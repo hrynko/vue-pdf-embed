@@ -1,0 +1,43 @@
+{
+  "name": "vue-pdf-embed",
+  "version": "1.0.0",
+  "description": "PDF embed component for Vue 2 and Vue 3",
+  "keywords": [
+    "vue",
+    "vuejs",
+    "pdf"
+  ],
+  "main": "dist/vue3-pdf-embed.js",
+  "types": "types/index.d.ts",
+  "files": [
+    "dist/*",
+    "src/*"
+  ],
+  "license": "MIT",
+  "author": "Aliaksei Hrynko (https://github.com/hrynko)",
+  "repository": "github:hrynko/vue-pdf-embed",
+  "scripts": {
+    "build": "webpack build --progress"
+  },
+  "dependencies": {
+    "pdfjs-dist": "^2.6.347"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.14.2",
+    "@babel/preset-env": "^7.14.2",
+    "@vue/compiler-sfc": "^3.0.11",
+    "babel-loader": "^8.2.2",
+    "file-loader": "^6.2.0",
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "vue": "^2.6.12",
+    "vue-loader": "^15.9.7",
+    "vue-loader-next": "npm:vue-loader@^16.2.0",
+    "vue-template-compiler": "^2.6.12",
+    "webpack": "^5.37.1",
+    "webpack-cli": "^4.7.0",
+    "worker-loader": "^3.0.8"
+  },
+  "peerDependencies": {
+    "vue": "^2.x || ^3.x"
+  }
+}
