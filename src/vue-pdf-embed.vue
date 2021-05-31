@@ -45,7 +45,12 @@ export default {
       }
 
       try {
-        this.document = await pdf.getDocument(this.source).promise
+        const documentLoadingTask = pdf.getDocument(this.source)
+        documentLoadingTask.onPassword = (callback, reason) => {
+          const retry = reason === pdf.PasswordResponses.INCORRECT_PASSWORD
+          this.$emit('password-requested', callback, retry)
+        }
+        this.document = await documentLoadingTask.promise
         this.pageCount = this.document.numPages
       } catch (e) {
         this.document = null

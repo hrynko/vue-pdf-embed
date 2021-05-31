@@ -45,15 +45,17 @@ export default {
 
 ### Props
 
-| Name   | Type            | Accepted values                                  | Description                                                         |
-| ------ | --------------- | ------------------------------------------------ | ------------------------------------------------------------------- |
-| page   | number          | 1 to the number of the last page                 | number of the page to display (displays all pages if not specified) |
-| source | string / object | document URL or typed array pre-filled with data | source of the document to display                                   |
+| Name   | Type                   | Accepted values                                  | Description                                                         |
+| ------ | ---------------------- | ------------------------------------------------ | ------------------------------------------------------------------- |
+| page   | `number`               | 1 to the number of the last page                 | number of the page to display (displays all pages if not specified) |
+| source | `string` <br> `object` | document URL or typed array pre-filled with data | source of the document to display                                   |
 
 ### Events
 
-| Name             | Description                     |
-| ---------------- | ------------------------------- |
-| loading-failed   | failed to load document         |
-| rendering-failed | failed to render document       |
-| rendered         | finished rendering the document |
+| Name               | Value                         | Description                                |
+| ------------------ | ----------------------------- | ------------------------------------------ |
+| loading-failed     | error object                  | failed to load document                    |
+| password-requested | callback function, retry flag | password is needed to display the document |
+| rendering-failed   | error object                  | failed to render document                  |
+| rendered           | –                             | finished rendering the document            |
+
