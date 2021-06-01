@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const { VueLoaderPlugin: Vue2LoaderPlugin } = require('vue-loader')
 const { VueLoaderPlugin: Vue3LoaderPlugin } = require('vue-loader-next')

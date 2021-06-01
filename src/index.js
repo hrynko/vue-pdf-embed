@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+
 import VuePdfEmbed from './vue-pdf-embed.vue'
 
 function install(Vue) {
