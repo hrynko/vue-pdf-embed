@@ -1,6 +1,11 @@
-# vue-pdf-embed
+# 📄 vue-pdf-embed
 
 PDF embed component for Vue 2 and Vue 3
+
+[![npm](https://img.shields.io/npm/v/vue-pdf-embed)](https://npmjs.com/package/vue-pdf-embed)
+[![npm](https://img.shields.io/npm/dm/vue-pdf-embed)](https://npmjs.com/package/vue-pdf-embed)
+[![GitHub Repo stars](https://img.shields.io/github/stars/hrynko/vue-pdf-embed)](https://github.com/hrynko/vue-pdf-embed)
+[![npm](https://img.shields.io/npm/l/vue-pdf-embed)](https://github.com/hrynko/vue-pdf-embed/blob/master/LICENSE)
 
 ## Compatibility
 
@@ -59,3 +64,6 @@ export default {
 | rendering-failed   | error object                  | failed to render document                  |
 | rendered           | –                             | finished rendering the document            |
 
+## License
+
+MIT License. Please see [LICENSE file](LICENSE) for more information.
