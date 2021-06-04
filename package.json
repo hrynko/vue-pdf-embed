@@ -1,6 +1,6 @@
 {
   "name": "vue-pdf-embed",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "PDF embed component for Vue 2 and Vue 3",
   "keywords": [
     "vue",
