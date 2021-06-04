@@ -64,6 +64,12 @@ export default {
 | rendering-failed   | error object                  | failed to render document                  |
 | rendered           | –                             | finished rendering the document            |
 
+## Examples
+
+[Basic Usage Demo (JSFiddle)](https://jsfiddle.net/hrynko/ct6p8r7k)
+
+[Advanced Usage Demo (JSFiddle)](https://jsfiddle.net/hrynko/we7p5uq4)
+
 ## License
 
 MIT License. Please see [LICENSE file](LICENSE) for more information.
