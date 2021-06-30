@@ -11,6 +11,22 @@ PDF embed component for Vue 2 and Vue 3
 
 This package is compatible with both Vue 2 and Vue 3, but is delievered in separate builds. Use `dist/vue2-pdf-embed.js` for Vue 2 and `dist/vue3-pdf-embed.js` for Vue 3. The default export of the package is for Vue 3.
 
+## Installation
+
+Depending on the environment, the package can be installed in one of the following ways:
+
+```shell
+npm install vue-pdf-embed
+```
+
+```shell
+yarn add vue-pdf-embed
+```
+
+```html
+<script src="https://unpkg.com/vue-pdf-embed"></script>
+```
+
 ## Usage
 
 ```vue
