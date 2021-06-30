@@ -73,12 +73,15 @@ export default {
           this.pageNums.map(async (pageNum, i) => {
             const page = await this.document.getPage(pageNum)
             const canvas = this.$el.children[i]
+            const scale = Math.ceil(this.$el.clientWidth / page.view[2]) + 1
             const viewport = page.getViewport({
-              scale: this.$el.clientWidth / page.view[2],
+              scale,
             })
 
-            canvas.height = viewport.height
             canvas.width = viewport.width
+            canvas.height = viewport.height
+            canvas.style.width = '100%'
+            canvas.style.height = '100%'
 
             await page.render({
               canvasContext: canvas.getContext('2d'),
