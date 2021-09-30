@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import * as pdf from 'pdfjs-dist/es5/build/pdf.js'
-import PdfWorker from 'pdfjs-dist/es5/build/pdf.worker.js'
+import * as pdf from 'pdfjs-dist/build/pdf.js'
+import PdfWorker from 'pdfjs-dist/build/pdf.worker.js'
 
 pdf.GlobalWorkerOptions.workerPort = new PdfWorker()
 
