@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 const { VueLoaderPlugin } = require('vue-loader')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 

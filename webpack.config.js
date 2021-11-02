@@ -1,12 +1,17 @@
-/* eslint-disable no-undef */
-
+const { merge } = require('webpack-merge')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const { VueLoaderPlugin: Vue2LoaderPlugin } = require('vue-loader')
 const { VueLoaderPlugin: Vue3LoaderPlugin } = require('vue-loader-next')
 
-const baseConfig = {
+const commonConfig = {
   mode: 'production',
   entry: './src/index.js',
+  output: {
+    library: {
+      name: 'vue-pdf-embed',
+      type: 'umd',
+    },
+  },
   module: {
     rules: [
       {
@@ -43,26 +48,16 @@ const baseConfig = {
 }
 
 module.exports = [
-  {
-    ...baseConfig,
+  merge(commonConfig, {
     output: {
       filename: 'vue2-pdf-embed.js',
-      library: {
-        name: 'vue-pdf-embed',
-        type: 'umd',
-      },
     },
     plugins: [new Vue2LoaderPlugin()],
-  },
-  {
-    ...baseConfig,
+  }),
+  merge(commonConfig, {
     output: {
       filename: 'vue3-pdf-embed.js',
-      library: {
-        name: 'vue-pdf-embed',
-        type: 'umd',
-      },
     },
     plugins: [new Vue3LoaderPlugin()],
-  },
+  }),
 ]
