@@ -27,7 +27,7 @@ const commonConfig = {
         test: /\.worker\.js$/,
         loader: 'worker-loader',
         options: {
-          inline: 'fallback',
+          inline: 'no-fallback',
         },
       },
     ],
