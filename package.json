@@ -11,7 +11,8 @@
   "types": "types/index.d.ts",
   "files": [
     "dist/*",
-    "src/*"
+    "src/*",
+    "types/*"
   ],
   "license": "MIT",
   "author": "Aliaksei Hrynko (https://github.com/hrynko)",

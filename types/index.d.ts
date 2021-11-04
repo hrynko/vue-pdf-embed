@@ -1,7 +1,4 @@
-import { VueConstructor } from 'vue';
-
-export default VuePdfEmbed;
-export const VuePdfEmbed: VuePdfEmbedConstructor;
+import { DefineComponent } from 'vue';
 
 export interface VuePdfEmbedProps {
   page?: number;
@@ -14,13 +11,10 @@ export interface VuePdfEmbedData {
   pageNums: number[];
 }
 
-export interface VuePdfEmbedMethods {
-  load: Promise<void>;
-  render: Promise<void>;
-}
+export const VuePdfEmbed: DefineComponent<
+  VuePdfEmbedProps,
+  unknown,
+  VuePdfEmbedData
+>;
 
-export interface VuePdfEmbedConstructor extends VueConstructor {
-  props: VuePdfEmbedProps;
-  data: () => VuePdfEmbedData;
-  methods: VuePdfEmbedMethods;
-}
+export default VuePdfEmbed;
