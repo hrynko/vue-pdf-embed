@@ -2,11 +2,7 @@
   "env": {
     "node": true
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:vue/essential",
-    "prettier"
-  ],
+  "extends": ["eslint:recommended", "plugin:vue/essential", "prettier"],
   "plugins": ["prettier"],
   "rules": {
     "prettier/prettier": "warn"
