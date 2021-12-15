@@ -13,7 +13,15 @@ pdf.GlobalWorkerOptions.workerPort = new PdfWorker()
 export default {
   name: 'VuePdfEmbed',
   props: {
+    /**
+     * Number of the page to display.
+     * @values Number
+     */
     page: Number,
+    /**
+     * Source of the document to display.
+     * @values String, URL, TypedArray
+     */
     source: {
       type: [Object, String],
       required: true,
@@ -39,6 +47,12 @@ export default {
     },
   },
   methods: {
+    /**
+     * Loads a PDF document. Defines a password callback for protected
+     * documents.
+     *
+     * NOTE: Ignored if source property is not provided.
+     */
     async load() {
       if (!this.source) {
         return
@@ -59,6 +73,11 @@ export default {
         this.$emit('loading-failed', e)
       }
     },
+    /**
+     * Renders the PDF document as SVG element(s).
+     *
+     * NOTE: Ignored if the document is not loaded.
+     */
     async render() {
       if (!this.document) {
         return
