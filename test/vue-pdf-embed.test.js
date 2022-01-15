@@ -3,9 +3,9 @@ import VuePdfEmbed from '../src/vue-pdf-embed.vue'
 
 HTMLCanvasElement.prototype.getContext = () => {}
 
-jest.mock('pdfjs-dist/es5/build/pdf.worker.js', () => jest.fn())
+jest.mock('pdfjs-dist/legacy/build/pdf.worker.js', () => jest.fn())
 
-jest.mock('pdfjs-dist/es5/build/pdf.js', () => ({
+jest.mock('pdfjs-dist/legacy/build/pdf.js', () => ({
   GlobalWorkerOptions: {},
   getDocument: () => ({
     promise: {
