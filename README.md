@@ -56,9 +56,7 @@ export default {
   data() {
     return {
       source1: '<PDF_URL>',
-      source2: {
-        data: atob('<BASE64_ENCODED_PDF>'),
-      },
+      source2: 'data:application/pdf;base64,<BASE64_ENCODED_PDF>',
     }
   }
 })
