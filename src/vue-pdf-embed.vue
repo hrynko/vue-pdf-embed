@@ -1,6 +1,6 @@
 <template>
   <div>
-    <canvas v-for="pageNum in pageNums" :key="pageNum"></canvas>
+    <canvas v-for="pageNum in pageNums" :key="pageNum" :id="`pdf-page-${pageNum}`"></canvas>
   </div>
 </template>
 
