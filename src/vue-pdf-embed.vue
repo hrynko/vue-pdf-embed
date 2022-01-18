@@ -1,13 +1,10 @@
 <template>
-  <div v-if="documentId" :id="documentId">
+  <div :id="id">
     <canvas
       v-for="pageNum in pageNums"
       :key="pageNum"
-      :id="`${documentId}-${pageNum}`"
+      :id="id && `${id}-${pageNum}`"
     />
-  </div>
-  <div v-else>
-    <canvas v-for="pageNum in pageNums" :key="pageNum" />
   </div>
 </template>
 
@@ -21,12 +18,13 @@ export default {
   name: 'VuePdfEmbed',
   props: {
     /**
-     * Id of the document to display 
+     * Component identifier (inherited by child SVGs with page number
+     * postfixes).
      * @values String
      */
-    documentId: {
+    id: {
       type: String,
-      required: false,
+      default: null,
     },
     /**
      * Number of the page to display.
