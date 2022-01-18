@@ -1,13 +1,10 @@
 <template>
-  <div v-if="documentId" :id="documentId">
+  <div :id="id">
     <canvas
       v-for="pageNum in pageNums"
       :key="pageNum"
-      :id="`${documentId}-${pageNum}`"
+      :id="id && `${id}-${pageNum}`"
     />
-  </div>
-  <div v-else>
-    <canvas v-for="pageNum in pageNums" :key="pageNum" />
   </div>
 </template>
 
