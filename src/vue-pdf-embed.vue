@@ -18,7 +18,8 @@ export default {
   name: 'VuePdfEmbed',
   props: {
     /**
-     * Id of the document to display 
+     * Component identifier (inherited by child SVGs with page number
+     * postfixes).
      * @values String
      */
     id: {
