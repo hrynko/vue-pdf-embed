@@ -21,7 +21,7 @@ export default {
      * Id of the document to display 
      * @values String
      */
-    documentId: {
+    id: {
       type: String,
       required: false,
     },
