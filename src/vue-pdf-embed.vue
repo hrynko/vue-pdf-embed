@@ -23,7 +23,7 @@ export default {
      */
     id: {
       type: String,
-      required: false,
+      default: null,
     },
     /**
      * Number of the page to display.
