@@ -4,6 +4,7 @@
       v-for="pageNum in pageNums"
       :key="pageNum"
       :id="id && `${id}-${pageNum}`"
+      :class="pageClass"
     />
   </div>
 </template>
@@ -31,6 +32,14 @@ export default {
      * @values Number
      */
     page: Number,
+    /**
+     * CSS class to apply to each page
+     * @values String
+     */
+    pageClass: {
+      type: String,
+      default: '',
+    },
     /**
      * Source of the document to display.
      * @values String, URL, TypedArray
