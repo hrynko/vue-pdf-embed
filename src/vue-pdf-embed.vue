@@ -1,6 +1,10 @@
 <template>
-  <div>
-    <canvas v-for="pageNum in pageNums" :key="pageNum"></canvas>
+  <div :id="id">
+    <canvas
+      v-for="pageNum in pageNums"
+      :key="pageNum"
+      :id="id && `${id}-${pageNum}`"
+    />
   </div>
 </template>
 
@@ -13,6 +17,15 @@ pdf.GlobalWorkerOptions.workerPort = new PdfWorker()
 export default {
   name: 'VuePdfEmbed',
   props: {
+    /**
+     * Component identifier (inherited by child SVGs with page number
+     * postfixes).
+     * @values String
+     */
+    id: {
+      type: String,
+      default: null,
+    },
     /**
      * Number of the page to display.
      * @values Number
