@@ -33,6 +33,14 @@ test('sets correct data', () => {
   expect(vm.pageNums).toEqual([1, 2, 3, 4, 5])
 })
 
+test('sets page IDs', async () => {
+  vm.id = 'ID'
+  await vm.$nextTick()
+  vm.$el.childNodes.forEach((node, i) => {
+    expect(node.id).toEqual(`ID-${i + 1}`)
+  })
+})
+
 test('emits "rendered" event', async () => {
   await vm.$nextTick()
   expect(emitSpy).lastCalledWith('rendered')
