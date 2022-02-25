@@ -43,6 +43,8 @@
     "pdfjs-dist": "^2.9.359",
     "prettier": "^2.3.0",
     "rimraf": "^3.0.2",
+    "sass": "^1.49.8",
+    "sass-loader": "^12.6.0",
     "uglifyjs-webpack-plugin": "^2.2.0",
     "vue": "^2.6.12",
     "vue-jest": "^4.0.1",

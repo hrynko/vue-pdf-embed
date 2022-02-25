@@ -24,6 +24,10 @@ const commonConfig = {
         loader: 'vue-loader',
       },
       {
+        test: /\.s?css$/,
+        use: ['vue-style-loader', 'css-loader', 'sass-loader'],
+      },
+      {
         test: /\.worker\.js$/,
         loader: 'worker-loader',
         options: {

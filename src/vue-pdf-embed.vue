@@ -1,10 +1,14 @@
 <template>
-  <div :id="id">
-    <canvas
+  <div :id="id" class="vue-pdf-embed">
+    <div
       v-for="pageNum in pageNums"
       :key="pageNum"
       :id="id && `${id}-${pageNum}`"
-    />
+    >
+      <canvas />
+
+      <div v-if="!disableTextLayer" class="textLayer" />
+    </div>
   </div>
 </template>
 
@@ -18,14 +22,16 @@ export default {
   name: 'VuePdfEmbed',
   props: {
     /**
+     * Whether the text layer should be disabled.
+     * @values Boolean
+     */
+    disableTextLayer: Boolean,
+    /**
      * Component identifier (inherited by child SVGs with page number
      * postfixes).
      * @values String
      */
-    id: {
-      type: String,
-      default: null,
-    },
+    id: String,
     /**
      * Number of the page to display.
      * @values Number
@@ -48,6 +54,9 @@ export default {
     }
   },
   watch: {
+    disableTextLayer() {
+      this.render()
+    },
     page() {
       this.render()
     },
@@ -104,21 +113,32 @@ export default {
         await Promise.all(
           this.pageNums.map(async (pageNum, i) => {
             const page = await this.document.getPage(pageNum)
-            const canvas = this.$el.children[i]
-            const scale = Math.ceil(this.$el.clientWidth / page.view[2]) + 1
+            const [canvas, textLayerDiv] = this.$el.children[i].children
+            const actualWidth = this.$el.clientWidth
+            const actualHeight = (width * page.view[3]) / page.view[2]
             const viewport = page.getViewport({
-              scale,
+              scale: Math.ceil(actualWidth / page.view[2]) + 1,
             })
 
             canvas.width = viewport.width
             canvas.height = viewport.height
-            canvas.style.width = '100%'
-            canvas.style.height = '100%'
+            canvas.style.width = `${Math.floor(actualWidth)}px`
+            canvas.style.height = `${Math.floor(actualHeight)}px`
 
             await page.render({
               canvasContext: canvas.getContext('2d'),
               viewport,
             }).promise
+
+            if (!this.disableTextLayer) {
+              await pdf.renderTextLayer({
+                container: textLayerDiv,
+                textContent: await page.getTextContent(),
+                viewport: page.getViewport({
+                  scale: actualWidth / page.view[2],
+                }),
+              }).promise
+            }
           })
         )
 
@@ -133,3 +153,17 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+@import 'styles/text-layer';
+
+.vue-pdf-embed {
+  & > div {
+    position: relative;
+  }
+
+  canvas {
+    display: block;
+  }
+}
+</style>

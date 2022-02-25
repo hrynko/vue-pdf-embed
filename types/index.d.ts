@@ -1,6 +1,7 @@
 import { DefineComponent } from 'vue';
 
 export interface VuePdfEmbedProps {
+  disableTextLayer?: boolean;
   page?: number;
   source: object | string;
 }
