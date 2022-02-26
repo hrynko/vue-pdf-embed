@@ -8,6 +8,8 @@
       <canvas />
 
       <div v-if="!disableTextLayer" class="textLayer" />
+
+      <div v-if="!disableAnnotationLayer" class="annotationLayer" />
     </div>
   </div>
 </template>
@@ -15,12 +17,18 @@
 <script>
 import * as pdf from 'pdfjs-dist/legacy/build/pdf.js'
 import PdfWorker from 'pdfjs-dist/legacy/build/pdf.worker.js'
+import { PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer.js'
 
 pdf.GlobalWorkerOptions.workerPort = new PdfWorker()
 
 export default {
   name: 'VuePdfEmbed',
   props: {
+    /**
+     * Whether the annotation layer should be disabled.
+     * @values Boolean
+     */
+    disableAnnotationLayer: Boolean,
     /**
      * Whether the text layer should be disabled.
      * @values Boolean
@@ -54,6 +62,9 @@ export default {
     }
   },
   watch: {
+    disableAnnotationLayer() {
+      this.render()
+    },
     disableTextLayer() {
       this.render()
     },
@@ -113,9 +124,9 @@ export default {
         await Promise.all(
           this.pageNums.map(async (pageNum, i) => {
             const page = await this.document.getPage(pageNum)
-            const [canvas, textLayerDiv] = this.$el.children[i].children
+            const [canvas, div1, div2] = this.$el.children[i].children
             const actualWidth = this.$el.clientWidth
-            const actualHeight = (width * page.view[3]) / page.view[2]
+            const actualHeight = (actualWidth * page.view[3]) / page.view[2]
             const viewport = page.getViewport({
               scale: Math.ceil(actualWidth / page.view[2]) + 1,
             })
@@ -132,12 +143,37 @@ export default {
 
             if (!this.disableTextLayer) {
               await pdf.renderTextLayer({
-                container: textLayerDiv,
+                container: div1,
                 textContent: await page.getTextContent(),
                 viewport: page.getViewport({
                   scale: actualWidth / page.view[2],
                 }),
               }).promise
+            }
+
+            if (!this.disableAnnotationLayer) {
+              const linkService = new PDFLinkService()
+              linkService.setDocument(this.document)
+              linkService.setViewer({
+                scrollPageIntoView: ({ pageNumber }) => {
+                  this.$emit('internal-link-clicked', pageNumber)
+                },
+              })
+
+              pdf.AnnotationLayer.render({
+                annotations: await page.getAnnotations(),
+                div: this.disableTextLayer ? div1 : div2,
+                linkService,
+                page,
+                renderInteractiveForms: false,
+                viewport: page
+                  .getViewport({
+                    scale: actualWidth / page.view[2],
+                  })
+                  .clone({
+                    dontFlip: true,
+                  }),
+              })
             }
           })
         )
@@ -156,6 +192,7 @@ export default {
 
 <style lang="scss">
 @import 'styles/text-layer';
+@import 'styles/annotation-layer';
 
 .vue-pdf-embed {
   & > div {
