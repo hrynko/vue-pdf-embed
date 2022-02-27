@@ -35,6 +35,11 @@ export default {
      */
     disableTextLayer: Boolean,
     /**
+     * Desired page height.
+     * @values Number, String
+     */
+    height: [Number, String],
+    /**
      * Component identifier (inherited by child SVGs with page number
      * postfixes).
      * @values String
@@ -53,6 +58,11 @@ export default {
       type: [Object, String],
       required: true,
     },
+    /**
+     * Desired page width.
+     * @values Number, String
+     */
+    width: [Number, String],
   },
   data() {
     return {
@@ -68,6 +78,9 @@ export default {
     disableTextLayer() {
       this.render()
     },
+    height() {
+      this.render()
+    },
     page() {
       this.render()
     },
@@ -78,8 +91,27 @@ export default {
         this.render()
       },
     },
+    width() {
+      this.render()
+    },
   },
   methods: {
+    /**
+     * Returns an array of the actual width and height of the page.
+     */
+    getPageDimensions(ratio) {
+      let width, height
+
+      if (this.height && !this.width) {
+        height = this.height
+        width = height / ratio
+      } else {
+        width = this.width || this.$el.clientWidth
+        height = width * ratio
+      }
+
+      return [width, height]
+    },
     /**
      * Loads a PDF document. Defines a password callback for protected
      * documents.
@@ -125,8 +157,9 @@ export default {
           this.pageNums.map(async (pageNum, i) => {
             const page = await this.document.getPage(pageNum)
             const [canvas, div1, div2] = this.$el.children[i].children
-            const actualWidth = this.$el.clientWidth
-            const actualHeight = (actualWidth * page.view[3]) / page.view[2]
+            const [actualWidth, actualHeight] = this.getPageDimensions(
+              page.view[3] / page.view[2]
+            )
             const viewport = page.getViewport({
               scale: Math.ceil(actualWidth / page.view[2]) + 1,
             })
