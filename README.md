@@ -10,7 +10,7 @@ PDF embed component for Vue 2 and Vue 3
 
 ## Compatibility
 
-This package is compatible with both Vue 2 and Vue 3. The default exported build is for Vue 3, but `dist` directory also contains a build for Vue 2 (`dist/vue2-pdf-embed.js`). See the example in [Usage](#usage) section.
+This package is compatible with both Vue 2 and Vue 3, but consists of two separate builds. The default exported build is for Vue 3, for Vue 2 import `dist/vue2-pdf-embed.js` (see [Usage](#usage)).
 
 ## Installation
 
@@ -34,11 +34,9 @@ yarn add vue-pdf-embed
 <template>
   <div>
     <h1>File</h1>
-
     <vue-pdf-embed :source="source1" />
 
     <h1>Base64</h1>
-
     <vue-pdf-embed :source="source2" />
   </div>
 </template>
@@ -65,19 +63,24 @@ export default {
 
 ### Props
 
-| Name   | Type                   | Accepted values                                  | Description                                                         |
-| ------ | ---------------------- | ------------------------------------------------ | ------------------------------------------------------------------- |
-| page   | `number`               | 1 to the number of the last page                 | number of the page to display (displays all pages if not specified) |
-| source | `string` <br> `object` | document URL or typed array pre-filled with data | source of the document to display                                   |
+| Name                   | Type                   | Accepted values                                  | Description                                                                |
+| ---------------------- | ---------------------- | ------------------------------------------------ | -------------------------------------------------------------------------- |
+| disableAnnotationLayer | `boolean`              | `true` or `false`                                | whether the annotation layer should be disabled                            |
+| disableTextLayer       | `boolean`              | `true` or `false`                                | whether the text layer should be disabled                                  |
+| height                 | `number` <br> `string` | natural numbers                                  | desired page height in pixels (ignored if the width property is specified) |
+| page                   | `number`               | `1` to the last page number                      | number of the page to display (displays all pages if not specified)        |
+| source                 | `string` <br> `object` | document URL or typed array pre-filled with data | source of the document to display                                          |
+| width                  | `number` <br> `string` | natural numbers                                  | desired page width in pixels                                               |
 
 ### Events
 
-| Name               | Value                         | Description                                |
-| ------------------ | ----------------------------- | ------------------------------------------ |
-| loading-failed     | error object                  | failed to load document                    |
-| password-requested | callback function, retry flag | password is needed to display the document |
-| rendering-failed   | error object                  | failed to render document                  |
-| rendered           | –                             | finished rendering the document            |
+| Name                  | Value                         | Description                                |
+| --------------------- | ----------------------------- | ------------------------------------------ |
+| internal-link-clicked | destination page number       | internal link was clicked                  |
+| loading-failed        | error object                  | failed to load document                    |
+| password-requested    | callback function, retry flag | password is needed to display the document |
+| rendering-failed      | error object                  | failed to render document                  |
+| rendered              | –                             | finished rendering the document            |
 
 ## Examples
 
