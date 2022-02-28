@@ -8,6 +8,15 @@ PDF embed component for Vue 2 and Vue 3
 [![GitHub Repo stars](https://img.shields.io/github/stars/hrynko/vue-pdf-embed)](https://github.com/hrynko/vue-pdf-embed)
 [![npm](https://img.shields.io/npm/l/vue-pdf-embed)](https://github.com/hrynko/vue-pdf-embed/blob/master/LICENSE)
 
+## Features
+
+- Controlled rendering of PDF documents in Vue apps
+- Handles password protected documents
+- Includes text layer (searchable and selectable documents)
+- Includes annotation layer (annotations and links)
+- No peer dependencies or additional configuration required
+- Can be used directly in the browser (see [Examples](#examples))
+
 ## Compatibility
 
 This package is compatible with both Vue 2 and Vue 3, but consists of two separate builds. The default exported build is for Vue 3, for Vue 2 import `dist/vue2-pdf-embed.js` (see [Usage](#usage)).
