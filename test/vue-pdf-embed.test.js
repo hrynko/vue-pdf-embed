@@ -23,7 +23,13 @@ const Component = Vue.extend(VuePdfEmbed)
 let vm, emitSpy
 
 beforeEach(() => {
-  vm = new Component({ propsData: { source: 'SOURCE' } }).$mount()
+  vm = new Component({
+    propsData: {
+      disableAnnotationLayer: true,
+      disableTextLayer: true,
+      source: 'SOURCE',
+    },
+  }).$mount()
   emitSpy = jest.spyOn(vm, '$emit')
 })
 
