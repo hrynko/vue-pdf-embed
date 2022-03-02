@@ -5,7 +5,7 @@ export interface VuePdfEmbedProps {
   disableTextLayer?: boolean;
   height?: number | string;
   page?: number;
-  source: object | string;
+  source: object | string | Uint8Array;
   width?: number | string;
 }
 

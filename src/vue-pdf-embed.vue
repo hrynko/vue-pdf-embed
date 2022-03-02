@@ -55,7 +55,7 @@ export default {
      * @values String, URL, TypedArray
      */
     source: {
-      type: [Object, String],
+      type: [Object, String, Uint8Array],
       required: true,
     },
     /**
