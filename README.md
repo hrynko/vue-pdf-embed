@@ -66,7 +66,7 @@ export default {
       source2: 'data:application/pdf;base64,<BASE64_ENCODED_PDF>',
     }
   }
-})
+}
 </script>
 ```
 
