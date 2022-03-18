@@ -40,7 +40,7 @@ export default {
      */
     height: [Number, String],
     /**
-     * Component identifier (inherited by child SVGs with page number
+     * Component identifier (inherited by page containers with page number
      * postfixes).
      * @values String
      */
