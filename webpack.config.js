@@ -1,5 +1,5 @@
 const { merge } = require('webpack-merge')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 const { VueLoaderPlugin: Vue2LoaderPlugin } = require('vue-loader')
 const { VueLoaderPlugin: Vue3LoaderPlugin } = require('vue-loader-next')
 
@@ -38,10 +38,10 @@ const commonConfig = {
   },
   optimization: {
     minimizer: [
-      new UglifyJsPlugin({
-        parallel: true,
-      }),
-    ],
+      new TerserPlugin({
+      parallel: true,
+    }),
+  ],
   },
   externals: {
     vue: 'vue',
