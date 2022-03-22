@@ -22,8 +22,8 @@
     "build": "webpack build --progress",
     "serve": "webpack serve --config webpack.dev.config.js --hot",
     "test": "jest",
-    "lint": "eslint src/**",
-    "lint:fix": "eslint src/** --fix"
+    "lint": "eslint \"**/*.{js,vue}\"",
+    "lint:fix": "eslint \"**/*.{js,vue}\" --fix"
   },
   "dependencies": {},
   "devDependencies": {
