@@ -113,7 +113,9 @@ export default {
   },
   methods: {
     /**
-     * Returns an array of the actual width and height of the page.
+     * Returns an array of the actual page width and height based on props and
+     * aspect ratio.
+     * @param {number} ratio - Page aspect ratio.
      */
     getPageDimensions(ratio) {
       let width, height
