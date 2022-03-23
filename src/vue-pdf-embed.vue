@@ -71,6 +71,22 @@ export default {
       pageNums: [],
     }
   },
+  computed: {
+    linkService() {
+      if (!this.document) {
+        return null
+      }
+
+      const service = new PDFLinkService()
+      service.setDocument(this.document)
+      service.setViewer({
+        scrollPageIntoView: ({ pageNumber }) => {
+          this.$emit('internal-link-clicked', pageNumber)
+        },
+      })
+      return service
+    },
+  },
   watch: {
     disableAnnotationLayer() {
       this.render()
@@ -196,7 +212,7 @@ export default {
               pdf.AnnotationLayer.render({
                 annotations: await page.getAnnotations(),
                 div: this.disableTextLayer ? div1 : div2,
-                linkService,
+                linkService: this.linkService,
                 page,
                 renderInteractiveForms: false,
                 viewport: page
