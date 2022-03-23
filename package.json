@@ -18,7 +18,6 @@
   "author": "Aliaksei Hrynko (https://github.com/hrynko)",
   "repository": "github:hrynko/vue-pdf-embed",
   "scripts": {
-    "prebuild": "rimraf dist",
     "build": "webpack build --progress",
     "serve": "webpack serve --config webpack.dev.config.js --hot",
     "test": "jest",
@@ -42,7 +41,6 @@
     "jest": "^26.6.3",
     "pdfjs-dist": "^2.9.359",
     "prettier": "^2.3.0",
-    "rimraf": "^3.0.2",
     "sass": "^1.49.8",
     "sass-loader": "^12.6.0",
     "terser-webpack-plugin": "^5.3.1",

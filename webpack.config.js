@@ -59,6 +59,7 @@ const commonConfig = {
 module.exports = [
   merge(commonConfig, {
     output: {
+      clean: true,
       filename: 'vue2-pdf-embed.js',
     },
     plugins: [new Vue2LoaderPlugin()],
