@@ -157,7 +157,7 @@ export default {
       }
     },
     /**
-     * Renders the PDF document as SVG element(s).
+     * Renders the PDF document as SVG element(s) and additional layers.
      *
      * NOTE: Ignored if the document is not loaded.
      */
@@ -178,53 +178,22 @@ export default {
             const [actualWidth, actualHeight] = this.getPageDimensions(
               page.view[3] / page.view[2]
             )
-            const viewport = page.getViewport({
-              scale: Math.ceil(actualWidth / page.view[2]) + 1,
-            })
 
-            canvas.width = viewport.width
-            canvas.height = viewport.height
             canvas.style.width = `${Math.floor(actualWidth)}px`
             canvas.style.height = `${Math.floor(actualHeight)}px`
 
-            await page.render({
-              canvasContext: canvas.getContext('2d'),
-              viewport,
-            }).promise
+            await this.renderPage(page, canvas, actualWidth)
 
             if (!this.disableTextLayer) {
-              await pdf.renderTextLayer({
-                container: div1,
-                textContent: await page.getTextContent(),
-                viewport: page.getViewport({
-                  scale: actualWidth / page.view[2],
-                }),
-              }).promise
+              await this.renderPageTextLayer(page, div1, actualWidth)
             }
 
             if (!this.disableAnnotationLayer) {
-              const linkService = new PDFLinkService()
-              linkService.setDocument(this.document)
-              linkService.setViewer({
-                scrollPageIntoView: ({ pageNumber }) => {
-                  this.$emit('internal-link-clicked', pageNumber)
-                },
-              })
-
-              pdf.AnnotationLayer.render({
-                annotations: await page.getAnnotations(),
-                div: this.disableTextLayer ? div1 : div2,
-                linkService: this.linkService,
+              await this.renderPageAnnotationLayer(
                 page,
-                renderInteractiveForms: false,
-                viewport: page
-                  .getViewport({
-                    scale: actualWidth / page.view[2],
-                  })
-                  .clone({
-                    dontFlip: true,
-                  }),
-              })
+                div2 || div1,
+                actualWidth
+              )
             }
           })
         )
@@ -236,6 +205,62 @@ export default {
         this.pageNums = []
         this.$emit('rendering-failed', e)
       }
+    },
+    /**
+     * Renders the page content.
+     * @param {PDFPageProxy} page - Page proxy.
+     * @param {HTMLCanvasElement} canvas - HTML canvas.
+     * @param {number} width - Actual page width.
+     */
+    async renderPage(page, canvas, width) {
+      const viewport = page.getViewport({
+        scale: Math.ceil(width / page.view[2]) + 1,
+      })
+
+      canvas.width = viewport.width
+      canvas.height = viewport.height
+
+      await page.render({
+        canvasContext: canvas.getContext('2d'),
+        viewport,
+      }).promise
+    },
+    /**
+     * Renders the annotation layer for the specified page.
+     * @param {PDFPageProxy} page - Page proxy.
+     * @param {HTMLElement} container - HTML container.
+     * @param {number} width - Actual page width.
+     */
+    async renderPageAnnotationLayer(page, container, width) {
+      pdf.AnnotationLayer.render({
+        annotations: await page.getAnnotations(),
+        div: container,
+        linkService: this.linkService,
+        page,
+        renderInteractiveForms: false,
+        viewport: page
+          .getViewport({
+            scale: width / page.view[2],
+          })
+          .clone({
+            dontFlip: true,
+          }),
+      })
+    },
+    /**
+     * Renders the text layer for the specified page.
+     * @param {PDFPageProxy} page - Page proxy.
+     * @param {HTMLElement} container - HTML container.
+     * @param {number} width - Actual page width.
+     */
+    async renderPageTextLayer(page, container, width) {
+      await pdf.renderTextLayer({
+        container,
+        textContent: await page.getTextContent(),
+        viewport: page.getViewport({
+          scale: width / page.view[2],
+        }),
+      }).promise
     },
   },
 }
