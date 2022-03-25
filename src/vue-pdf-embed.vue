@@ -73,7 +73,7 @@ export default {
   },
   computed: {
     linkService() {
-      if (!this.document) {
+      if (!this.document || this.disableAnnotationLayer) {
         return null
       }
 
