@@ -18,13 +18,13 @@
   "author": "Aliaksei Hrynko (https://github.com/hrynko)",
   "repository": "github:hrynko/vue-pdf-embed",
   "scripts": {
-    "prepare": "npm run build",
+    "prepare": "ci ; npm run build",
     "prebuild": "rimraf dist",
     "build": "webpack build --progress",
     "serve": "webpack serve --config webpack.dev.config.js --hot",
     "test": "jest",
-    "lint": "eslint src/**",
-    "lint:fix": "eslint src/** --fix"
+    "lint": "eslint \"**/*.{js,vue}\"",
+    "lint:fix": "eslint \"**/*.{js,vue}\" --fix"
   },
   "dependencies": {},
   "devDependencies": {
@@ -43,10 +43,9 @@
     "jest": "^26.6.3",
     "pdfjs-dist": "^2.9.359",
     "prettier": "^2.3.0",
-    "rimraf": "^3.0.2",
     "sass": "^1.49.8",
     "sass-loader": "^12.6.0",
-    "uglifyjs-webpack-plugin": "^2.2.0",
+    "terser-webpack-plugin": "^5.3.1",
     "vue": "^2.6.12",
     "vue-jest": "^4.0.1",
     "vue-loader": "^15.9.7",
