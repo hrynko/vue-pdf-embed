@@ -18,8 +18,7 @@
   "author": "Aliaksei Hrynko (https://github.com/hrynko)",
   "repository": "github:hrynko/vue-pdf-embed",
   "scripts": {
-    "prepare": "npm run build",
-    "prebuild": "rimraf dist",
+    "prepare": "webpack build",
     "build": "webpack build --progress",
     "serve": "webpack serve --config webpack.dev.config.js --hot",
     "test": "jest",
