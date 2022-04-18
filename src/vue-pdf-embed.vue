@@ -253,6 +253,7 @@ export default {
         viewport: page
           .getViewport({
             scale: width / page.view[2],
+            rotation: this.rotate % 90 === 0 ? this.rotate : 0,
           })
           .clone({
             dontFlip: true,
@@ -271,6 +272,7 @@ export default {
         textContent: await page.getTextContent(),
         viewport: page.getViewport({
           scale: width / page.view[2],
+          rotation: this.rotate % 90 === 0 ? this.rotate : 0,
         }),
       }).promise
     },
