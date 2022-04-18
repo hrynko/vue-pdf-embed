@@ -63,6 +63,14 @@ export default {
      * @values Number, String
      */
     width: [Number, String],
+    /**
+     * The page rotation in degrees, only multiple of 90 are valid. EG: 90, 180, 270, 360, ...
+     * @values Number
+     */
+    rotate: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
@@ -108,6 +116,9 @@ export default {
       },
     },
     width() {
+      this.render()
+    },
+    rotate() {
       this.render()
     },
   },
@@ -215,6 +226,7 @@ export default {
     async renderPage(page, canvas, width) {
       const viewport = page.getViewport({
         scale: Math.ceil(width / page.view[2]) + 1,
+        rotation: this.rotate % 90 === 0 ? this.rotate : 0,
       })
 
       canvas.width = viewport.width
