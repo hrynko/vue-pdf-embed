@@ -80,7 +80,7 @@ export default {
 | page                   | `number`               | `1` to the last page number                      | number of the page to display (displays all pages if not specified)        |
 | source                 | `string` <br> `object` <br> `Uint8Array` | document URL or typed array pre-filled with data | source of the document to display                                          |
 | width                  | `number` <br> `string` | natural numbers                                  | desired page width in pixels                                               |
-| rotate                 | `number`               | numbers                                  | The page rotation in degrees, only multiple of 90 are valid. EG: 90, 180, 270, 360, ...                               |
+| rotate                 | `number`                                 | `0`, `90`, `180` or `270` (multiples of `90`)    | desired page rotation angle in degrees                                     |
 
 ### Events
 
