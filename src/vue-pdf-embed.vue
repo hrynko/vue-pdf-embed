@@ -64,7 +64,7 @@ export default {
      */
     width: [Number, String],
     /**
-     * The page rotation in degrees, only multiple of 90 are valid. EG: 90, 180, 270, 360, ...
+     * Desired page rotation angle.
      * @values Number
      */
     rotate: {
