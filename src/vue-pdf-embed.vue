@@ -63,6 +63,20 @@ export default {
      * @values Number, String
      */
     width: [Number, String],
+    /**
+     * Desired page rotation angle.
+     * @values Number
+     */
+    rotation: {
+      type: Number,
+      default: 0,
+      validator(value) {
+        if (value % 90 !== 0) {
+          throw new Error('Rotation must be a zero or multiple of 90°')
+        }
+        return true
+      },
+    },
   },
   data() {
     return {
@@ -108,6 +122,9 @@ export default {
       },
     },
     width() {
+      this.render()
+    },
+    rotation() {
       this.render()
     },
   },
@@ -215,6 +232,7 @@ export default {
     async renderPage(page, canvas, width) {
       const viewport = page.getViewport({
         scale: Math.ceil(width / page.view[2]) + 1,
+        rotation: this.rotation,
       })
 
       canvas.width = viewport.width
@@ -241,6 +259,7 @@ export default {
         viewport: page
           .getViewport({
             scale: width / page.view[2],
+            rotation: this.rotation,
           })
           .clone({
             dontFlip: true,
@@ -259,6 +278,7 @@ export default {
         textContent: await page.getTextContent(),
         viewport: page.getViewport({
           scale: width / page.view[2],
+          rotation: this.rotation,
         }),
       }).promise
     },
