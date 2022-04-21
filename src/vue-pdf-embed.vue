@@ -65,14 +65,13 @@ export default {
     width: [Number, String],
     /**
      * Desired page rotation angle.
-     * @values Number
+     * @values Number, String
      */
     rotation: {
-      type: Number,
-      default: 0,
+      type: [Number, String],
       validator(value) {
         if (value % 90 !== 0) {
-          throw new Error('Rotation must be a zero or multiple of 90°')
+          throw new Error('Rotation must be 0 or a multiple of 90.')
         }
         return true
       },
