@@ -51,19 +51,6 @@ export default {
      */
     page: Number,
     /**
-     * Source of the document to display.
-     * @values String, URL, TypedArray
-     */
-    source: {
-      type: [Object, String, Uint8Array],
-      required: true,
-    },
-    /**
-     * Desired page width.
-     * @values Number, String
-     */
-    width: [Number, String],
-    /**
      * Desired page rotation angle.
      * @values Number, String
      */
@@ -76,6 +63,19 @@ export default {
         return true
       },
     },
+    /**
+     * Source of the document to display.
+     * @values String, URL, TypedArray
+     */
+    source: {
+      type: [Object, String, Uint8Array],
+      required: true,
+    },
+    /**
+     * Desired page width.
+     * @values Number, String
+     */
+    width: [Number, String],
   },
   data() {
     return {
