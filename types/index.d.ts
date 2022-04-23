@@ -1,10 +1,11 @@
 import { DefineComponent } from 'vue';
 
 export interface VuePdfEmbedProps {
-  disableAnnotationLayer?: Boolean;
+  disableAnnotationLayer?: boolean;
   disableTextLayer?: boolean;
   height?: number | string;
   page?: number;
+  rotation?: number | string;
   source: object | string | Uint8Array;
   width?: number | string;
 }
