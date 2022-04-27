@@ -195,8 +195,13 @@ export default {
               page.view[3] / page.view[2]
             )
 
-            canvas.style.width = `${Math.floor(actualWidth)}px`
-            canvas.style.height = `${Math.floor(actualHeight)}px`
+            if (this.rotation === 90 || this.rotation === 270) {
+              canvas.style.height = `${Math.floor(actualWidth)}px`
+              canvas.style.width = `${Math.floor(actualHeight)}px`
+            } else {
+              canvas.style.width = `${Math.floor(actualWidth)}px`
+              canvas.style.height = `${Math.floor(actualHeight)}px`
+            }
 
             await this.renderPage(page, canvas, actualWidth)
 
