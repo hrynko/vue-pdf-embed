@@ -165,6 +165,7 @@ export default {
         }
         this.document = await documentLoadingTask.promise
         this.pageCount = this.document.numPages
+        this.$emit('loaded', this.document)
       } catch (e) {
         this.document = null
         this.pageCount = null

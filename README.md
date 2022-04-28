@@ -88,6 +88,7 @@ export default {
 | --------------------- | ----------------------------- | ------------------------------------------ |
 | internal-link-clicked | destination page number       | internal link was clicked                  |
 | loading-failed        | error object                  | failed to load document                    |
+| loaded                | PDF document proxy            | finished loading the document              |
 | password-requested    | callback function, retry flag | password is needed to display the document |
 | rendering-failed      | error object                  | failed to render document                  |
 | rendered              | –                             | finished rendering the document            |
