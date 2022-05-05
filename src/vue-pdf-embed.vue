@@ -186,6 +186,7 @@ export default {
         return
       }
 
+      this.$emit('rendering-started')
       this.locked = true
 
       try {
