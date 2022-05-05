@@ -18,6 +18,7 @@
 import * as pdf from 'pdfjs-dist/legacy/build/pdf.js'
 import PdfWorker from 'pdfjs-dist/legacy/build/pdf.worker.js'
 import { PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer.js'
+import { emptyElement } from './util.js'
 
 pdf.GlobalWorkerOptions.workerPort = new PdfWorker()
 
@@ -255,6 +256,7 @@ export default {
      * @param {number} width - Actual page width.
      */
     async renderPageAnnotationLayer(page, container, width) {
+      emptyElement(container)
       pdf.AnnotationLayer.render({
         annotations: await page.getAnnotations(),
         div: container,
@@ -278,6 +280,7 @@ export default {
      * @param {number} width - Actual page width.
      */
     async renderPageTextLayer(page, container, width) {
+      emptyElement(container)
       await pdf.renderTextLayer({
         container,
         textContent: await page.getTextContent(),
