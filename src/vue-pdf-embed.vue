@@ -82,6 +82,7 @@ export default {
       document: null,
       pageCount: null,
       pageNums: [],
+      locked: false
     }
   },
   computed: {
@@ -179,9 +180,13 @@ export default {
      * NOTE: Ignored if the document is not loaded.
      */
     async render() {
+      if (this.locked) return
+
       if (!this.document) {
         return
       }
+
+      this.locked = true
 
       try {
         this.pageNums = this.page
@@ -220,6 +225,7 @@ export default {
           })
         )
 
+        this.locked = false
         this.$emit('rendered')
       } catch (e) {
         this.document = null
