@@ -49,5 +49,6 @@ test('sets page IDs', async () => {
 
 test('emits "rendered" event', async () => {
   await vm.$nextTick()
+  await vm.$nextTick()
   expect(emitSpy).lastCalledWith('rendered')
 })
