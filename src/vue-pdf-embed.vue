@@ -99,18 +99,12 @@ export default {
       })
       return service
     },
+    renderTrigger() {
+      return `${this.page}|${this.rotation}|${this.disableAnnotationLayer}|${this.disableTextLayer}|${this.width}|${this.height}`
+    },
   },
   watch: {
-    disableAnnotationLayer() {
-      this.render()
-    },
-    disableTextLayer() {
-      this.render()
-    },
-    height() {
-      this.render()
-    },
-    page() {
+    renderTrigger() {
       this.render()
     },
     source: {
@@ -119,12 +113,6 @@ export default {
         await this.load()
         this.render()
       },
-    },
-    width() {
-      this.render()
-    },
-    rotation() {
-      this.render()
     },
   },
   methods: {
