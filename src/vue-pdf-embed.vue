@@ -269,6 +269,7 @@ export default {
           .clone({
             dontFlip: true,
           }),
+          imageResourcesPath: '/node_modules/pdfjs-dist/web/images/',
       })
     },
     /**
