@@ -84,6 +84,22 @@ export default {
       pageNums: [],
     }
   },
+  computed: {
+    linkService() {
+      if (!this.document || this.disableAnnotationLayer) {
+        return null
+      }
+
+      const service = new PDFLinkService()
+      service.setDocument(this.document)
+      service.setViewer({
+        scrollPageIntoView: ({ pageNumber }) => {
+          this.$emit('internal-link-clicked', pageNumber)
+        },
+      })
+      return service
+    },
+  },
   created() {
     this.$watch(
       () => [
@@ -106,22 +122,6 @@ export default {
   async mounted() {
     await this.load()
     this.render()
-  },
-  computed: {
-    linkService() {
-      if (!this.document || this.disableAnnotationLayer) {
-        return null
-      }
-
-      const service = new PDFLinkService()
-      service.setDocument(this.document)
-      service.setViewer({
-        scrollPageIntoView: ({ pageNumber }) => {
-          this.$emit('internal-link-clicked', pageNumber)
-        },
-      })
-      return service
-    },
   },
   methods: {
     /**
