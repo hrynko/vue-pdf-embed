@@ -84,10 +84,7 @@ export default {
       pageNums: [],
     }
   },
-  async mounted() {
-    await this.load()
-    this.render()
-
+  created() {
     this.$watch(
       () => [
         this.source,
@@ -105,6 +102,10 @@ export default {
         this.render()
       }
     )
+  },
+  async mounted() {
+    await this.load()
+    this.render()
   },
   computed: {
     linkService() {
