@@ -84,6 +84,28 @@ export default {
       pageNums: [],
     }
   },
+  async mounted() {
+    await this.load()
+    this.render()
+
+    this.$watch(
+      () => [
+        this.source,
+        this.disableAnnotationLayer,
+        this.disableTextLayer,
+        this.height,
+        this.page,
+        this.rotation,
+        this.width,
+      ],
+      async ([newSource], [oldSource]) => {
+        if (newSource !== oldSource) {
+          await this.load()
+        }
+        this.render()
+      }
+    )
+  },
   computed: {
     linkService() {
       if (!this.document || this.disableAnnotationLayer) {
@@ -98,21 +120,6 @@ export default {
         },
       })
       return service
-    },
-    renderTrigger() {
-      return `${this.page}|${this.rotation}|${this.disableAnnotationLayer}|${this.disableTextLayer}|${this.width}|${this.height}`
-    },
-  },
-  watch: {
-    renderTrigger() {
-      this.render()
-    },
-    source: {
-      immediate: true,
-      async handler() {
-        await this.load()
-        this.render()
-      },
     },
   },
   methods: {
