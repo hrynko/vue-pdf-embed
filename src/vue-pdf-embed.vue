@@ -101,32 +101,28 @@ export default {
       return service
     },
   },
-  watch: {
-    disableAnnotationLayer() {
-      this.render()
-    },
-    disableTextLayer() {
-      this.render()
-    },
-    height() {
-      this.render()
-    },
-    page() {
-      this.render()
-    },
-    source: {
-      immediate: true,
-      async handler() {
-        await this.load()
+  created() {
+    this.$watch(
+      () => [
+        this.source,
+        this.disableAnnotationLayer,
+        this.disableTextLayer,
+        this.height,
+        this.page,
+        this.rotation,
+        this.width,
+      ],
+      async ([newSource], [oldSource]) => {
+        if (newSource !== oldSource) {
+          await this.load()
+        }
         this.render()
-      },
-    },
-    width() {
-      this.render()
-    },
-    rotation() {
-      this.render()
-    },
+      }
+    )
+  },
+  async mounted() {
+    await this.load()
+    this.render()
   },
   methods: {
     /**
