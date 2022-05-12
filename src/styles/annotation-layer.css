@@ -27,7 +27,6 @@
 .annotationLayer .textAnnotation img {
   position: absolute;
   cursor: pointer;
-  opacity: 0;
 }
 
 .annotationLayer .popupWrapper {
