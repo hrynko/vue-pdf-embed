@@ -78,7 +78,7 @@ export default {
 | disableTextLayer       | `boolean`                                | `true` or `false`                                | whether the text layer should be disabled                                  |
 | height                 | `number` <br> `string`                   | natural numbers                                  | desired page height in pixels (ignored if the width property is specified) |
 | page                   | `number`                                 | `1` to the last page number                      | number of the page to display (displays all pages if not specified)        |
-| rotation               | `number`                                 | `0`, `90`, `180` or `270` (multiples of `90`)    | desired page rotation angle in degrees                                     |
+| rotation               | `number` <br> `string`                   | `0`, `90`, `180` or `270` (multiples of `90`)    | desired page rotation angle in degrees                                     |
 | source                 | `string` <br> `object` <br> `Uint8Array` | document URL or typed array pre-filled with data | source of the document to display                                          |
 | width                  | `number` <br> `string`                   | natural numbers                                  | desired page width in pixels                                               |
 
