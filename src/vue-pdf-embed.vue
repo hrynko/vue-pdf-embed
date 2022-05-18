@@ -77,6 +77,11 @@ export default {
      * @values Number, String
      */
     width: [Number, String],
+    /**
+     * Path for annotation icons, including trailing slash.
+     * @values String
+     */
+    imageResourcesPath: String,
   },
   data() {
     return {
@@ -267,6 +272,7 @@ export default {
           .clone({
             dontFlip: true,
           }),
+        imageResourcesPath: this.imageResourcesPath,
       })
     },
     /**
