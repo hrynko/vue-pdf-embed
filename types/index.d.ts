@@ -4,6 +4,7 @@ export interface VuePdfEmbedProps {
   disableAnnotationLayer?: boolean;
   disableTextLayer?: boolean;
   height?: number | string;
+  imageResourcesPath?: string;
   page?: number;
   rotation?: number | string;
   source: object | string | Uint8Array;
