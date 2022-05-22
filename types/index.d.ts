@@ -17,10 +17,17 @@ export interface VuePdfEmbedData {
   pageNums: number[];
 }
 
+export interface VuePdfEmbedMethods {
+  print: (dpi?: number) => Promise<void>;
+  render: () => Promise<void>;
+}
+
 export const VuePdfEmbed: DefineComponent<
   VuePdfEmbedProps,
   unknown,
-  VuePdfEmbedData
+  VuePdfEmbedData,
+  unknown,
+  VuePdfEmbedMethods
 >;
 
 export default VuePdfEmbed;
