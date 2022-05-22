@@ -18,7 +18,7 @@
 import * as pdf from 'pdfjs-dist/legacy/build/pdf.js'
 import PdfWorker from 'pdfjs-dist/legacy/build/pdf.worker.js'
 import { PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer.js'
-import { emptyElement } from './util.js'
+import { addPrintStyles, createPrintIframe, emptyElement } from './util.js'
 
 pdf.GlobalWorkerOptions.workerPort = new PdfWorker()
 
@@ -173,6 +173,53 @@ export default {
         this.pageCount = null
         this.pageNums = []
         this.$emit('loading-failed', e)
+      }
+    },
+    /**
+     * Prints a PDF document via the browser interface.
+     *
+     * NOTE: Ignored if the document is not loaded.
+     *
+     * @param {number} dpi - Print resolution.
+     */
+    async print(dpi = 300) {
+      if (!this.document || !this.pageNums.length) {
+        return
+      }
+
+      const printUnits = dpi / 72
+      const styleUnits = 96 / 72
+      let iframe
+
+      try {
+        iframe = await createPrintIframe()
+        await Promise.all(
+          this.pageNums.map(async (pageNum, i) => {
+            const page = await this.document.getPage(pageNum)
+            const viewport = page.getViewport({ scale: 1 })
+            if (i === 0) {
+              const sizeX = (viewport.width * printUnits) / styleUnits
+              const sizeY = (viewport.height * printUnits) / styleUnits
+              addPrintStyles(iframe, sizeX, sizeY)
+            }
+            const canvas = iframe.contentWindow.document.createElement('canvas')
+            canvas.width = viewport.width * printUnits
+            canvas.height = viewport.height * printUnits
+            iframe.contentWindow.document.body.appendChild(canvas)
+            await page.render({
+              canvasContext: canvas.getContext('2d'),
+              intent: 'print',
+              transform: [printUnits, 0, 0, printUnits, 0, 0],
+              viewport,
+            }).promise
+          })
+        )
+        iframe.contentWindow.focus()
+        iframe.contentWindow.print()
+      } catch (e) {
+        this.$emit('printing-failed', e)
+      } finally {
+        iframe.parentNode.removeChild(iframe)
       }
     },
     /**
