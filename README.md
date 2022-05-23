@@ -93,6 +93,7 @@ export default {
 | password-requested    | callback function, retry flag | password is needed to display the document |
 | rendering-failed      | error object                  | failed to render document                  |
 | rendered              | –                             | finished rendering the document            |
+| printing-failed       | error object                  | failed to print document                   |
 
 ## Examples
 
