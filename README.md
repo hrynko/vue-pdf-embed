@@ -95,6 +95,13 @@ export default {
 | rendered              | –                             | finished rendering the document            |
 | printing-failed       | error object                  | failed to print document                   |
 
+### Public Methods
+
+| Name   | Arguments                   | Description                          |
+| ------ | --------------------------- | ------------------------------------ |
+| render | –                           | manually (re)render document         |
+| print  | print resolution (`number`) | print document via browser interface |
+
 ## Examples
 
 [Basic Usage Demo (JSFiddle)](https://jsfiddle.net/hrynko/ct6p8r7k)
