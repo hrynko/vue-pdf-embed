@@ -159,20 +159,26 @@ export default {
         return
       }
 
-      try {
-        const documentLoadingTask = pdf.getDocument(this.source)
-        documentLoadingTask.onPassword = (callback, reason) => {
-          const retry = reason === pdf.PasswordResponses.INCORRECT_PASSWORD
-          this.$emit('password-requested', callback, retry)
-        }
-        this.document = await documentLoadingTask.promise
+      if (this.source instanceof Object && this.source.constructor.name === 'PDFDocumentProxy') {
+        this.document = this.source
         this.pageCount = this.document.numPages
         this.$emit('loaded', this.document)
-      } catch (e) {
-        this.document = null
-        this.pageCount = null
-        this.pageNums = []
-        this.$emit('loading-failed', e)
+      } else {
+        try {
+          const documentLoadingTask = pdf.getDocument(this.source)
+          documentLoadingTask.onPassword = (callback, reason) => {
+            const retry = reason === pdf.PasswordResponses.INCORRECT_PASSWORD
+            this.$emit('password-requested', callback, retry)
+          }
+          this.document = await documentLoadingTask.promise
+          this.pageCount = this.document.numPages
+          this.$emit('loaded', this.document)
+        } catch (e) {
+          this.document = null
+          this.pageCount = null
+          this.pageNums = []
+          this.$emit('loading-failed', e)
+        }
       }
     },
     /**
