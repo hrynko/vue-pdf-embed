@@ -102,6 +102,10 @@ export default {
 | render | –                           | manually (re)render document         |
 | print  | print resolution (`number`) | print document via browser interface |
 
+### Static Methods
+
+Besides the component itself, the module also includes a `getDocument` function for manual loading of PDF documents, which can then be used as the `source` prop of the component. In most cases it is sufficient to specify the `source` prop with a URL or typed array, while the result of the `getDocument` function can be used in special cases, such as sharing the source between multiple component instances. This is an advanced topic, so it is recommended to check the source code of the component before using this function.
+
 ## Examples
 
 [Basic Usage Demo (JSFiddle)](https://jsfiddle.net/hrynko/ct6p8r7k)
