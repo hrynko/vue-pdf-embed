@@ -196,37 +196,51 @@ export default {
 
       const printUnits = dpi / 72
       const styleUnits = 96 / 72
-      let iframe
+      let container, iframe
 
       try {
-        iframe = await createPrintIframe()
+        container = document.createElement('div')
+        container.style.display = 'none'
+        window.document.body.appendChild(container)
+        iframe = await createPrintIframe(container)
+
         await Promise.all(
           this.pageNums.map(async (pageNum, i) => {
             const page = await this.document.getPage(pageNum)
             const viewport = page.getViewport({ scale: 1 })
+
             if (i === 0) {
               const sizeX = (viewport.width * printUnits) / styleUnits
               const sizeY = (viewport.height * printUnits) / styleUnits
               addPrintStyles(iframe, sizeX, sizeY)
             }
-            const canvas = iframe.contentWindow.document.createElement('canvas')
+
+            const canvas = document.createElement('canvas')
             canvas.width = viewport.width * printUnits
             canvas.height = viewport.height * printUnits
-            iframe.contentWindow.document.body.appendChild(canvas)
+            container.appendChild(canvas)
+            const canvasClone = canvas.cloneNode()
+            iframe.contentWindow.document.body.appendChild(canvasClone)
+
             await page.render({
               canvasContext: canvas.getContext('2d'),
               intent: 'print',
               transform: [printUnits, 0, 0, printUnits, 0, 0],
               viewport,
             }).promise
+
+            canvasClone.getContext('2d').drawImage(canvas, 0, 0)
           })
         )
+
         iframe.contentWindow.focus()
         iframe.contentWindow.print()
       } catch (e) {
         this.$emit('printing-failed', e)
       } finally {
-        iframe.parentNode.removeChild(iframe)
+        if (container) {
+          container.parentNode.removeChild(container)
+        }
       }
     },
     /**

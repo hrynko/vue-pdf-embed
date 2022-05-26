@@ -8,7 +8,7 @@ export function addPrintStyles(iframe, sizeX, sizeY) {
   iframe.contentWindow.document.head.appendChild(style)
 }
 
-export function createPrintIframe() {
+export function createPrintIframe(container) {
   return new Promise((resolve) => {
     const iframe = document.createElement('iframe')
     iframe.width = 0
@@ -19,7 +19,7 @@ export function createPrintIframe() {
     iframe.style.border = 'none'
     iframe.style.overflow = 'hidden'
     iframe.onload = () => resolve(iframe)
-    window.document.body.appendChild(iframe)
+    container.appendChild(iframe)
   })
 }
 
