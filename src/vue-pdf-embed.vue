@@ -47,6 +47,11 @@ export default {
      */
     id: String,
     /**
+     * Path for annotation icons, including trailing slash.
+     * @values String
+     */
+    imageResourcesPath: String,
+    /**
      * Number of the page to display.
      * @values Number
      */
@@ -77,11 +82,6 @@ export default {
      * @values Number, String
      */
     width: [Number, String],
-    /**
-     * Path for annotation icons, including trailing slash.
-     * @values String
-     */
-    imageResourcesPath: String,
   },
   data() {
     return {
