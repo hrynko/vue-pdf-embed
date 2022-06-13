@@ -188,15 +188,16 @@ export default {
      * NOTE: Ignored if the document is not loaded.
      *
      * @param {number} dpi - Print resolution.
+     * @param {string} filename - Predefined filename to save.
      */
-    async print(dpi = 300) {
+    async print(dpi = 300, filename = '') {
       if (!this.document || !this.pageNums.length) {
         return
       }
 
       const printUnits = dpi / 72
       const styleUnits = 96 / 72
-      let container, iframe
+      let container, iframe, title
 
       try {
         container = document.createElement('div')
@@ -233,11 +234,20 @@ export default {
           })
         )
 
+        if (filename) {
+          title = window.document.title
+          window.document.title = filename
+        }
+
         iframe.contentWindow.focus()
         iframe.contentWindow.print()
       } catch (e) {
         this.$emit('printing-failed', e)
       } finally {
+        if (filename && title) {
+          window.document.title = title
+        }
+
         if (container) {
           container.parentNode.removeChild(container)
         }
