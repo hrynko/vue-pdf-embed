@@ -97,10 +97,10 @@ export default {
 
 ### Public Methods
 
-| Name   | Arguments                   | Description                          |
-| ------ | --------------------------- | ------------------------------------ |
-| render | –                           | manually (re)render document         |
-| print  | print resolution (`number`) | print document via browser interface |
+| Name   | Arguments                                        | Description                          |
+| ------ | ------------------------------------------------ | ------------------------------------ |
+| render | –                                                | manually (re)render document         |
+| print  | print resolution (`number`), filename (`string`) | print document via browser interface |
 
 ### Static Methods
 

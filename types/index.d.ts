@@ -18,7 +18,7 @@ export interface VuePdfEmbedData {
 }
 
 export interface VuePdfEmbedMethods {
-  print: (dpi?: number) => Promise<void>;
+  print: (dpi?: number, filename?: string) => Promise<void>;
   render: () => Promise<void>;
 }
 
