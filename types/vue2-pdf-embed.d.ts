@@ -1,4 +1,4 @@
-import { DefineComponent } from 'vue';
+import { VueConstructor } from 'vue';
 
 export interface VuePdfEmbedProps {
   disableAnnotationLayer?: boolean;
@@ -13,7 +13,7 @@ export interface VuePdfEmbedProps {
 
 export interface VuePdfEmbedData {
   document: object | null;
-  pageCount: number;
+  pageCount: number | null;
   pageNums: number[];
 }
 
@@ -22,12 +22,12 @@ export interface VuePdfEmbedMethods {
   render: () => Promise<void>;
 }
 
-export const VuePdfEmbed: DefineComponent<
-  VuePdfEmbedProps,
-  unknown,
-  VuePdfEmbedData,
-  unknown,
-  VuePdfEmbedMethods
->;
+export interface VuePdfEmbedConstructor extends VueConstructor {
+  props: VuePdfEmbedProps;
+  data: () => VuePdfEmbedData;
+  methods: VuePdfEmbedMethods;
+}
+
+declare const VuePdfEmbed: VuePdfEmbedConstructor;
 
 export default VuePdfEmbed;
