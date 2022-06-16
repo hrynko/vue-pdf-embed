@@ -1,4 +1,4 @@
-import { DefineComponent } from 'vue';
+import { ComputedOptions, DefineComponent } from 'vue';
 
 export interface VuePdfEmbedProps {
   disableAnnotationLayer?: boolean;
@@ -24,9 +24,9 @@ export interface VuePdfEmbedMethods {
 
 declare const VuePdfEmbed: DefineComponent<
   VuePdfEmbedProps,
-  unknown,
+  {},
   VuePdfEmbedData,
-  unknown,
+  ComputedOptions,
   VuePdfEmbedMethods
 >;
 
