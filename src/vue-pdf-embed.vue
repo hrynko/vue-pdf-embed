@@ -18,7 +18,12 @@
 import * as pdf from 'pdfjs-dist/legacy/build/pdf.js'
 import PdfWorker from 'pdfjs-dist/legacy/build/pdf.worker.js'
 import { PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer.js'
-import { addPrintStyles, createPrintIframe, emptyElement } from './util.js'
+import {
+  addPrintStyles,
+  createPrintIframe,
+  emptyElement,
+  releaseCanvas,
+} from './util.js'
 
 pdf.GlobalWorkerOptions.workerPort = new PdfWorker()
 
@@ -119,6 +124,7 @@ export default {
       ],
       async ([newSource], [oldSource]) => {
         if (newSource !== oldSource) {
+          this.$el.querySelectorAll('canvas').forEach(releaseCanvas)
           await this.load()
         }
         this.render()
