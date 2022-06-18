@@ -125,6 +125,7 @@ export default {
       async ([newSource], [oldSource]) => {
         if (newSource !== oldSource) {
           this.$el.querySelectorAll('canvas').forEach(releaseCanvas)
+          await this.document?.destroy()
           await this.load()
         }
         this.render()
@@ -134,6 +135,12 @@ export default {
   async mounted() {
     await this.load()
     this.render()
+  },
+  beforeDestroy() {
+    this.document?.destroy()
+  },
+  beforeUnmount() {
+    this.document?.destroy()
   },
   methods: {
     /**
