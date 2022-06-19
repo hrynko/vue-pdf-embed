@@ -173,10 +173,7 @@ export default {
       }
 
       try {
-        if (
-          this.source instanceof Object &&
-          this.source.constructor.name === 'PDFDocumentProxy'
-        ) {
+        if (this.source._pdfInfo) {
           this.document = this.source
         } else {
           const documentLoadingTask = pdf.getDocument(this.source)
