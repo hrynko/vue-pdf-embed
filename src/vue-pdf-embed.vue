@@ -312,6 +312,9 @@ export default {
 
         this.$emit('rendered')
       } catch (e) {
+        if (e.message === 'Transport destroyed') {
+          return
+        }
         this.document = null
         this.pageCount = null
         this.pageNums = []
