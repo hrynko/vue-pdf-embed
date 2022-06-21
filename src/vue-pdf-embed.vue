@@ -137,9 +137,11 @@ export default {
     this.render()
   },
   beforeDestroy() {
+    this.$el.querySelectorAll('canvas').forEach(releaseCanvas)
     this.document?.destroy()
   },
   beforeUnmount() {
+    this.$el.querySelectorAll('canvas').forEach(releaseCanvas)
     this.document?.destroy()
   },
   methods: {
