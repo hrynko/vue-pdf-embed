@@ -22,7 +22,7 @@ import {
   addPrintStyles,
   createPrintIframe,
   emptyElement,
-  releaseCanvas,
+  releaseChildCanvases,
 } from './util.js'
 
 pdf.GlobalWorkerOptions.workerPort = new PdfWorker()
@@ -124,7 +124,7 @@ export default {
       ],
       async ([newSource], [oldSource]) => {
         if (newSource !== oldSource) {
-          this.$el.querySelectorAll('canvas').forEach(releaseCanvas)
+          releaseChildCanvases(this.$el)
           await this.document?.destroy()
           await this.load()
         }
@@ -137,11 +137,11 @@ export default {
     this.render()
   },
   beforeDestroy() {
-    this.$el.querySelectorAll('canvas').forEach(releaseCanvas)
+    releaseChildCanvases(this.$el)
     this.document?.destroy()
   },
   beforeUnmount() {
-    this.$el.querySelectorAll('canvas').forEach(releaseCanvas)
+    releaseChildCanvases(this.$el)
     this.document?.destroy()
   },
   methods: {
@@ -256,13 +256,12 @@ export default {
       } catch (e) {
         this.$emit('printing-failed', e)
       } finally {
-        if (filename && title) {
+        if (title) {
           window.document.title = title
         }
 
-        if (container) {
-          container.parentNode.removeChild(container)
-        }
+        releaseChildCanvases(container)
+        container.parentNode?.removeChild(container)
       }
     },
     /**
