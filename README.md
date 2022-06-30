@@ -82,6 +82,7 @@ export default {
 | rotation               | `number` <br> `string`                   | `0`, `90`, `180` or `270` (multiples of `90`)    | desired page rotation angle in degrees                                     |
 | source                 | `string` <br> `object` <br> `Uint8Array` | document URL or typed array pre-filled with data | source of the document to display                                          |
 | width                  | `number` <br> `string`                   | natural numbers                                  | desired page width in pixels                                               |
+| scalePdfToCanvas       | `number`                                 | natural numbers                                  | desired ratio of canvas width / pdf page width                             |
 
 ### Events
 
