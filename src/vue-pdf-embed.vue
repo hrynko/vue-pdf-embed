@@ -87,6 +87,12 @@ export default {
      * @values Number, String
      */
     width: [Number, String],
+    /**
+     * ratio of canvas width to pdf page viewport width (canvas width / page width)
+     * scalePdfToCanvas * page width = canvas width
+     * @values Number
+     */
+    scalePdfToCanvas: Number,
   },
   data() {
     return {
@@ -331,7 +337,7 @@ export default {
      */
     async renderPage(page, canvas, width) {
       const viewport = page.getViewport({
-        scale: Math.ceil(width / page.view[2]) + 1,
+        scale: this.scalePdfToCanvas ?? Math.ceil(width / page.view[2]) + 1,
         rotation: this.rotation,
       })
 
