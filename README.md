@@ -80,9 +80,9 @@ export default {
 | imageResourcesPath     | `string`                                 | URL or path with trailing slash                  | path for icons used in the annotation layer                                |
 | page                   | `number`                                 | `1` to the last page number                      | number of the page to display (displays all pages if not specified)        |
 | rotation               | `number` <br> `string`                   | `0`, `90`, `180` or `270` (multiples of `90`)    | desired page rotation angle in degrees                                     |
+| scale                  | `number`                                 | rational numbers                                 | desired ratio of canvas size to document size                              |
 | source                 | `string` <br> `object` <br> `Uint8Array` | document URL or typed array pre-filled with data | source of the document to display                                          |
 | width                  | `number` <br> `string`                   | natural numbers                                  | desired page width in pixels                                               |
-| scale                  | `number`                                 | rational numbers                                 | desired ratio of canvas size to document size                              |
 
 ### Events
 
