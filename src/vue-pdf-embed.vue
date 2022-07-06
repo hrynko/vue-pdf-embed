@@ -88,11 +88,10 @@ export default {
      */
     width: [Number, String],
     /**
-     * ratio of canvas width to pdf page viewport width (canvas width / page width)
-     * scalePdfToCanvas * page width = canvas width
+     * Desired ratio of canvas size to document size.
      * @values Number
      */
-    scalePdfToCanvas: Number,
+    scale: Number,
   },
   data() {
     return {
