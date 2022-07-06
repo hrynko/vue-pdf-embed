@@ -75,6 +75,11 @@ export default {
       },
     },
     /**
+     * Desired ratio of canvas size to document size.
+     * @values Number
+     */
+    scale: Number,
+    /**
      * Source of the document to display.
      * @values String, URL, TypedArray
      */
@@ -87,11 +92,6 @@ export default {
      * @values Number, String
      */
     width: [Number, String],
-    /**
-     * Desired ratio of canvas size to document size.
-     * @values Number
-     */
-    scale: Number,
   },
   data() {
     return {
