@@ -336,7 +336,7 @@ export default {
      */
     async renderPage(page, canvas, width) {
       const viewport = page.getViewport({
-        scale: this.scalePdfToCanvas ?? Math.ceil(width / page.view[2]) + 1,
+        scale: this.scale ?? Math.ceil(width / page.view[2]) + 1,
         rotation: this.rotation,
       })
 
