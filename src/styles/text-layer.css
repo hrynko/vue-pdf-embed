@@ -6,6 +6,7 @@
 
 .textLayer {
   position: absolute;
+  text-align: initial;
   left: 0;
   top: 0;
   right: 0;
@@ -13,6 +14,10 @@
   overflow: hidden;
   opacity: 0.2;
   line-height: 1;
+  -webkit-text-size-adjust: none;
+  -moz-text-size-adjust: none;
+  text-size-adjust: none;
+  forced-color-adjust: none;
 }
 
 .textLayer span,
@@ -24,12 +29,20 @@
   transform-origin: 0% 0%;
 }
 
+.textLayer span.markedContent {
+  top: 0;
+  height: 0;
+}
+
 .textLayer .highlight {
-  position: relative;
   margin: -1px;
   padding: 1px;
   background-color: rgba(180, 0, 170, 1);
   border-radius: 4px;
+}
+
+.textLayer .highlight.appended {
+  position: initial;
 }
 
 .textLayer .highlight.begin {
@@ -54,6 +67,13 @@
 
 .textLayer ::selection {
   background: rgba(0, 0, 255, 1);
+}
+
+.textLayer br::-moz-selection {
+  background: transparent;
+}
+.textLayer br::selection {
+  background: transparent;
 }
 
 .textLayer .endOfContent {

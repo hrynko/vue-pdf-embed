@@ -75,6 +75,11 @@ export default {
       },
     },
     /**
+     * Desired ratio of canvas size to document size.
+     * @values Number
+     */
+    scale: Number,
+    /**
      * Source of the document to display.
      * @values String, URL, TypedArray
      */
@@ -330,7 +335,7 @@ export default {
      */
     async renderPage(page, canvas, width) {
       const viewport = page.getViewport({
-        scale: Math.ceil(width / page.view[2]) + 1,
+        scale: this.scale ?? Math.ceil(width / page.view[2]) + 1,
         rotation: this.rotation,
       })
 
