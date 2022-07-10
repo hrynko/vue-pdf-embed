@@ -130,7 +130,6 @@ export default {
       async ([newSource], [oldSource]) => {
         if (newSource !== oldSource) {
           releaseChildCanvases(this.$el)
-          await this.document?.destroy()
           await this.load()
         }
         this.render()
@@ -318,9 +317,6 @@ export default {
 
         this.$emit('rendered')
       } catch (e) {
-        if (e.message === 'Transport destroyed') {
-          return
-        }
         this.document = null
         this.pageCount = null
         this.pageNums = []
