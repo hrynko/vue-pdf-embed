@@ -205,9 +205,10 @@ export default {
      *
      * @param {number} dpi - Print resolution.
      * @param {string} filename - Predefined filename to save.
+     * @param {boolean} allPages - Ignore page prop to print all pages.
      */
-    async print(dpi = 300, filename = '') {
-      if (!this.document || !this.pageNums.length) {
+    async print(dpi = 300, filename = '', allPages = false) {
+      if (!this.document) {
         return
       }
 
@@ -221,8 +222,13 @@ export default {
         window.document.body.appendChild(container)
         iframe = await createPrintIframe(container)
 
+        const pageNums =
+          this.page && !allPages
+            ? [this.page]
+            : [...Array(this.document.numPages + 1).keys()].slice(1)
+
         await Promise.all(
-          this.pageNums.map(async (pageNum, i) => {
+          pageNums.map(async (pageNum, i) => {
             const page = await this.document.getPage(pageNum)
             const viewport = page.getViewport({ scale: 1 })
 
