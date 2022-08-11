@@ -65,7 +65,7 @@ export default {
       source1: '<PDF_URL>',
       source2: 'data:application/pdf;base64,<BASE64_ENCODED_PDF>',
     }
-  }
+  },
 }
 </script>
 ```
@@ -98,10 +98,10 @@ export default {
 
 ### Public Methods
 
-| Name   | Arguments                                        | Description                          |
-| ------ | ------------------------------------------------ | ------------------------------------ |
-| render | –                                                | manually (re)render document         |
-| print  | print resolution (`number`), filename (`string`) | print document via browser interface |
+| Name   | Arguments                                                                    | Description                          |
+| ------ | ---------------------------------------------------------------------------- | ------------------------------------ |
+| render | –                                                                            | manually (re)render document         |
+| print  | print resolution (`number`), filename (`string`), all pages flag (`boolean`) | print document via browser interface |
 
 ### Static Methods
 
