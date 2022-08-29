@@ -1,4 +1,4 @@
-import { ComputedOptions, DefineComponent } from 'vue';
+import { ComputedOptions, DefineComponent, MethodOptions } from 'vue';
 
 export interface VuePdfEmbedProps {
   disableAnnotationLayer?: boolean;
@@ -17,7 +17,7 @@ export interface VuePdfEmbedData {
   pageNums: number[];
 }
 
-export interface VuePdfEmbedMethods {
+export interface VuePdfEmbedMethods extends MethodOptions {
   print: (dpi?: number, filename?: string, allPages?: boolean) => Promise<void>;
   render: () => Promise<void>;
 }
