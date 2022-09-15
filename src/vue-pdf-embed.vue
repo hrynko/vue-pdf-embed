@@ -296,6 +296,8 @@ export default {
             const [actualWidth, actualHeight] = this.getPageDimensions(
               page.view[3] / page.view[2]
             )
+            const trimBox = page._pageInfo.trimBox
+            console.log('trimBox: '+trimBox)
 
             if ((this.rotation / 90) % 2) {
               canvas.style.width = `${Math.floor(actualHeight)}px`
