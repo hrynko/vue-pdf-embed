@@ -113,6 +113,8 @@ Besides the component itself, the module also includes a `getDocument` function 
 
 [Advanced Usage Demo (JSFiddle)](https://jsfiddle.net/hrynko/we7p5uq4)
 
+[Advanced Usage Demo (StackBlitz)](https://stackblitz.com/fork/vue-pdf-embed)
+
 ## License
 
 MIT License. Please see [LICENSE file](LICENSE) for more information.
