@@ -95,6 +95,7 @@ export default {
 | rendering-failed      | error object                  | failed to render document                  |
 | rendered              | –                             | finished rendering the document            |
 | printing-failed       | error object                  | failed to print document                   |
+| progress              | progress params object        | tracking document loading progress         |
 
 ### Public Methods
 
