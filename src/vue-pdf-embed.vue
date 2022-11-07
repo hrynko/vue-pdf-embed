@@ -183,7 +183,9 @@ export default {
           this.document = this.source
         } else {
           const documentLoadingTask = pdf.getDocument(this.source)
-          documentLoadingTask.onProgress = ProgressEventObject => this.$emit('progress', ProgressEventObject)
+          documentLoadingTask.onProgress = (progressParams) => {
+            this.$emit('progress', progressParams)
+          }
           documentLoadingTask.onPassword = (callback, reason) => {
             const retry = reason === pdf.PasswordResponses.INCORRECT_PASSWORD
             this.$emit('password-requested', callback, retry)
