@@ -40,7 +40,7 @@
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.3.2",
     "jest": "^26.6.3",
-    "pdfjs-dist": "^2.14.305",
+    "pdfjs-dist": "^2.9.359",
     "prettier": "^2.3.0",
     "sass": "^1.49.8",
     "sass-loader": "^12.6.0",
