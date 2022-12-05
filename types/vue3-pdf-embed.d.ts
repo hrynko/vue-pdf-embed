@@ -7,7 +7,7 @@ export interface VuePdfEmbedProps {
   imageResourcesPath?: string;
   page?: number;
   rotation?: number | string;
-  source: object | string | Uint8Array;
+  source: object | string | URL | Uint8Array;
   width?: number | string;
 }
 

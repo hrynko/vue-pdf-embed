@@ -81,10 +81,10 @@ export default {
     scale: Number,
     /**
      * Source of the document to display.
-     * @values String, URL, TypedArray
+     * @values Object, String, URL, TypedArray
      */
     source: {
-      type: [Object, String, Uint8Array],
+      type: [Object, String, URL, Uint8Array],
       required: true,
     },
     /**
