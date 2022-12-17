@@ -4,6 +4,7 @@
       v-for="pageNum in pageNums"
       :key="pageNum"
       :id="id && `${id}-${pageNum}`"
+      :v-bind="pageNum"
     >
       <canvas />
 
