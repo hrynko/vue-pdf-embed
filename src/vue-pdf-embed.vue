@@ -3,7 +3,7 @@
     <div
       v-for="pageNum in pageNums"
       :key="pageNum"
-      :id="id && `${id}-${pageNum}`"
+      :id="pageNum"
     >
       <canvas />
 
