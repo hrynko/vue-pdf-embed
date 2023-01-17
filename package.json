@@ -13,6 +13,10 @@
     ".": {
       "import": "./dist/vue-pdf-embed.es.js",
       "require": "./dist/vue-pdf-embed.umd.js"
+    },
+    "./style": {
+      "import": "./dist/style.css",
+      "require": "./dist/style.css"
     }
   },
   "types": "types/vue3-pdf-embed.d.ts",
