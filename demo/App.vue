@@ -3,6 +3,10 @@
     <vue-pdf-embed
       :image-resources-path="annotationIconsPath"
       :source="pdfSource"
+      @loaded="debug('loaded')"
+      @no-source="debug('no-source')"
+      @progress="debug('progress')"
+      @rendering-failed="debug('rendering-failed')"
     />
   </div>
 </template>
@@ -34,6 +38,13 @@ export default {
         'MDAwMDAgbiAKdHJhaWxlcgo8PAogIC9TaXplIDYKICAvUm9vdCAxIDAgUgo+PgpzdGFy' +
         'dHhyZWYKNDkyCiUlRU9G',
     }
+  },
+  methods: {
+    debug(type) {
+      return (...args) => {
+        console.log(type, ...args)
+      }
+    },
   },
 }
 </script>
