@@ -6,5 +6,10 @@
   "plugins": ["prettier"],
   "rules": {
     "prettier/prettier": "warn"
+  },
+  "globals": {
+    "$ref": "readonly",
+    "$$": "readonly",
+    "$computed": "readonly"
   }
 }

@@ -13,5 +13,9 @@ export default defineConfig({
     },
     minify: false,
   },
-  plugins: [vue()],
+  plugins: [
+    vue({
+      reactivityTransform: true,
+    }),
+  ],
 })
