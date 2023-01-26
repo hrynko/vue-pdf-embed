@@ -34,12 +34,18 @@ export default {
      * Whether the annotation layer should be disabled.
      * @values Boolean
      */
-    disableAnnotationLayer: Boolean,
+    disableAnnotationLayer: {
+      type: Boolean,
+      default: true,
+    },
     /**
      * Whether the text layer should be disabled.
      * @values Boolean
      */
-    disableTextLayer: Boolean,
+    disableTextLayer: {
+      type: Boolean,
+      default: true,
+    },
     /**
      * Desired page height.
      * @values Number, String

@@ -74,8 +74,8 @@ export default {
 
 | Name                   | Type                                     | Accepted values                                  | Description                                                                |
 | ---------------------- | ---------------------------------------- | ------------------------------------------------ | -------------------------------------------------------------------------- |
-| disableAnnotationLayer | `boolean`                                | `true` or `false`                                | whether the annotation layer should be disabled                            |
-| disableTextLayer       | `boolean`                                | `true` or `false`                                | whether the text layer should be disabled                                  |
+| disableAnnotationLayer | `boolean`                                | `true` or `false` default `true`                 | whether the annotation layer should be disabled                            |
+| disableTextLayer       | `boolean`                                | `true` or `false`  default `true`                | whether the text layer should be disabled                                  |
 | height                 | `number` <br> `string`                   | natural numbers                                  | desired page height in pixels (ignored if the width property is specified) |
 | imageResourcesPath     | `string`                                 | URL or path with trailing slash                  | path for icons used in the annotation layer                                |
 | page                   | `number`                                 | `1` to the last page number                      | number of the page to display (displays all pages if not specified)        |
