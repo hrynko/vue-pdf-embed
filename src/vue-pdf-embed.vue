@@ -399,7 +399,7 @@ export default {
 @import 'styles/annotation-layer';
 
 .vue-pdf-embed {
-  &>div {
+  & > div {
     position: relative;
   }
 
