@@ -1,15 +1,11 @@
 <template>
   <div :id="id" class="vue-pdf-embed">
-    <div
-      v-for="pageNum in pageNums"
-      :key="pageNum"
-      :id="id && `${id}-${pageNum}`"
-    >
+    <div v-for="pageNum in pageNums" :key="pageNum" :id="id && `${id}-${pageNum}`">
       <canvas />
 
-      <div v-if="!disableTextLayer" class="textLayer" />
+      <div v-if="textLayer" class="textLayer" />
 
-      <div v-if="!disableAnnotationLayer" class="annotationLayer" />
+      <div v-if="annotationLayer" class="annotationLayer" />
     </div>
   </div>
 </template>
@@ -31,12 +27,12 @@ export default {
   name: 'VuePdfEmbed',
   props: {
     /**
-     * Whether the annotation layer should be disabled.
+     * Whether the annotation layer should be enabled.
      * @values Boolean
      */
     annotationLayer: Boolean,
     /**
-     * Whether the text layer should be disabled.
+     * Whether the text layer should be enabled.
      * @values Boolean
      */
     textLayer: Boolean,
@@ -102,7 +98,7 @@ export default {
   },
   computed: {
     linkService() {
-      if (!this.document || this.disableAnnotationLayer) {
+      if (!this.document || !this.annotationLayer) {
         return null
       }
 
@@ -120,8 +116,8 @@ export default {
     this.$watch(
       () => [
         this.source,
-        this.disableAnnotationLayer,
-        this.disableTextLayer,
+        this.annotationLayer,
+        this.textLayer,
         this.height,
         this.page,
         this.rotation,
@@ -310,11 +306,11 @@ export default {
 
             await this.renderPage(page, canvas, actualWidth)
 
-            if (!this.disableTextLayer) {
+            if (this.textLayer) {
               await this.renderPageTextLayer(page, div1, actualWidth)
             }
 
-            if (!this.disableAnnotationLayer) {
+            if (this.annotationLayer) {
               await this.renderPageAnnotationLayer(
                 page,
                 div2 || div1,
@@ -403,7 +399,7 @@ export default {
 @import 'styles/annotation-layer';
 
 .vue-pdf-embed {
-  & > div {
+  &>div {
     position: relative;
   }
 
