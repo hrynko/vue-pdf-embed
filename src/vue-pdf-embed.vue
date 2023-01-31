@@ -34,10 +34,7 @@ export default {
      * Whether the annotation layer should be disabled.
      * @values Boolean
      */
-    disableAnnotationLayer: {
-      type: Boolean,
-      default: true,
-    },
+    annotationLayer: Boolean,
     /**
      * Whether the text layer should be disabled.
      * @values Boolean
