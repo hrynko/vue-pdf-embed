@@ -39,10 +39,7 @@ export default {
      * Whether the text layer should be disabled.
      * @values Boolean
      */
-    disableTextLayer: {
-      type: Boolean,
-      default: true,
-    },
+    textLayer: Boolean,
     /**
      * Desired page height.
      * @values Number, String
