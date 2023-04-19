@@ -164,8 +164,17 @@ export default {
         width = this.width || this.$el.clientWidth
         height = width * ratio
       }
-
-      return [width, height]
+      /**
+       * A document may be generated in a specific way and then rotated in a pdf editor. 
+       * When this happens the height and width stored in the file do not actually change, 
+       * which leads to a canvas with the original height and width, but the content, 
+       * being rotated, appears squeezed within the page.
+       * 
+       * The following attempts to avoid this side effect, but requires additional
+       * tweaking to center the canvas and thorough testing.
+       */
+      const invertDimensions = (this.rotation / 90) % 2 != 0
+      return invertDimensions ? [height, width] : [width, height]
     },
     /**
      * Loads a PDF document. Defines a password callback for protected
