@@ -235,9 +235,9 @@ export default {
           pageNums.map(async (pageNum, i) => {
             const page = await this.document.getPage(pageNum)
             const viewport = page.getViewport({
-               scale: 1,
-               rotation: 0,
-             })
+              scale: 1,
+              rotation: 0,
+            })
 
             if (i === 0) {
               const sizeX = (viewport.width * printUnits) / styleUnits
@@ -298,13 +298,13 @@ export default {
 
         await Promise.all(
           this.pageNums.map(async (pageNum, i) => {
-            const pageRotation = this.rotation + page.rotate
             const page = await this.document.getPage(pageNum)
+            const pageRotation = this.rotation + page.rotate
             const [canvas, div1, div2] = this.$el.children[i].children
             const [actualWidth, actualHeight] = this.getPageDimensions(
               (pageRotation / 90) % 2
-                 ? page.view[2] / page.view[3]
-                 : page.view[3] / page.view[2]
+                ? page.view[2] / page.view[3]
+                : page.view[3] / page.view[2]
             )
 
             canvas.style.width = `${Math.floor(actualWidth)}px`
@@ -314,8 +314,8 @@ export default {
 
             if (!this.disableTextLayer) {
               await this.renderPageTextLayer(
-                page, 
-                div1, 
+                page,
+                div1,
                 actualWidth,
                 pageRotation
               )
@@ -381,7 +381,7 @@ export default {
         viewport: page
           .getViewport({
             scale: width / pageWidth,
-            rotation
+            rotation,
           })
           .clone({
             dontFlip: true,
@@ -404,7 +404,7 @@ export default {
         textContent: await page.getTextContent(),
         viewport: page.getViewport({
           scale: width / pageWidth,
-          rotation
+          rotation,
         }),
       }).promise
     },
