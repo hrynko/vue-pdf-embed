@@ -347,7 +347,7 @@ export default {
      * @param {number} width - Actual page width.
      * @param {number} rotation - Total page rotation.
      */
-    async renderPage(page, canvas, width) {
+    async renderPage(page, canvas, width, rotation) {
       const pageWidth = (rotation / 90) % 2 ? page.view[3] : page.view[2]
       const viewport = page.getViewport({
         scale: this.scale ?? Math.ceil(width / pageWidth) + 1,
