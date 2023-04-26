@@ -235,9 +235,9 @@ export default {
           pageNums.map(async (pageNum, i) => {
             const page = await this.document.getPage(pageNum)
             const viewport = page.getViewport({
-+              scale: 1,
-+              rotation: 0,
-+            })
+               scale: 1,
+               rotation: 0,
+             })
 
             if (i === 0) {
               const sizeX = (viewport.width * printUnits) / styleUnits
@@ -303,12 +303,12 @@ export default {
             const [canvas, div1, div2] = this.$el.children[i].children
             const [actualWidth, actualHeight] = this.getPageDimensions(
               (pageRotation / 90) % 2
-+                ? page.view[2] / page.view[3]
-+                : page.view[3] / page.view[2]
+                 ? page.view[2] / page.view[3]
+                 : page.view[3] / page.view[2]
             )
 
             canvas.style.width = `${Math.floor(actualWidth)}px`
-+           canvas.style.height = `${Math.floor(actualHeight)}px`
+            canvas.style.height = `${Math.floor(actualHeight)}px`
 
             await this.renderPage(page, canvas, actualWidth, pageRotation)
 
