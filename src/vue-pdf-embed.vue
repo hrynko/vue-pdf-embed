@@ -67,6 +67,7 @@ export default {
      */
     rotation: {
       type: [Number, String],
+      default: 0,
       validator(value) {
         if (value % 90 !== 0) {
           throw new Error('Rotation must be 0 or a multiple of 90.')
@@ -164,17 +165,8 @@ export default {
         width = this.width || this.$el.clientWidth
         height = width * ratio
       }
-      /**
-       * A document may be generated in a specific way and then rotated in a pdf editor. 
-       * When this happens the height and width stored in the file do not actually change, 
-       * which leads to a canvas with the original height and width, but the content, 
-       * being rotated, appears squeezed within the page.
-       * 
-       * The following attempts to avoid this side effect, but requires additional
-       * tweaking to center the canvas and thorough testing.
-       */
-      const invertDimensions = (this.rotation / 90) % 2 != 0
-      return invertDimensions ? [height, width] : [width, height]
+
+      return [width, height]
     },
     /**
      * Loads a PDF document. Defines a password callback for protected
@@ -242,7 +234,10 @@ export default {
         await Promise.all(
           pageNums.map(async (pageNum, i) => {
             const page = await this.document.getPage(pageNum)
-            const viewport = page.getViewport({ scale: 1 })
+            const viewport = page.getViewport({
++              scale: 1,
++              rotation: 0,
++            })
 
             if (i === 0) {
               const sizeX = (viewport.width * printUnits) / styleUnits
@@ -303,31 +298,35 @@ export default {
 
         await Promise.all(
           this.pageNums.map(async (pageNum, i) => {
+            const pageRotation = this.rotation + page.rotate
             const page = await this.document.getPage(pageNum)
             const [canvas, div1, div2] = this.$el.children[i].children
             const [actualWidth, actualHeight] = this.getPageDimensions(
-              page.view[3] / page.view[2]
+              (pageRotation / 90) % 2
++                ? page.view[2] / page.view[3]
++                : page.view[3] / page.view[2]
             )
 
-            if ((this.rotation / 90) % 2) {
-              canvas.style.width = `${Math.floor(actualHeight)}px`
-              canvas.style.height = `${Math.floor(actualWidth)}px`
-            } else {
-              canvas.style.width = `${Math.floor(actualWidth)}px`
-              canvas.style.height = `${Math.floor(actualHeight)}px`
-            }
+            canvas.style.width = `${Math.floor(actualWidth)}px`
++           canvas.style.height = `${Math.floor(actualHeight)}px`
 
-            await this.renderPage(page, canvas, actualWidth)
+            await this.renderPage(page, canvas, actualWidth, pageRotation)
 
             if (!this.disableTextLayer) {
-              await this.renderPageTextLayer(page, div1, actualWidth)
+              await this.renderPageTextLayer(
+                page, 
+                div1, 
+                actualWidth,
+                pageRotation
+              )
             }
 
             if (!this.disableAnnotationLayer) {
               await this.renderPageAnnotationLayer(
                 page,
                 div2 || div1,
-                actualWidth
+                actualWidth,
+                pageRotation
               )
             }
           })
@@ -346,11 +345,13 @@ export default {
      * @param {PDFPageProxy} page - Page proxy.
      * @param {HTMLCanvasElement} canvas - HTML canvas.
      * @param {number} width - Actual page width.
+     * @param {number} rotation - Total page rotation.
      */
     async renderPage(page, canvas, width) {
+      const pageWidth = (rotation / 90) % 2 ? page.view[3] : page.view[2]
       const viewport = page.getViewport({
-        scale: this.scale ?? Math.ceil(width / page.view[2]) + 1,
-        rotation: this.rotation,
+        scale: this.scale ?? Math.ceil(width / pageWidth) + 1,
+        rotation,
       })
 
       canvas.width = viewport.width
@@ -366,9 +367,11 @@ export default {
      * @param {PDFPageProxy} page - Page proxy.
      * @param {HTMLElement} container - HTML container.
      * @param {number} width - Actual page width.
+     * @param {number} rotation - Total page rotation.
      */
-    async renderPageAnnotationLayer(page, container, width) {
+    async renderPageAnnotationLayer(page, container, width, rotation) {
       emptyElement(container)
+      const pageWidth = (rotation / 90) % 2 ? page.view[3] : page.view[2]
       pdf.AnnotationLayer.render({
         annotations: await page.getAnnotations(),
         div: container,
@@ -377,8 +380,8 @@ export default {
         renderInteractiveForms: false,
         viewport: page
           .getViewport({
-            scale: width / page.view[2],
-            rotation: this.rotation,
+            scale: width / pageWidth,
+            rotation
           })
           .clone({
             dontFlip: true,
@@ -391,15 +394,17 @@ export default {
      * @param {PDFPageProxy} page - Page proxy.
      * @param {HTMLElement} container - HTML container.
      * @param {number} width - Actual page width.
+     * @param {number} rotation - Total page rotation.
      */
-    async renderPageTextLayer(page, container, width) {
+    async renderPageTextLayer(page, container, width, rotation) {
       emptyElement(container)
+      const pageWidth = (rotation / 90) % 2 ? page.view[3] : page.view[2]
       await pdf.renderTextLayer({
         container,
         textContent: await page.getTextContent(),
         viewport: page.getViewport({
-          scale: width / page.view[2],
-          rotation: this.rotation,
+          scale: width / pageWidth,
+          rotation
         }),
       }).promise
     },
