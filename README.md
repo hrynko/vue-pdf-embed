@@ -110,6 +110,30 @@ export default {
 
 Besides the component itself, the module also includes a `getDocument` function for manual loading of PDF documents, which can then be used as the `source` prop of the component. In most cases it is sufficient to specify the `source` prop with a URL or typed array, while the result of the `getDocument` function can be used in special cases, such as sharing the source between multiple component instances. This is an advanced topic, so it is recommended to check the source code of the component before using this function.
 
+## Common Issues
+
+The path to predefined CMaps should be specified to ensure correct rendering of documents containing non-Latin characters, as well as in case of CMap-related errors:
+
+```vue
+<vue-pdf-embed
+  :source="{
+    cMapUrl: 'https://unpkg.com/pdfjs-dist/cmaps/',
+    url: pdfSource,
+  }"
+/>
+```
+
+The image resource path must be specified for annotations to display correctly:
+
+```vue
+<vue-pdf-embed
+  image-resources-path="https://unpkg.com/pdfjs-dist/web/images/"
+  :source="pdfSource"
+/>
+```
+
+**Note:** The examples above use a CDN to load resources, however these resources can also be included in the build by installing the `pdfjs-dist` package as a dependency and further configuring the bundler.
+
 ## Examples
 
 [Basic Usage Demo (JSFiddle)](https://jsfiddle.net/hrynko/ct6p8r7k)
