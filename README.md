@@ -104,6 +104,21 @@ export default {
 | render | –                                                                            | manually (re)render document         |
 | print  | print resolution (`number`), filename (`string`), all pages flag (`boolean`) | print document via browser interface |
 
+### Slots
+You can use
+```vue
+<vue-pdf-embed
+  :source="{
+    cMapUrl: 'https://unpkg.com/pdfjs-dist/cmaps/',
+    url: pdfSource,
+  }"
+>
+<template v-slot:page="{ page }">
+  The page number is {{ page }}
+</template>
+</vue-pdf-embed>
+```
+
 **Note:** Public methods can be accessed via a [template ref](https://vuejs.org/guide/essentials/template-refs.html).
 
 ### Static Methods

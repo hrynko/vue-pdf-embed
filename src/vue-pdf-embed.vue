@@ -10,6 +10,10 @@
       <div v-if="!disableTextLayer" class="textLayer" />
 
       <div v-if="!disableAnnotationLayer" class="annotationLayer" />
+
+      <div>
+        <slot name="page" :page="pageNum"></slot>
+      </div>
     </div>
   </div>
 </template>
