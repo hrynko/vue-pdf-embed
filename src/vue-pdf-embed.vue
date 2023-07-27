@@ -1,11 +1,15 @@
 <template>
   <div :id="id" class="vue-pdf-embed">
-    <div v-for="pageNum in pageNums" :key="pageNum" :id="id && `${id}-${pageNum}`">
+    <div
+      v-for="pageNum in pageNums"
+      :key="pageNum"
+      :id="id && `${id}-${pageNum}`"
+    >
       <canvas />
 
-      <div v-if="textLayer" class="textLayer" />
+      <div v-if="!disableTextLayer" class="textLayer" />
 
-      <div v-if="annotationLayer" class="annotationLayer" />
+      <div v-if="!disableAnnotationLayer" class="annotationLayer" />
     </div>
   </div>
 </template>
@@ -31,11 +35,6 @@ export default {
      * @values Boolean
      */
     annotationLayer: Boolean,
-    /**
-     * Whether the text layer should be enabled.
-     * @values Boolean
-     */
-    textLayer: Boolean,
     /**
      * Desired page height.
      * @values Number, String
@@ -63,6 +62,7 @@ export default {
      */
     rotation: {
       type: [Number, String],
+      default: 0,
       validator(value) {
         if (value % 90 !== 0) {
           throw new Error('Rotation must be 0 or a multiple of 90.')
@@ -83,6 +83,11 @@ export default {
       type: [Object, String, URL, Uint8Array],
       required: true,
     },
+    /**
+     * Whether the text layer should be enabled.
+     * @values Boolean
+     */
+    textLayer: Boolean,
     /**
      * Desired page width.
      * @values Number, String
@@ -117,10 +122,10 @@ export default {
       () => [
         this.source,
         this.annotationLayer,
-        this.textLayer,
         this.height,
         this.page,
         this.rotation,
+        this.textLayer,
         this.width,
       ],
       async ([newSource], [oldSource]) => {
@@ -229,7 +234,10 @@ export default {
         await Promise.all(
           pageNums.map(async (pageNum, i) => {
             const page = await this.document.getPage(pageNum)
-            const viewport = page.getViewport({ scale: 1 })
+            const viewport = page.getViewport({
+              scale: 1,
+              rotation: 0,
+            })
 
             if (i === 0) {
               const sizeX = (viewport.width * printUnits) / styleUnits
@@ -291,30 +299,34 @@ export default {
         await Promise.all(
           this.pageNums.map(async (pageNum, i) => {
             const page = await this.document.getPage(pageNum)
+            const pageRotation = this.rotation + page.rotate
             const [canvas, div1, div2] = this.$el.children[i].children
             const [actualWidth, actualHeight] = this.getPageDimensions(
-              page.view[3] / page.view[2]
+              (pageRotation / 90) % 2
+                ? page.view[2] / page.view[3]
+                : page.view[3] / page.view[2]
             )
 
-            if ((this.rotation / 90) % 2) {
-              canvas.style.width = `${Math.floor(actualHeight)}px`
-              canvas.style.height = `${Math.floor(actualWidth)}px`
-            } else {
-              canvas.style.width = `${Math.floor(actualWidth)}px`
-              canvas.style.height = `${Math.floor(actualHeight)}px`
-            }
+            canvas.style.width = `${Math.floor(actualWidth)}px`
+            canvas.style.height = `${Math.floor(actualHeight)}px`
 
-            await this.renderPage(page, canvas, actualWidth)
+            await this.renderPage(page, canvas, actualWidth, pageRotation)
 
             if (this.textLayer) {
-              await this.renderPageTextLayer(page, div1, actualWidth)
+              await this.renderPageTextLayer(
+                page,
+                div1,
+                actualWidth,
+                pageRotation
+              )
             }
 
             if (this.annotationLayer) {
               await this.renderPageAnnotationLayer(
                 page,
                 div2 || div1,
-                actualWidth
+                actualWidth,
+                pageRotation
               )
             }
           })
@@ -333,11 +345,13 @@ export default {
      * @param {PDFPageProxy} page - Page proxy.
      * @param {HTMLCanvasElement} canvas - HTML canvas.
      * @param {number} width - Actual page width.
+     * @param {number} rotation - Total page rotation.
      */
-    async renderPage(page, canvas, width) {
+    async renderPage(page, canvas, width, rotation) {
+      const pageWidth = (rotation / 90) % 2 ? page.view[3] : page.view[2]
       const viewport = page.getViewport({
-        scale: this.scale ?? Math.ceil(width / page.view[2]) + 1,
-        rotation: this.rotation,
+        scale: this.scale ?? Math.ceil(width / pageWidth) + 1,
+        rotation,
       })
 
       canvas.width = viewport.width
@@ -353,9 +367,11 @@ export default {
      * @param {PDFPageProxy} page - Page proxy.
      * @param {HTMLElement} container - HTML container.
      * @param {number} width - Actual page width.
+     * @param {number} rotation - Total page rotation.
      */
-    async renderPageAnnotationLayer(page, container, width) {
+    async renderPageAnnotationLayer(page, container, width, rotation) {
       emptyElement(container)
+      const pageWidth = (rotation / 90) % 2 ? page.view[3] : page.view[2]
       pdf.AnnotationLayer.render({
         annotations: await page.getAnnotations(),
         div: container,
@@ -364,8 +380,8 @@ export default {
         renderInteractiveForms: false,
         viewport: page
           .getViewport({
-            scale: width / page.view[2],
-            rotation: this.rotation,
+            scale: width / pageWidth,
+            rotation,
           })
           .clone({
             dontFlip: true,
@@ -378,15 +394,17 @@ export default {
      * @param {PDFPageProxy} page - Page proxy.
      * @param {HTMLElement} container - HTML container.
      * @param {number} width - Actual page width.
+     * @param {number} rotation - Total page rotation.
      */
-    async renderPageTextLayer(page, container, width) {
+    async renderPageTextLayer(page, container, width, rotation) {
       emptyElement(container)
+      const pageWidth = (rotation / 90) % 2 ? page.view[3] : page.view[2]
       await pdf.renderTextLayer({
         container,
         textContent: await page.getTextContent(),
         viewport: page.getViewport({
-          scale: width / page.view[2],
-          rotation: this.rotation,
+          scale: width / pageWidth,
+          rotation,
         }),
       }).promise
     },
