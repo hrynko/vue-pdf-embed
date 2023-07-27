@@ -16,7 +16,7 @@
 
 <script>
 import * as pdf from 'pdfjs-dist/legacy/build/pdf.js'
-import PdfWorker from 'pdfjs-dist/legacy/build/pdf.worker.js'
+import PdfWorker from 'pdfjs-dist/legacy/build/pdf.worker.js?worker&inline'
 import { PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer.js'
 import {
   addPrintStyles,
