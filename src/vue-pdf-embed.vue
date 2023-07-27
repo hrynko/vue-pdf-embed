@@ -7,9 +7,9 @@
     >
       <canvas />
 
-      <div v-if="!disableTextLayer" class="textLayer" />
+      <div v-if="textLayer" class="textLayer" />
 
-      <div v-if="!disableAnnotationLayer" class="annotationLayer" />
+      <div v-if="annotationLayer" class="annotationLayer" />
     </div>
   </div>
 </template>
