@@ -1,13 +1,13 @@
 import { VueConstructor } from 'vue';
 
 export interface VuePdfEmbedProps {
-  disableAnnotationLayer?: boolean;
-  disableTextLayer?: boolean;
+  annotationLayer?: boolean;
   height?: number | string;
   imageResourcesPath?: string;
   page?: number;
   rotation?: number | string;
   source: object | string | URL | Uint8Array;
+  textLayer?: boolean;
   width?: number | string;
 }
 
