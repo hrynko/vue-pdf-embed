@@ -1,16 +1,9 @@
 import * as path from 'node:path'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import copy from 'rollup-plugin-copy'
 
 module.exports = defineConfig({
-  plugins: [
-    vue(),
-    copy({
-      targets: [{ src: 'types/*', dest: 'dist/' }],
-      hook: 'writeBundle',
-    }),
-  ],
+  plugins: [vue()],
   build: {
     emptyOutDir: true,
     lib: {

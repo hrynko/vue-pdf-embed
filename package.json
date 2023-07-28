@@ -1,7 +1,7 @@
 {
   "name": "vue-pdf-embed",
   "version": "1.1.6",
-  "description": "PDF embed component for Vue 2 and Vue 3",
+  "description": "PDF embed component for Vue 3",
   "keywords": [
     "vue",
     "vuejs",
@@ -11,14 +11,14 @@
   "types": "types/vue3-pdf-embed.d.ts",
   "files": [
     "dist/*",
-    "src/*",
     "types/*"
   ],
   "license": "MIT",
   "author": "Aliaksei Hrynko (https://github.com/hrynko)",
   "repository": "github:hrynko/vue-pdf-embed",
   "scripts": {
-    "build": "vite build -c vite.library.config.js",
+    "prepare": "npm run build",
+    "build": "vite build -c vite.lib.config.js",
     "demo": "vite",
     "lint": "eslint \"**/*.{js,vue}\"",
     "lint:fix": "eslint \"**/*.{js,vue}\" --fix"
@@ -33,7 +33,6 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-vue": "^7.10.0",
     "prettier": "^2.3.0",
-    "rollup-plugin-copy": "^3.4.0",
     "vite": "^4.4.7",
     "vue": "^3.3.0"
   },
