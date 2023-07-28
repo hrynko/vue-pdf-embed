@@ -18,8 +18,8 @@
   "repository": "github:hrynko/vue-pdf-embed",
   "scripts": {
     "prepare": "npm run build",
-    "build": "vite build -c vite.lib.config.js",
-    "demo": "vite",
+    "build": "vite build",
+    "demo": "cd demo && vite",
     "lint": "eslint \"**/*.{js,vue}\"",
     "lint:fix": "eslint \"**/*.{js,vue}\" --fix"
   },
