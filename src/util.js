@@ -10,6 +10,7 @@ export function addPrintStyles(iframe, sizeX, sizeY) {
     }
     canvas {
       width: 100%;
+      height: 100%;
       page-break-after: always;
       page-break-before: avoid;
       page-break-inside: avoid;
