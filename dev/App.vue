@@ -1,10 +1,8 @@
 <template>
-  <div>
-    <vue-pdf-embed
-      :image-resources-path="annotationIconsPath"
-      :source="pdfSource"
-    />
-  </div>
+  <VuePdfEmbed
+    :image-resources-path="annotationIconsPath"
+    :source="pdfSource"
+  />
 </template>
 
 <script>

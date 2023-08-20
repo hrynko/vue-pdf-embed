@@ -1,39 +1,53 @@
 {
   "name": "vue-pdf-embed",
   "version": "1.1.6",
-  "description": "PDF embed component for Vue 3",
+  "description": "PDF embed component for Vue",
   "keywords": [
     "vue",
     "vuejs",
     "pdf"
   ],
-  "main": "dist/index.mjs",
-  "types": "types/vue3-pdf-embed.d.ts",
-  "files": [
-    "dist/*",
-    "types/*"
-  ],
   "license": "MIT",
   "author": "Aliaksei Hrynko (https://github.com/hrynko)",
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.umd.js"
+    },
+    "./dist/*.css": "./dist/*.css"
+  },
+  "style": "./dist/style.css",
+  "types": "./types/vue-pdf-embed.d.ts",
+  "files": [
+    "dist",
+    "types"
+  ],
   "repository": "github:hrynko/vue-pdf-embed",
   "scripts": {
-    "prepare": "npm run build",
+    "prepare": "vite build",
+    "dev": "vite -c vite.config.dev.js",
     "build": "vite build",
-    "demo": "cd demo && vite",
-    "lint": "eslint \"**/*.{js,vue}\"",
-    "lint:fix": "eslint \"**/*.{js,vue}\" --fix"
+    "test": "vitest",
+    "lint": "eslint . --ext .js,.vue --fix --ignore-path .gitignore",
+    "format": "prettier . --write --ignore-path .gitignore"
   },
   "dependencies": {
     "pdfjs-dist": "^2.9.359"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
-    "eslint": "^7.27.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^3.4.0",
-    "eslint-plugin-vue": "^7.10.0",
-    "prettier": "^2.3.0",
+    "@vue/test-utils": "^2.4.1",
+    "eslint": "^8.47.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-vue": "^9.17.0",
+    "happy-dom": "^10.10.4",
+    "prettier": "^3.0.2",
+    "sass": "^1.65.1",
     "vite": "^4.4.7",
+    "vitest": "^0.34.2",
     "vue": "^3.3.0"
   },
   "peerDependencies": {

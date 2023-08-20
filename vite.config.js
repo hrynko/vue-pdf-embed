@@ -1,26 +1,23 @@
-import * as path from 'node:path'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
-module.exports = defineConfig({
+const globals = {
+  'pdfjs-dist': 'PDFJS',
+  vue: 'Vue',
+}
+
+export default defineConfig({
   plugins: [vue()],
   build: {
-    emptyOutDir: true,
     lib: {
-      entry: path.resolve(__dirname, 'src/index.js'),
-      name: 'vue-pdf-embed',
-      formats: ['es'],
+      entry: new URL('./src/index.js', import.meta.url).pathname,
+      name: 'VuePdfEmbed',
       fileName: 'index',
     },
     rollupOptions: {
-      external: ['vue'],
-    },
-  },
-  worker: {
-    format: 'es',
-    rollupOptions: {
+      external: Object.keys(globals),
       output: {
-        entryFileNames: 'worker.js',
+        globals,
       },
     },
   },

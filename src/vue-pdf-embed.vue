@@ -15,8 +15,9 @@
 </template>
 
 <script>
+import { toRaw } from 'vue'
 import * as pdf from 'pdfjs-dist/legacy/build/pdf.js'
-import PdfWorker from 'pdfjs-dist/legacy/build/pdf.worker.js?worker&inline'
+import PdfWorker from 'pdfjs-dist/legacy/build/pdf.worker.min.js?url'
 import { PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer.js'
 import {
   addPrintStyles,
@@ -25,7 +26,7 @@ import {
   releaseChildCanvases,
 } from './util.js'
 
-pdf.GlobalWorkerOptions.workerPort = new PdfWorker()
+pdf.GlobalWorkerOptions.workerSrc = PdfWorker
 
 export default {
   name: 'VuePdfEmbed',
@@ -141,10 +142,6 @@ export default {
     await this.load()
     this.render()
   },
-  beforeDestroy() {
-    releaseChildCanvases(this.$el)
-    this.document?.destroy()
-  },
   beforeUnmount() {
     releaseChildCanvases(this.$el)
     this.document?.destroy()
@@ -233,7 +230,7 @@ export default {
 
         await Promise.all(
           pageNums.map(async (pageNum, i) => {
-            const page = await this.document.getPage(pageNum)
+            const page = await toRaw(this.document).getPage(pageNum)
             const viewport = page.getViewport({
               scale: 1,
               rotation: 0,
@@ -298,7 +295,7 @@ export default {
 
         await Promise.all(
           this.pageNums.map(async (pageNum, i) => {
-            const page = await this.document.getPage(pageNum)
+            const page = await toRaw(this.document).getPage(pageNum)
             const pageRotation = this.rotation + page.rotate
             const [canvas, div1, div2] = this.$el.children[i].children
             const [actualWidth, actualHeight] = this.getPageDimensions(
