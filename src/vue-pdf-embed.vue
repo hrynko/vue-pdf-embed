@@ -7,9 +7,9 @@
     >
       <canvas />
 
-      <div v-if="!disableTextLayer" class="textLayer" />
+      <div v-if="textLayer" class="textLayer" />
 
-      <div v-if="!disableAnnotationLayer" class="annotationLayer" />
+      <div v-if="annotationLayer" class="annotationLayer" />
     </div>
   </div>
 </template>
@@ -32,15 +32,10 @@ export default {
   name: 'VuePdfEmbed',
   props: {
     /**
-     * Whether the annotation layer should be disabled.
+     * Whether the annotation layer should be enabled.
      * @values Boolean
      */
-    disableAnnotationLayer: Boolean,
-    /**
-     * Whether the text layer should be disabled.
-     * @values Boolean
-     */
-    disableTextLayer: Boolean,
+    annotationLayer: Boolean,
     /**
      * Desired page height.
      * @values Number, String
@@ -90,6 +85,11 @@ export default {
       required: true,
     },
     /**
+     * Whether the text layer should be enabled.
+     * @values Boolean
+     */
+    textLayer: Boolean,
+    /**
      * Desired page width.
      * @values Number, String
      */
@@ -104,7 +104,7 @@ export default {
   },
   computed: {
     linkService() {
-      if (!this.document || this.disableAnnotationLayer) {
+      if (!this.document || !this.annotationLayer) {
         return null
       }
 
@@ -122,11 +122,11 @@ export default {
     this.$watch(
       () => [
         this.source,
-        this.disableAnnotationLayer,
-        this.disableTextLayer,
+        this.annotationLayer,
         this.height,
         this.page,
         this.rotation,
+        this.textLayer,
         this.width,
       ],
       async ([newSource], [oldSource]) => {
@@ -309,7 +309,7 @@ export default {
 
             await this.renderPage(page, canvas, actualWidth, pageRotation)
 
-            if (!this.disableTextLayer) {
+            if (this.textLayer) {
               await this.renderPageTextLayer(
                 page,
                 div1,
@@ -318,7 +318,7 @@ export default {
               )
             }
 
-            if (!this.disableAnnotationLayer) {
+            if (this.annotationLayer) {
               await this.renderPageAnnotationLayer(
                 page,
                 div2 || div1,

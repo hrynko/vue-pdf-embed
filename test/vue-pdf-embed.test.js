@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils'
 
 import VuePdfEmbed from '../src/vue-pdf-embed.vue'
 
-vi.mock('pdfjs-dist/build/pdf.worker.min.js', () => vi.fn())
+vi.mock('pdfjs-dist/legacy/build/pdf.worker.min.js', () => vi.fn())
 
 vi.mock('pdfjs-dist/legacy/build/pdf.js', () => ({
   GlobalWorkerOptions: {},
