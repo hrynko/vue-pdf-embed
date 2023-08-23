@@ -104,6 +104,8 @@ export default {
 | render | –                                                                            | manually (re)render document         |
 | print  | print resolution (`number`), filename (`string`), all pages flag (`boolean`) | print document via browser interface |
 
+**Note:** Public methods can be accessed via a [template ref](https://vuejs.org/guide/essentials/template-refs.html).
+
 ### Slots
 You can use
 ```vue
@@ -118,8 +120,6 @@ You can use
 </template>
 </vue-pdf-embed>
 ```
-
-**Note:** Public methods can be accessed via a [template ref](https://vuejs.org/guide/essentials/template-refs.html).
 
 ### Static Methods
 
