@@ -8,13 +8,12 @@
     >
       <canvas />
 
+      <slot name="before-page" :page="pageNum"></slot>
+      
       <div v-if="!disableTextLayer" class="textLayer" />
-
       <div v-if="!disableAnnotationLayer" class="annotationLayer" />
-
-      <div>
-        <slot name="page" :page="pageNum"></slot>
-      </div>
+      
+      <slot name="after-page" :page="pageNum"></slot>
     </div>
   </div>
 </template>
