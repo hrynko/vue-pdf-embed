@@ -107,7 +107,11 @@ export default {
 **Note:** Public methods can be accessed via a [template ref](https://vuejs.org/guide/essentials/template-refs.html).
 
 ### Slots
-You can use
+There are 2 slots:
+- before-page
+- after-page
+
+For example:
 ```vue
 <vue-pdf-embed
   :source="{
@@ -115,8 +119,12 @@ You can use
     url: pdfSource,
   }"
 >
-<template v-slot:page="{ page }">
-  The page number is {{ page }}
+<template v-slot:before-page="{ page }">
+  Prior to the page, we can display this line. Page # {{ page }}
+</template>
+
+<template v-slot:after-page="{ page }">
+  After the page, we can display this line. Page # {{ page }}
 </template>
 </vue-pdf-embed>
 ```
