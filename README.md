@@ -107,6 +107,7 @@ export default {
 **Note:** Public methods can be accessed via a [template ref](https://vuejs.org/guide/essentials/template-refs.html).
 
 ### Slots
+
 There are 2 slots:
 - before-page
 - after-page

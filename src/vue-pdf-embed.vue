@@ -5,14 +5,15 @@
       :key="pageNum"
       :id="id && `${id}-${pageNum}`"
     >
-      <canvas />
+      <slot name="before-page" :page="pageNum" />
 
-      <slot name="before-page" :page="pageNum"></slot>
+      <canvas />
       
       <div v-if="!disableTextLayer" class="textLayer" />
+
       <div v-if="!disableAnnotationLayer" class="annotationLayer" />
       
-      <slot name="after-page" :page="pageNum"></slot>
+      <slot name="after-page" :page="pageNum" />
     </div>
   </div>
 </template>
