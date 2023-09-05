@@ -3,14 +3,7 @@
     <vue-pdf-embed
       :image-resources-path="annotationIconsPath"
       :source="pdfSource"
-    >
-      <template v-slot:before-page="{ page }">
-        {{ page }}
-      </template>
-      <template v-slot:after-page="{ page }">
-        {{ page }}
-      </template>
-    </vue-pdf-embed>
+    />
   </div>
 </template>
 
