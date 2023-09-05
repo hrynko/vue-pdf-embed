@@ -97,6 +97,13 @@ export default {
 | printing-failed       | error object                  | failed to print document                   |
 | progress              | progress params object        | tracking document loading progress         |
 
+### Slots
+
+| Name        | Props                | Description                         |
+| ----------- | -------------------- | ----------------------------------- |
+| after-page  | `page` (page number) | content to be added after the page  |
+| before-page | `page` (page number) | content to be added before the page |
+
 ### Public Methods
 
 | Name   | Arguments                                                                    | Description                          |
@@ -105,30 +112,6 @@ export default {
 | print  | print resolution (`number`), filename (`string`), all pages flag (`boolean`) | print document via browser interface |
 
 **Note:** Public methods can be accessed via a [template ref](https://vuejs.org/guide/essentials/template-refs.html).
-
-### Slots
-
-There are 2 slots:
-- before-page
-- after-page
-
-For example:
-```vue
-<vue-pdf-embed
-  :source="{
-    cMapUrl: 'https://unpkg.com/pdfjs-dist/cmaps/',
-    url: pdfSource,
-  }"
->
-<template v-slot:before-page="{ page }">
-  Prior to the page, we can display this line. Page # {{ page }}
-</template>
-
-<template v-slot:after-page="{ page }">
-  After the page, we can display this line. Page # {{ page }}
-</template>
-</vue-pdf-embed>
-```
 
 ### Static Methods
 
