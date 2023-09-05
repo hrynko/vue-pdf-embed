@@ -1,17 +1,19 @@
 <template>
   <div :id="id" class="vue-pdf-embed">
-    <div
-      v-for="pageNum in pageNums"
-      :key="pageNum"
-      :id="id && `${id}-${pageNum}`"
-    >
+    <div v-for="pageNum in pageNums" :key="pageNum">
       <slot name="before-page" :page="pageNum" />
 
-      <canvas />
+      <div
+        :id="id && `${id}-${pageNum}`"
+        ref="pages"
+        class="vue-pdf-embed__page"
+      >
+        <canvas />
 
-      <div v-if="textLayer" class="textLayer" />
+        <div v-if="textLayer" class="textLayer" />
 
-      <div v-if="annotationLayer" class="annotationLayer" />
+        <div v-if="annotationLayer" class="annotationLayer" />
+      </div>
 
       <slot name="after-page" :page="pageNum" />
     </div>
@@ -304,7 +306,7 @@ export default {
           this.pageNums.map(async (pageNum, i) => {
             const page = await this.document.getPage(pageNum)
             const pageRotation = this.rotation + page.rotate
-            const [canvas, div1, div2] = this.$el.children[i].children
+            const [canvas, div1, div2] = this.$refs.pages[i].children
             const [actualWidth, actualHeight] = this.getPageDimensions(
               (pageRotation / 90) % 2
                 ? page.view[2] / page.view[3]
@@ -421,12 +423,12 @@ export default {
 @import 'styles/annotation-layer';
 
 .vue-pdf-embed {
-  & > div {
+  &__page {
     position: relative;
-  }
 
-  canvas {
-    display: block;
+    canvas {
+      display: block;
+    }
   }
 }
 </style>
