@@ -97,6 +97,13 @@ export default {
 | printing-failed       | error object                  | failed to print document                   |
 | progress              | progress params object        | tracking document loading progress         |
 
+### Slots
+
+| Name        | Props                | Description                         |
+| ----------- | -------------------- | ----------------------------------- |
+| after-page  | `page` (page number) | content to be added after the page  |
+| before-page | `page` (page number) | content to be added before the page |
+
 ### Public Methods
 
 | Name   | Arguments                                                                    | Description                          |
