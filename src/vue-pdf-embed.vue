@@ -31,8 +31,6 @@ import {
   releaseChildCanvases,
 } from './util.js'
 
-pdf.GlobalWorkerOptions.workerPort = new PdfWorker()
-
 export default {
   name: 'VuePdfEmbed',
   props: {
@@ -124,6 +122,7 @@ export default {
     },
   },
   created() {
+    pdf.GlobalWorkerOptions.workerPort = new PdfWorker()
     this.$watch(
       () => [
         this.source,
@@ -150,10 +149,12 @@ export default {
   beforeDestroy() {
     releaseChildCanvases(this.$el)
     this.document?.destroy()
+    pdf.GlobalWorkerOptions.workerPort?.terminate()
   },
   beforeUnmount() {
     releaseChildCanvases(this.$el)
     this.document?.destroy()
+    pdf.GlobalWorkerOptions.workerPort?.terminate()
   },
   methods: {
     /**
