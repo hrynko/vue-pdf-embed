@@ -102,6 +102,7 @@ export default {
   },
   data() {
     return {
+      documentLoadingTask: null,
       document: null,
       pageCount: null,
       pageNums: [],
@@ -149,10 +150,22 @@ export default {
   },
   beforeDestroy() {
     releaseChildCanvases(this.$el)
+    if (this.documentLoadingTask?.onPassword) {
+      this.documentLoadingTask.onPassword = null
+    }
+    if (this.documentLoadingTask?.onProgress) {
+      this.documentLoadingTask.onProgress = null
+    }
     this.document?.destroy()
   },
   beforeUnmount() {
     releaseChildCanvases(this.$el)
+    if (this.documentLoadingTask?.onPassword) {
+      this.documentLoadingTask.onPassword = null
+    }
+    if (this.documentLoadingTask?.onProgress) {
+      this.documentLoadingTask.onProgress = null
+    }
     this.document?.destroy()
   },
   methods: {
@@ -189,15 +202,15 @@ export default {
         if (this.source._pdfInfo) {
           this.document = this.source
         } else {
-          const documentLoadingTask = pdf.getDocument(this.source)
-          documentLoadingTask.onProgress = (progressParams) => {
+          this.documentLoadingTask = pdf.getDocument(this.source)
+          this.documentLoadingTask.onProgress = (progressParams) => {
             this.$emit('progress', progressParams)
           }
-          documentLoadingTask.onPassword = (callback, reason) => {
+          this.documentLoadingTask.onPassword = (callback, reason) => {
             const retry = reason === pdf.PasswordResponses.INCORRECT_PASSWORD
             this.$emit('password-requested', callback, retry)
           }
-          this.document = await documentLoadingTask.promise
+          this.document = await this.documentLoadingTask.promise
         }
         this.pageCount = this.document.numPages
         this.$emit('loaded', this.document)
