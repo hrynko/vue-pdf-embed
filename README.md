@@ -119,6 +119,8 @@ Besides the component itself, the module also includes a `getDocument` function 
 
 ## Common Issues
 
+This is a client-side library, so it is important to keep this in mind when working with SSR (server-side rendering) frameworks such as Nuxt. Depending on the framework used, you may need to properly configure the library import or use a wrapper.
+
 The path to predefined CMaps should be specified to ensure correct rendering of documents containing non-Latin characters, as well as in case of CMap-related errors:
 
 ```vue
