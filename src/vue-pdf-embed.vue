@@ -8,11 +8,13 @@
         ref="pages"
         class="vue-pdf-embed__page"
       >
-        <canvas />
+        <template v-if="!svg">
+          <canvas />
 
-        <div v-if="textLayer" class="textLayer" />
+          <div v-if="textLayer" class="textLayer" />
 
-        <div v-if="annotationLayer" class="annotationLayer" />
+          <div v-if="annotationLayer" class="annotationLayer" />
+        </template>
       </div>
 
       <slot name="after-page" :page="pageNum" />
@@ -29,6 +31,7 @@ import {
   createPrintIframe,
   emptyElement,
   releaseChildCanvases,
+  releaseChildSvgs,
 } from './util.js'
 
 pdf.GlobalWorkerOptions.workerPort = new PdfWorker()
@@ -90,6 +93,11 @@ export default {
       required: true,
     },
     /**
+     * Whether to render as SVG.
+     * @values Boolean
+     */
+    svg: Boolean,
+    /**
      * Whether the text layer should be enabled.
      * @values Boolean
      */
@@ -128,6 +136,7 @@ export default {
     this.$watch(
       () => [
         this.source,
+        this.svg,
         this.annotationLayer,
         this.height,
         this.page,
@@ -135,10 +144,13 @@ export default {
         this.textLayer,
         this.width,
       ],
-      async ([newSource], [oldSource]) => {
+      async ([newSource], [oldSource, oldSvg]) => {
         if (newSource !== oldSource) {
           releaseChildCanvases(this.$el)
           await this.load()
+        }
+        if (oldSvg) {
+          releaseChildSvgs(this.$el)
         }
         this.render()
       }
@@ -301,7 +313,8 @@ export default {
       }
     },
     /**
-     * Renders the PDF document as SVG element(s) and additional layers.
+     * Renders the PDF document as canvas or SVG element(s) and additional
+     * layers.
      *
      * NOTE: Ignored if the document is not loaded.
      */
@@ -319,13 +332,26 @@ export default {
           this.pageNums.map(async (pageNum, i) => {
             const page = await this.document.getPage(pageNum)
             const pageRotation = this.rotation + page.rotate
-            const [canvas, div1, div2] = this.$refs.pages[i].children
             const [actualWidth, actualHeight] = this.getPageDimensions(
               (pageRotation / 90) % 2
                 ? page.view[2] / page.view[3]
                 : page.view[3] / page.view[2]
             )
 
+            if (this.svg) {
+              const operatorList = await page.getOperatorList()
+              const viewport = page.getViewport({
+                scale: 1,
+              })
+              const svg = await new pdf.SVGGraphics(
+                page.commonObjs,
+                page.objs
+              ).getSVG(operatorList, viewport)
+              this.$refs.pages[i].appendChild(svg)
+              return
+            }
+
+            const [canvas, div1, div2] = this.$refs.pages[i].children
             canvas.style.width = `${Math.floor(actualWidth)}px`
             canvas.style.height = `${Math.floor(actualHeight)}px`
 
@@ -441,6 +467,11 @@ export default {
 
     canvas {
       display: block;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
     }
   }
 }
