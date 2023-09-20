@@ -47,3 +47,9 @@ export function releaseChildCanvases(el) {
     canvas.getContext('2d')?.clearRect(0, 0, 1, 1)
   })
 }
+
+export function releaseChildSvgs(el) {
+  el.querySelectorAll('svg').forEach((svg) => {
+    svg.parentElement?.removeChild?.(svg)
+  })
+}

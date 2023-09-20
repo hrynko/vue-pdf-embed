@@ -81,6 +81,7 @@ export default {
 | rotation           | `number` <br> `string`                   | `0`, `90`, `180` or `270` (multiples of `90`)    | desired page rotation angle in degrees                                     |
 | scale              | `number`                                 | rational numbers                                 | desired ratio of canvas size to document size                              |
 | source             | `string` <br> `object` <br> `Uint8Array` | document URL or typed array pre-filled with data | source of the document to display                                          |
+| svg                | `boolean`                                | `true` or `false`                                | whether to render as SVG                                                   |
 | textLayer          | `boolean`                                | `true` or `false`                                | whether the text layer should be enabled                                   |
 | width              | `number` <br> `string`                   | natural numbers                                  | desired page width in pixels                                               |
 
