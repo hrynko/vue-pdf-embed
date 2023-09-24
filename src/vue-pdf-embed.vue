@@ -322,7 +322,7 @@ export default {
       }
     },
     /**
-     * Renders the PDF document as SVG element(s) and additional layers.
+     * Renders the PDF document as canvas element(s) and additional layers.
      *
      * NOTE: Ignored if the document is not loaded.
      */
