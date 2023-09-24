@@ -27,6 +27,7 @@ import { PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer.js'
 import {
   addPrintStyles,
   createPrintIframe,
+  downloadPdf,
   emptyElement,
   releaseChildCanvases,
 } from './util.js'
@@ -169,6 +170,26 @@ export default {
     this.document?.destroy()
   },
   methods: {
+    /**
+     * Downloads a PDF document.
+     *
+     * NOTE: Ignored if the document is not loaded.
+     *
+     * @param {string} filename - Predefined filename to save.
+     */
+    async download(filename) {
+      if (!this.document) {
+        return
+      }
+
+      try {
+        const data = await this.document.getData()
+        const metadata = await this.document.getMetadata()
+        downloadPdf(data, filename ?? metadata.contentDispositionFilename ?? '')
+      } catch (e) {
+        this.$emit('downloading-failed', e)
+      }
+    },
     /**
      * Returns an array of the actual page width and height based on props and
      * aspect ratio.

@@ -88,14 +88,15 @@ export default {
 
 | Name                  | Value                         | Description                                |
 | --------------------- | ----------------------------- | ------------------------------------------ |
+| downloading-failed    | error object                  | failed to download document                |
 | internal-link-clicked | destination page number       | internal link was clicked                  |
-| loading-failed        | error object                  | failed to load document                    |
 | loaded                | PDF document proxy            | finished loading the document              |
+| loading-failed        | error object                  | failed to load document                    |
 | password-requested    | callback function, retry flag | password is needed to display the document |
-| rendering-failed      | error object                  | failed to render document                  |
-| rendered              | –                             | finished rendering the document            |
 | printing-failed       | error object                  | failed to print document                   |
 | progress              | progress params object        | tracking document loading progress         |
+| rendered              | –                             | finished rendering the document            |
+| rendering-failed      | error object                  | failed to render document                  |
 
 ### Slots
 
@@ -106,10 +107,11 @@ export default {
 
 ### Public Methods
 
-| Name   | Arguments                                                                    | Description                          |
-| ------ | ---------------------------------------------------------------------------- | ------------------------------------ |
-| render | –                                                                            | manually (re)render document         |
-| print  | print resolution (`number`), filename (`string`), all pages flag (`boolean`) | print document via browser interface |
+| Name     | Arguments                                                                    | Description                          |
+| -------- | ---------------------------------------------------------------------------- | ------------------------------------ |
+| download | filename (`string`)                                                          | download document                    |
+| print    | print resolution (`number`), filename (`string`), all pages flag (`boolean`) | print document via browser interface |
+| render   | –                                                                            | manually (re)render document         |
 
 **Note:** Public methods can be accessed via a [template ref](https://vuejs.org/guide/essentials/template-refs.html).
 
