@@ -182,13 +182,9 @@ export default {
         return
       }
 
-      try {
-        const data = await this.document.getData()
-        const metadata = await this.document.getMetadata()
-        downloadPdf(data, filename ?? metadata.contentDispositionFilename ?? '')
-      } catch (e) {
-        this.$emit('downloading-failed', e)
-      }
+      const data = await this.document.getData()
+      const metadata = await this.document.getMetadata()
+      downloadPdf(data, filename ?? metadata.contentDispositionFilename ?? '')
     },
     /**
      * Returns an array of the actual page width and height based on props and
@@ -310,8 +306,6 @@ export default {
 
         iframe.contentWindow.focus()
         iframe.contentWindow.print()
-      } catch (e) {
-        this.$emit('printing-failed', e)
       } finally {
         if (title) {
           window.document.title = title

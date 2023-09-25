@@ -88,12 +88,10 @@ export default {
 
 | Name                  | Value                         | Description                                |
 | --------------------- | ----------------------------- | ------------------------------------------ |
-| downloading-failed    | error object                  | failed to download document                |
 | internal-link-clicked | destination page number       | internal link was clicked                  |
 | loaded                | PDF document proxy            | finished loading the document              |
 | loading-failed        | error object                  | failed to load document                    |
 | password-requested    | callback function, retry flag | password is needed to display the document |
-| printing-failed       | error object                  | failed to print document                   |
 | progress              | progress params object        | tracking document loading progress         |
 | rendered              | –                             | finished rendering the document            |
 | rendering-failed      | error object                  | failed to render document                  |
