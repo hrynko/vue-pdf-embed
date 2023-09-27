@@ -3,11 +3,7 @@
     <div v-for="pageNum in pageNums" :key="pageNum">
       <slot name="before-page" :page="pageNum" />
 
-      <div
-        :id="id && `${id}-${pageNum}`"
-        ref="pages"
-        class="vue-pdf-embed__page"
-      >
+      <div :id="id && `${id}-${pageNum}`" class="vue-pdf-embed__page">
         <canvas />
 
         <div v-if="textLayer" class="textLayer" />
@@ -330,11 +326,15 @@ export default {
           ? [this.page]
           : [...Array(this.document.numPages + 1).keys()].slice(1)
 
+        const pageElements = this.$el.getElementsByClassName(
+          'vue-pdf-embed__page'
+        )
+
         await Promise.all(
           this.pageNums.map(async (pageNum, i) => {
             const page = await this.document.getPage(pageNum)
             const pageRotation = this.rotation + page.rotate
-            const [canvas, div1, div2] = this.$refs.pages[i].children
+            const [canvas, div1, div2] = pageElements[i].children
             const [actualWidth, actualHeight] = this.getPageDimensions(
               (pageRotation / 90) % 2
                 ? page.view[2] / page.view[3]
