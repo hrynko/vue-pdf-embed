@@ -26,15 +26,15 @@ This package is only compatible with Vue 3, to support Vue 2 install `vue-pdf-em
 Depending on the environment, the package can be installed in one of the following ways:
 
 ```shell
-npm install vue-pdf-embed@1
+npm install vue-pdf-embed
 ```
 
 ```shell
-yarn add vue-pdf-embed@1
+yarn add vue-pdf-embed
 ```
 
 ```html
-<script src="https://unpkg.com/vue-pdf-embed@1"></script>
+<script src="https://unpkg.com/vue-pdf-embed"></script>
 ```
 
 ## Usage
