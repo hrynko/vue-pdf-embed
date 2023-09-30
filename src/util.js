@@ -34,6 +34,24 @@ export function createPrintIframe(container) {
   })
 }
 
+export function downloadPdf(data, filename) {
+  const url = URL.createObjectURL(
+    new Blob([data], {
+      type: 'application/pdf',
+    })
+  )
+  const anchor = document.createElement('a')
+  anchor.href = url
+  anchor.download = filename
+  anchor.style.display = 'none'
+  document.body.append(anchor)
+  anchor.click()
+  setTimeout(() => {
+    URL.revokeObjectURL(url)
+    document.body.removeChild(anchor)
+  }, 1000)
+}
+
 export function emptyElement(el) {
   while (el.firstChild) {
     el.removeChild(el.firstChild)

@@ -1,15 +1,17 @@
 <template>
   <div :id="id" class="vue-pdf-embed">
-    <div
-      v-for="pageNum in pageNums"
-      :key="pageNum"
-      :id="id && `${id}-${pageNum}`"
-    >
-      <canvas />
+    <div v-for="pageNum in pageNums" :key="pageNum">
+      <slot name="before-page" :page="pageNum" />
 
-      <div v-if="textLayer" class="textLayer" />
+      <div :id="id && `${id}-${pageNum}`" class="vue-pdf-embed__page">
+        <canvas />
 
-      <div v-if="annotationLayer" class="annotationLayer" />
+        <div v-if="textLayer" class="textLayer" />
+
+        <div v-if="annotationLayer" class="annotationLayer" />
+      </div>
+
+      <slot name="after-page" :page="pageNum" />
     </div>
   </div>
 </template>
@@ -22,6 +24,7 @@ import { PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer.js'
 import {
   addPrintStyles,
   createPrintIframe,
+  downloadPdf,
   emptyElement,
   releaseChildCanvases,
 } from './util.js'
@@ -97,6 +100,7 @@ export default {
   },
   data() {
     return {
+      documentLoadingTask: null,
       document: null,
       pageCount: null,
       pageNums: [],
@@ -144,9 +148,31 @@ export default {
   },
   beforeUnmount() {
     releaseChildCanvases(this.$el)
+    if (this.documentLoadingTask?.onPassword) {
+      this.documentLoadingTask.onPassword = null
+    }
+    if (this.documentLoadingTask?.onProgress) {
+      this.documentLoadingTask.onProgress = null
+    }
     this.document?.destroy()
   },
   methods: {
+    /**
+     * Downloads a PDF document.
+     *
+     * NOTE: Ignored if the document is not loaded.
+     *
+     * @param {string} filename - Predefined filename to save.
+     */
+    async download(filename) {
+      if (!this.document) {
+        return
+      }
+
+      const data = await this.document.getData()
+      const metadata = await this.document.getMetadata()
+      downloadPdf(data, filename ?? metadata.contentDispositionFilename ?? '')
+    },
     /**
      * Returns an array of the actual page width and height based on props and
      * aspect ratio.
@@ -180,15 +206,15 @@ export default {
         if (this.source._pdfInfo) {
           this.document = this.source
         } else {
-          const documentLoadingTask = pdf.getDocument(this.source)
-          documentLoadingTask.onProgress = (progressParams) => {
+          this.documentLoadingTask = pdf.getDocument(this.source)
+          this.documentLoadingTask.onProgress = (progressParams) => {
             this.$emit('progress', progressParams)
           }
-          documentLoadingTask.onPassword = (callback, reason) => {
+          this.documentLoadingTask.onPassword = (callback, reason) => {
             const retry = reason === pdf.PasswordResponses.INCORRECT_PASSWORD
             this.$emit('password-requested', callback, retry)
           }
-          this.document = await documentLoadingTask.promise
+          this.document = await this.documentLoadingTask.promise
         }
         this.pageCount = this.document.numPages
         this.$emit('loaded', this.document)
@@ -267,8 +293,6 @@ export default {
 
         iframe.contentWindow.focus()
         iframe.contentWindow.print()
-      } catch (e) {
-        this.$emit('printing-failed', e)
       } finally {
         if (title) {
           window.document.title = title
@@ -279,7 +303,7 @@ export default {
       }
     },
     /**
-     * Renders the PDF document as SVG element(s) and additional layers.
+     * Renders the PDF document as canvas element(s) and additional layers.
      *
      * NOTE: Ignored if the document is not loaded.
      */
@@ -293,11 +317,15 @@ export default {
           ? [this.page]
           : [...Array(this.document.numPages + 1).keys()].slice(1)
 
+        const pageElements = this.$el.getElementsByClassName(
+          'vue-pdf-embed__page'
+        )
+
         await Promise.all(
           this.pageNums.map(async (pageNum, i) => {
             const page = await toRaw(this.document).getPage(pageNum)
             const pageRotation = this.rotation + page.rotate
-            const [canvas, div1, div2] = this.$el.children[i].children
+            const [canvas, div1, div2] = pageElements[i].children
             const [actualWidth, actualHeight] = this.getPageDimensions(
               (pageRotation / 90) % 2
                 ? page.view[2] / page.view[3]
@@ -414,12 +442,12 @@ export default {
 @import 'styles/annotation-layer';
 
 .vue-pdf-embed {
-  & > div {
+  &__page {
     position: relative;
-  }
 
-  canvas {
-    display: block;
+    canvas {
+      display: block;
+    }
   }
 }
 </style>

@@ -6,7 +6,7 @@ PDF embed component for Vue 3 and Vue 2 (see [Compatibility](#compatibility))
 [![npm](https://img.shields.io/npm/v/vue-pdf-embed)](https://npmjs.com/package/vue-pdf-embed)
 [![npm](https://img.shields.io/npm/dm/vue-pdf-embed)](https://npmjs.com/package/vue-pdf-embed)
 [![GitHub Repo stars](https://img.shields.io/github/stars/hrynko/vue-pdf-embed)](https://github.com/hrynko/vue-pdf-embed)
-[![npm](https://img.shields.io/npm/l/vue-pdf-embed)](https://github.com/hrynko/vue-pdf-embed/blob/master/LICENSE)
+[![npm](https://img.shields.io/npm/l/vue-pdf-embed)](https://github.com/hrynko/vue-pdf-embed/blob/main/LICENSE)
 
 ## Features
 
@@ -86,20 +86,27 @@ export default {
 | Name                  | Value                         | Description                                |
 | --------------------- | ----------------------------- | ------------------------------------------ |
 | internal-link-clicked | destination page number       | internal link was clicked                  |
-| loading-failed        | error object                  | failed to load document                    |
 | loaded                | PDF document proxy            | finished loading the document              |
+| loading-failed        | error object                  | failed to load document                    |
 | password-requested    | callback function, retry flag | password is needed to display the document |
-| rendering-failed      | error object                  | failed to render document                  |
-| rendered              | –                             | finished rendering the document            |
-| printing-failed       | error object                  | failed to print document                   |
 | progress              | progress params object        | tracking document loading progress         |
+| rendered              | –                             | finished rendering the document            |
+| rendering-failed      | error object                  | failed to render document                  |
+
+### Slots
+
+| Name        | Props                | Description                         |
+| ----------- | -------------------- | ----------------------------------- |
+| after-page  | `page` (page number) | content to be added after the page  |
+| before-page | `page` (page number) | content to be added before the page |
 
 ### Public Methods
 
-| Name   | Arguments                                                                    | Description                          |
-| ------ | ---------------------------------------------------------------------------- | ------------------------------------ |
-| render | –                                                                            | manually (re)render document         |
-| print  | print resolution (`number`), filename (`string`), all pages flag (`boolean`) | print document via browser interface |
+| Name     | Arguments                                                                    | Description                          |
+| -------- | ---------------------------------------------------------------------------- | ------------------------------------ |
+| download | filename (`string`)                                                          | download document                    |
+| print    | print resolution (`number`), filename (`string`), all pages flag (`boolean`) | print document via browser interface |
+| render   | –                                                                            | manually (re)render document         |
 
 **Note:** Public methods can be accessed via a [template ref](https://vuejs.org/guide/essentials/template-refs.html).
 
@@ -108,6 +115,8 @@ export default {
 Besides the component itself, the module also includes a `getDocument` function for manual loading of PDF documents, which can then be used as the `source` prop of the component. In most cases it is sufficient to specify the `source` prop with a URL or typed array, while the result of the `getDocument` function can be used in special cases, such as sharing the source between multiple component instances. This is an advanced topic, so it is recommended to check the source code of the component before using this function.
 
 ## Common Issues
+
+This is a client-side library, so it is important to keep this in mind when working with SSR (server-side rendering) frameworks such as Nuxt. Depending on the framework used, you may need to properly configure the library import or use a wrapper.
 
 The path to predefined CMaps should be specified to ensure correct rendering of documents containing non-Latin characters, as well as in case of CMap-related errors:
 
