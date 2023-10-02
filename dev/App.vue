@@ -1,10 +1,8 @@
 <template>
-  <div>
-    <vue-pdf-embed
-      :image-resources-path="annotationIconsPath"
-      :source="pdfSource"
-    />
-  </div>
+  <VuePdfEmbed
+    :image-resources-path="annotationIconsPath"
+    :source="pdfSource"
+  />
 </template>
 
 <script>
@@ -16,7 +14,7 @@ export default {
   },
   data() {
     return {
-      annotationIconsPath: '/node_modules/pdfjs-dist/web/images/',
+      annotationIconsPath: '../node_modules/pdfjs-dist/web/images/',
       pdfSource:
         'data:application/pdf;base64,' +
         'JVBERi0xLjcKCjEgMCBvYmogICUgZW50cnkgcG9pbnQKPDwKICAvVHlwZSAvQ2F0YWxv' +

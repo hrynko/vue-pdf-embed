@@ -1,64 +1,58 @@
 {
   "name": "vue-pdf-embed",
   "version": "1.2.1",
-  "description": "PDF embed component for Vue 2 and Vue 3",
+  "description": "PDF embed component for Vue",
   "keywords": [
     "vue",
     "vuejs",
     "pdf"
   ],
-  "main": "dist/vue3-pdf-embed.js",
-  "types": "types/vue3-pdf-embed.d.ts",
-  "files": [
-    "dist/*",
-    "src/*",
-    "types/*"
-  ],
   "license": "MIT",
   "author": "Aliaksei Hrynko (https://github.com/hrynko)",
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.umd.js"
+    },
+    "./dist/*.css": "./dist/*.css"
+  },
+  "style": "./dist/style.css",
+  "types": "./types/vue-pdf-embed.d.ts",
+  "files": [
+    "dist",
+    "types"
+  ],
   "repository": "github:hrynko/vue-pdf-embed",
   "scripts": {
-    "prepare": "husky install && webpack build",
-    "build": "webpack build --progress",
-    "serve": "webpack serve --config webpack.dev.config.js --hot",
-    "test": "jest",
-    "lint": "eslint src demo --ext js,vue --fix"
+    "prepare": "husky install && vite build",
+    "dev": "vite -c vite.config.dev.js",
+    "build": "vite build",
+    "test": "vitest",
+    "lint": "eslint . --ext .js,.vue --fix --ignore-path .gitignore",
+    "format": "prettier . --write --ignore-path .gitignore"
+  },
+  "dependencies": {
+    "pdfjs-dist": "^2.9.359"
   },
   "devDependencies": {
-    "@babel/core": "^7.14.2",
-    "@babel/preset-env": "^7.14.2",
-    "@vue/compiler-sfc": "^3.0.11",
-    "babel-jest": "^26.6.3",
-    "babel-loader": "^8.2.2",
-    "copy-webpack-plugin": "^9.1.0",
-    "css-loader": "^5.2.6",
-    "eslint": "^7.27.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^3.4.0",
-    "eslint-plugin-vue": "^7.10.0",
-    "file-loader": "^6.2.0",
-    "html-webpack-plugin": "^5.3.2",
-    "husky": "^8.0.0",
-    "jest": "^26.6.3",
-    "lint-staged": "^13.2.2",
-    "pdfjs-dist": "^2.9.359",
-    "prettier": "^2.3.0",
-    "sass": "^1.49.8",
-    "sass-loader": "^12.6.0",
-    "terser-webpack-plugin": "^5.3.1",
-    "vue": "^2.6.12",
-    "vue-jest": "^4.0.1",
-    "vue-loader": "^15.9.7",
-    "vue-loader-next": "npm:vue-loader@^16.2.0",
-    "vue-style-loader": "^4.1.3",
-    "vue-template-compiler": "^2.6.12",
-    "webpack": "^5.37.1",
-    "webpack-cli": "^4.7.0",
-    "webpack-dev-server": "^3.11.2",
-    "webpack-merge": "^5.8.0",
-    "worker-loader": "^3.0.8"
+    "@vitejs/plugin-vue": "^4.2.3",
+    "@vue/test-utils": "^2.4.1",
+    "eslint": "^8.47.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-vue": "^9.17.0",
+    "happy-dom": "^10.10.4",
+    "husky": "^8.0.3",
+    "lint-staged": "^14.0.0",
+    "prettier": "^3.0.2",
+    "sass": "^1.65.1",
+    "vite": "^4.4.7",
+    "vitest": "^0.34.2",
+    "vue": "^3.3.0"
   },
   "peerDependencies": {
-    "vue": "^2.x || ^3.x"
+    "vue": "^3.3.0"
   }
 }

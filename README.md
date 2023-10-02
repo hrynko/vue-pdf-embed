@@ -1,6 +1,6 @@
 # 📄 vue-pdf-embed
 
-PDF embed component for Vue 2 and Vue 3
+PDF embed component for Vue 3 and Vue 2 (see [Compatibility](#compatibility))
 
 [![Awesome](https://raw.githubusercontent.com/sindresorhus/awesome/main/media/mentioned-badge.svg)](https://github.com/vuejs/awesome-vue)
 [![npm](https://img.shields.io/npm/v/vue-pdf-embed)](https://npmjs.com/package/vue-pdf-embed)
@@ -19,22 +19,22 @@ PDF embed component for Vue 2 and Vue 3
 
 ## Compatibility
 
-This package is compatible with both Vue 2 and Vue 3, but consists of two separate builds. The default exported build is for Vue 3, for Vue 2 import `dist/vue2-pdf-embed.js` (see [Usage](#usage)).
+This package is only compatible with Vue 3, to support Vue 2 install `vue-pdf-embed@1` and discover [the v1 docs](https://github.com/hrynko/vue-pdf-embed/tree/v1).
 
 ## Installation
 
 Depending on the environment, the package can be installed in one of the following ways:
 
 ```shell
-npm install vue-pdf-embed@1
+npm install vue-pdf-embed
 ```
 
 ```shell
-yarn add vue-pdf-embed@1
+yarn add vue-pdf-embed
 ```
 
 ```html
-<script src="https://unpkg.com/vue-pdf-embed@1"></script>
+<script src="https://unpkg.com/vue-pdf-embed"></script>
 ```
 
 ## Usage
@@ -52,9 +52,6 @@ yarn add vue-pdf-embed@1
 
 <script>
 import VuePdfEmbed from 'vue-pdf-embed'
-
-// OR THE FOLLOWING IMPORT FOR VUE 2
-// import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
 
 export default {
   components: {

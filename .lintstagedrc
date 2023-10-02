@@ -1,5 +1,4 @@
 {
-  "*.{js,vue}": [
-    "npm run lint"
-  ]
+  "*.{js,vue}": "eslint --fix",
+  "*": "prettier --write"
 }

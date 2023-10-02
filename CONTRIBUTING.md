@@ -11,4 +11,5 @@ We use [GitHub issues](https://github.com/hrynko/vue-pdf-embed/issues) to report
 All code changes happen through [pull requests](https://github.com/hrynko/vue-pdf-embed/pulls). We actively welcome your features and fixes. Please provide a detailed description of the changes made and link them to [issues](https://github.com/hrynko/vue-pdf-embed/issues), if any.
 
 ## License
+
 By contributing, you agree that your contribution will be licensed under the [MIT License](LICENSE).
