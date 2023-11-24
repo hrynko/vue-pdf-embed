@@ -14,43 +14,53 @@
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
-      "require": "./dist/index.umd.js"
+      "require": "./dist/index.umd.js",
+      "types": "./dist/index.d.ts"
     },
     "./dist/*.css": "./dist/*.css"
   },
   "style": "./dist/style.css",
-  "types": "./types/vue-pdf-embed.d.ts",
+  "types": "./dist/index.d.ts",
   "files": [
-    "dist",
-    "types"
+    "dist"
   ],
   "repository": "github:hrynko/vue-pdf-embed",
   "scripts": {
     "prepare": "husky install && vite build",
-    "dev": "vite -c vite.config.dev.js",
+    "dev": "vite -c vite.config.dev.ts",
     "build": "vite build",
+    "postbuild": "vue-tsc -p tsconfig.lib.json --declaration --emitDeclarationOnly",
     "test": "vitest",
-    "lint": "eslint . --ext .js,.vue --fix --ignore-path .gitignore",
+    "lint": "eslint . --ext .js,.ts,.vue --fix --ignore-path .gitignore",
     "format": "prettier . --write --ignore-path .gitignore"
   },
   "dependencies": {
     "pdfjs-dist": "^2.9.359"
   },
   "devDependencies": {
+    "@tsconfig/node18": "^18.2.2",
+    "@types/node": "^18.18.9",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
     "@vitejs/plugin-vue": "^4.2.3",
+    "@vue/eslint-config-typescript": "^12.0.0",
     "@vue/test-utils": "^2.4.1",
-    "eslint": "^8.47.0",
+    "@vue/tsconfig": "^0.4.0",
+    "eslint": "^8.53.0",
     "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "^5.0.0",
-    "eslint-plugin-vue": "^9.17.0",
-    "happy-dom": "^10.10.4",
+    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-vue": "^9.18.1",
+    "happy-dom": "^12.10.3",
     "husky": "^8.0.3",
     "lint-staged": "^14.0.0",
-    "prettier": "^3.0.2",
+    "prettier": "^3.0.3",
     "sass": "^1.65.1",
+    "typescript": "^5.2.2",
     "vite": "^4.4.7",
     "vitest": "^0.34.2",
-    "vue": "^3.3.0"
+    "vue": "^3.3.0",
+    "vue-eslint-parser": "^9.3.1",
+    "vue-tsc": "^1.8.22"
   },
   "peerDependencies": {
     "vue": "^3.3.0"

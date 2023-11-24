@@ -110,10 +110,6 @@ export default {
 
 **Note:** Public methods can be accessed via a [template ref](https://vuejs.org/guide/essentials/template-refs.html).
 
-### Static Methods
-
-Besides the component itself, the module also includes a `getDocument` function for manual loading of PDF documents, which can then be used as the `source` prop of the component. In most cases it is sufficient to specify the `source` prop with a URL or typed array, while the result of the `getDocument` function can be used in special cases, such as sharing the source between multiple component instances. This is an advanced topic, so it is recommended to check the source code of the component before using this function.
-
 ## Common Issues
 
 This is a client-side library, so it is important to keep this in mind when working with SSR (server-side rendering) frameworks such as Nuxt. Depending on the framework used, you may need to properly configure the library import or use a wrapper.

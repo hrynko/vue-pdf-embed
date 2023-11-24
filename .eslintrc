@@ -1,10 +1,19 @@
 {
-  "extends": ["eslint:recommended", "plugin:vue/vue3-essential", "prettier"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:vue/vue3-recommended",
+    "@vue/typescript/recommended",
+    "prettier"
+  ],
+  "parser": "vue-eslint-parser",
   "parserOptions": {
+    "parser": "@typescript-eslint/parser",
     "ecmaVersion": "latest"
   },
-  "plugins": ["prettier"],
+  "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
-    "prettier/prettier": "warn"
+    "@typescript-eslint/ban-types": "off",
+    "prettier/prettier": "warn",
+    "vue/require-default-prop": "off"
   }
 }

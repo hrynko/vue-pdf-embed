@@ -1,5 +1,9 @@
-export function addPrintStyles(iframe, sizeX, sizeY) {
-  const style = iframe.contentWindow.document.createElement('style')
+export function addPrintStyles(
+  iframe: HTMLIFrameElement,
+  sizeX: number,
+  sizeY: number
+) {
+  const style = iframe.contentWindow!.document.createElement('style')
   style.textContent = `
     @page {
       margin: 0;
@@ -15,18 +19,20 @@ export function addPrintStyles(iframe, sizeX, sizeY) {
       page-break-inside: avoid;
     }
   `
-  iframe.contentWindow.document.head.appendChild(style)
-  iframe.contentWindow.document.body.style.width = '100%'
+  iframe.contentWindow!.document.head.appendChild(style)
+  iframe.contentWindow!.document.body.style.width = '100%'
 }
 
-export function createPrintIframe(container) {
+export function createPrintIframe(
+  container: HTMLDivElement
+): Promise<HTMLIFrameElement> {
   return new Promise((resolve) => {
     const iframe = document.createElement('iframe')
-    iframe.width = 0
-    iframe.height = 0
+    iframe.width = '0'
+    iframe.height = '0'
     iframe.style.position = 'absolute'
-    iframe.style.top = 0
-    iframe.style.left = 0
+    iframe.style.top = '0'
+    iframe.style.left = '0'
     iframe.style.border = 'none'
     iframe.style.overflow = 'hidden'
     iframe.onload = () => resolve(iframe)
@@ -34,7 +40,7 @@ export function createPrintIframe(container) {
   })
 }
 
-export function downloadPdf(data, filename) {
+export function downloadPdf(data: Uint8Array, filename: string) {
   const url = URL.createObjectURL(
     new Blob([data], {
       type: 'application/pdf',
@@ -52,14 +58,14 @@ export function downloadPdf(data, filename) {
   }, 1000)
 }
 
-export function emptyElement(el) {
-  while (el.firstChild) {
+export function emptyElement(el?: HTMLElement) {
+  while (el?.firstChild) {
     el.removeChild(el.firstChild)
   }
 }
 
-export function releaseChildCanvases(el) {
-  el.querySelectorAll('canvas').forEach((canvas) => {
+export function releaseChildCanvases(el?: HTMLElement) {
+  el?.querySelectorAll('canvas').forEach((canvas: HTMLCanvasElement) => {
     canvas.width = 1
     canvas.height = 1
     canvas.getContext('2d')?.clearRect(0, 0, 1, 1)
