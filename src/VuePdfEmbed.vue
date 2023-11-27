@@ -469,9 +469,6 @@ defineExpose({
 </script>
 
 <style lang="scss">
-@import 'styles/text-layer';
-@import 'styles/annotation-layer';
-
 .vue-pdf-embed {
   &__page {
     position: relative;

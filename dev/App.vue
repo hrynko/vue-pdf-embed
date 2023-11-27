@@ -24,6 +24,8 @@ const pdfSource =
 </script>
 
 <style lang="scss">
+@import 'pdfjs-dist/web/pdf_viewer.css';
+
 body {
   padding: 16px;
   background-color: #ccc;
