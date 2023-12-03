@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, toRaw, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
 import type {
   GetDocumentParameters,
   OnProgressParameters,
@@ -97,11 +97,11 @@ const emit = defineEmits<{
   (e: 'rendering-failed', value: Error): void
 }>()
 
-const document = ref<PDFDocumentProxy | null>(null)
-const documentLoadingTask = ref<PDFDocumentLoadingTask | null>(null)
-const pageCount = ref<number | null>(null)
-const pageNums = ref<number[]>([])
-const root = ref<HTMLDivElement | null>(null)
+const document = shallowRef<PDFDocumentProxy | null>(null)
+const documentLoadingTask = shallowRef<PDFDocumentLoadingTask | null>(null)
+const pageCount = shallowRef<number | null>(null)
+const pageNums = shallowRef<number[]>([])
+const root = shallowRef<HTMLDivElement | null>(null)
 
 const linkService = computed(() => {
   if (!document.value || !props.annotationLayer) {
@@ -127,9 +127,8 @@ const download = async (filename: string) => {
     return
   }
 
-  const documentRaw = toRaw(document.value)
-  const data = await documentRaw.getData()
-  const metadata = await documentRaw.getMetadata()
+  const data = await document.value.getData()
+  const metadata = await document.value.getMetadata()
   const suggestedFilename =
     // @ts-expect-error: contentDispositionFilename is not typed
     filename ?? metadata.contentDispositionFilename ?? ''
@@ -187,7 +186,7 @@ const load = async () => {
       document.value = await documentLoadingTask.value.promise
     }
     pageCount.value = document.value!.numPages
-    emit('loaded', toRaw(document.value) as PDFDocumentProxy)
+    emit('loaded', document.value)
   } catch (e) {
     document.value = null
     pageCount.value = null
@@ -226,7 +225,7 @@ const print = async (dpi = 300, filename = '', allPages = false) => {
 
     await Promise.all(
       pageNums.map(async (pageNum, i) => {
-        const page = await toRaw(document.value)!.getPage(pageNum)
+        const page = await document.value!.getPage(pageNum)
         const viewport = page.getViewport({
           scale: 1,
           rotation: 0,
@@ -292,7 +291,7 @@ const render = async () => {
 
     await Promise.all(
       pageNums.value.map(async (pageNum, i) => {
-        const page = await toRaw(document.value)!.getPage(pageNum)
+        const page = await document.value!.getPage(pageNum)
         const pageRotation =
           (+props.rotation % 90 === 0 ? +props.rotation : 0) + page.rotate
         const [canvas, div1, div2] = Array.from(pageElements[i].children) as [
@@ -456,7 +455,7 @@ onBeforeUnmount(async () => {
     // @ts-expect-error: onProgress must be reset
     documentLoadingTask.value.onProgress = null
   }
-  toRaw(document.value)?.destroy()
+  document.value?.destroy()
 })
 
 defineExpose({
