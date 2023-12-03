@@ -3,7 +3,11 @@
     <div v-for="pageNum in pageNums" :key="pageNum">
       <slot name="before-page" :page="pageNum" />
 
-      <div :id="id && `${id}-${pageNum}`" class="vue-pdf-embed__page">
+      <div
+        :id="id && `${id}-${pageNum}`"
+        ref="pageRefs"
+        class="vue-pdf-embed__page"
+      >
         <canvas />
 
         <div v-if="textLayer" class="textLayer" />
@@ -101,6 +105,7 @@ const document = shallowRef<PDFDocumentProxy | null>(null)
 const documentLoadingTask = shallowRef<PDFDocumentLoadingTask | null>(null)
 const pageCount = shallowRef<number | null>(null)
 const pageNums = shallowRef<number[]>([])
+const pageRefs = shallowRef<HTMLDivElement[]>([])
 const root = shallowRef<HTMLDivElement | null>(null)
 
 const linkService = computed(() => {
@@ -285,16 +290,12 @@ const render = async () => {
       ? [props.page]
       : [...Array(document.value.numPages + 1).keys()].slice(1)
 
-    const pageElements = root.value!.getElementsByClassName(
-      'vue-pdf-embed__page'
-    )
-
     await Promise.all(
       pageNums.value.map(async (pageNum, i) => {
         const page = await document.value!.getPage(pageNum)
         const pageRotation =
           (+props.rotation % 90 === 0 ? +props.rotation : 0) + page.rotate
-        const [canvas, div1, div2] = Array.from(pageElements[i].children) as [
+        const [canvas, div1, div2] = Array.from(pageRefs.value[i].children) as [
           HTMLCanvasElement,
           HTMLDivElement,
           HTMLDivElement,
