@@ -57,3 +57,18 @@ test('emits successful events', async () => {
   expect(wrapper.emitted()).toHaveProperty('loaded')
   expect(wrapper.emitted()).toHaveProperty('rendered')
 })
+
+test('renders slots content', async () => {
+  const wrapper = mount(VuePdfEmbed, {
+    props: {
+      source: 'SOURCE',
+    },
+    slots: {
+      'after-page': 'AFTER',
+      'before-page': 'BEFORE',
+    },
+  })
+  await flushPromises()
+  expect(wrapper.html()).toMatch('AFTER')
+  expect(wrapper.html()).toMatch('BEFORE')
+})

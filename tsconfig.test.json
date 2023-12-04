@@ -1,6 +1,5 @@
 {
   "extends": "./tsconfig.lib.json",
-  "exclude": [],
   "compilerOptions": {
     "composite": true,
     "lib": ["DOM"],
