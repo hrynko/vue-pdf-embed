@@ -11,7 +11,7 @@ PDF embed component for Vue 3 and Vue 2 (see [Compatibility](#compatibility))
 ## Features
 
 - Controlled rendering of PDF documents in Vue apps
-- Handles password protected documents
+- Handling password-protected documents
 - Includes text layer (searchable and selectable documents)
 - Includes annotation layer (annotations and links)
 - No peer dependencies or additional configuration required
@@ -19,7 +19,7 @@ PDF embed component for Vue 3 and Vue 2 (see [Compatibility](#compatibility))
 
 ## Compatibility
 
-This package is only compatible with Vue 3, to support Vue 2 install `vue-pdf-embed@1` and discover [the v1 docs](https://github.com/hrynko/vue-pdf-embed/tree/v1).
+This package is only compatible with Vue 3. For Vue 2 support, install `vue-pdf-embed@1` and refer to the [v1 docs](https://github.com/hrynko/vue-pdf-embed/tree/v1).
 
 ## Installation
 
@@ -95,10 +95,10 @@ export default {
 
 ### Slots
 
-| Name        | Props                | Description                         |
-| ----------- | -------------------- | ----------------------------------- |
-| after-page  | `page` (page number) | content to be added after the page  |
-| before-page | `page` (page number) | content to be added before the page |
+| Name        | Props                | Description                          |
+| ----------- | -------------------- | ------------------------------------ |
+| after-page  | `page` (page number) | content to be added after each page  |
+| before-page | `page` (page number) | content to be added before each page |
 
 ### Public Methods
 
