@@ -27,8 +27,7 @@ test('sets correct data', async () => {
   })
   await flushPromises()
   expect(wrapper.vm.document).toBeTruthy()
-  expect(wrapper.vm.pageCount).toBe(3)
-  expect(wrapper.vm.pageNums).toEqual([1, 2, 3])
+  expect(wrapper.vm.document?.numPages).toBe(3)
 })
 
 test('sets page IDs', async () => {

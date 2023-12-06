@@ -69,29 +69,29 @@ export default {
 
 ### Props
 
-| Name               | Type                                     | Accepted values                                  | Description                                                                |
-| ------------------ | ---------------------------------------- | ------------------------------------------------ | -------------------------------------------------------------------------- |
-| annotationLayer    | `boolean`                                | `true` or `false`                                | whether the annotation layer should be enabled                             |
-| height             | `number` <br> `string`                   | natural numbers                                  | desired page height in pixels (ignored if the width property is specified) |
-| imageResourcesPath | `string`                                 | URL or path with trailing slash                  | path for icons used in the annotation layer                                |
-| page               | `number`                                 | `1` to the last page number                      | number of the page to display (displays all pages if not specified)        |
-| rotation           | `number` <br> `string`                   | `0`, `90`, `180` or `270` (multiples of `90`)    | desired page rotation angle in degrees                                     |
-| scale              | `number`                                 | rational numbers                                 | desired ratio of canvas size to document size                              |
-| source             | `string` <br> `object` <br> `Uint8Array` | document URL or typed array pre-filled with data | source of the document to display                                          |
-| textLayer          | `boolean`                                | `true` or `false`                                | whether the text layer should be enabled                                   |
-| width              | `number` <br> `string`                   | natural numbers                                  | desired page width in pixels                                               |
+| Name               | Type                   | Accepted values                                            | Description                                                                |
+| ------------------ | ---------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------- |
+| annotationLayer    | `boolean`              | `true` or `false`                                          | whether the annotation layer should be enabled                             |
+| height             | `number` <br> `string` | natural numbers                                            | desired page height in pixels (ignored if the width property is specified) |
+| imageResourcesPath | `string`               | URL or path with trailing slash                            | path for icons used in the annotation layer                                |
+| page               | `number` <br> `string` | `1` to the last page number                                | number of the page to display (displaying all pages if not specified)      |
+| rotation           | `number` <br> `string` | `0`, `90`, `180`, `270` (multiples of `90`)                | desired page rotation angle in degrees                                     |
+| scale              | `number`               | rational numbers                                           | desired ratio of canvas size to document size                              |
+| source             | `string` <br> `object` | document URL or Base64 or typed array pre-filled with data | source of the document to display                                          |
+| textLayer          | `boolean`              | `true` or `false`                                          | whether the text layer should be enabled                                   |
+| width              | `number` <br> `string` | natural numbers                                            | desired page width in pixels                                               |
 
 ### Events
 
-| Name                  | Value                         | Description                                |
-| --------------------- | ----------------------------- | ------------------------------------------ |
-| internal-link-clicked | destination page number       | internal link was clicked                  |
-| loaded                | PDF document proxy            | finished loading the document              |
-| loading-failed        | error object                  | failed to load document                    |
-| password-requested    | callback function, retry flag | password is needed to display the document |
-| progress              | progress params object        | tracking document loading progress         |
-| rendered              | –                             | finished rendering the document            |
-| rendering-failed      | error object                  | failed to render document                  |
+| Name                  | Value                                                                   | Description                                |
+| --------------------- | ----------------------------------------------------------------------- | ------------------------------------------ |
+| internal-link-clicked | destination page number                                                 | internal link was clicked                  |
+| loaded                | PDF document proxy                                                      | finished loading the document              |
+| loading-failed        | error object                                                            | failed to load document                    |
+| password-requested    | object with `callback` function and `isWrongPassword` flag              | password is needed to display the document |
+| progress              | object with number of `loaded` pages along with `total` number of pages | tracking document loading progress         |
+| rendered              | –                                                                       | finished rendering the document            |
+| rendering-failed      | error object                                                            | failed to render document                  |
 
 ### Slots
 

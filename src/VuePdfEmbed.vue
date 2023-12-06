@@ -21,17 +21,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
+import { computed, onBeforeUnmount, shallowRef, toRef, watch } from 'vue'
+import * as pdf from 'pdfjs-dist/legacy/build/pdf'
+import { PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer'
 import type {
   GetDocumentParameters,
   OnProgressParameters,
-  PDFDocumentLoadingTask,
   PDFDocumentProxy,
   PDFPageProxy,
 } from 'pdfjs-dist/types/src/display/api'
-import * as pdf from 'pdfjs-dist/legacy/build/pdf'
-import PdfWorker from 'pdfjs-dist/legacy/build/pdf.worker.min?url'
-import { PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer'
+
 import {
   addPrintStyles,
   createPrintIframe,
@@ -39,8 +38,7 @@ import {
   emptyElement,
   releaseChildCanvases,
 } from './util'
-
-pdf.GlobalWorkerOptions.workerSrc = PdfWorker
+import { useVuePdfEmbed } from './composable'
 
 const props = withDefaults(
   defineProps<{
@@ -64,7 +62,7 @@ const props = withDefaults(
     /**
      * Number of the page to display.
      */
-    page?: number
+    page?: number | string
     /**
      * Desired page rotation angle.
      */
@@ -101,12 +99,23 @@ const emit = defineEmits<{
   (e: 'rendering-failed', value: Error): void
 }>()
 
-const document = shallowRef<PDFDocumentProxy | null>(null)
-const documentLoadingTask = shallowRef<PDFDocumentLoadingTask | null>(null)
-const pageCount = shallowRef<number | null>(null)
 const pageNums = shallowRef<number[]>([])
 const pageRefs = shallowRef<HTMLDivElement[]>([])
 const root = shallowRef<HTMLDivElement | null>(null)
+
+const { document } = useVuePdfEmbed({
+  onError: (e) => {
+    pageNums.value = []
+    emit('loading-failed', e)
+  },
+  onPasswordRequest({ callback, isWrongPassword }) {
+    emit('password-requested', { callback, isWrongPassword })
+  },
+  onProgress: (progressParams) => {
+    emit('progress', progressParams)
+  },
+  source: toRef(props, 'source'),
+})
 
 const linkService = computed(() => {
   if (!document.value || !props.annotationLayer) {
@@ -161,46 +170,6 @@ const getPageDimensions = (ratio: number): [number, number] => {
 }
 
 /**
- * Loads a PDF document. Defines a password callback for protected
- * documents.
- */
-const load = async () => {
-  if (!props.source) {
-    return
-  }
-
-  try {
-    if (Object.prototype.hasOwnProperty.call(props.source, '_pdfInfo')) {
-      document.value = props.source as PDFDocumentProxy
-    } else {
-      documentLoadingTask.value = pdf.getDocument(
-        props.source as GetDocumentParameters
-      )
-      documentLoadingTask.value.onProgress = (
-        progressParams: OnProgressParameters
-      ) => {
-        emit('progress', progressParams)
-      }
-      documentLoadingTask.value.onPassword = (
-        callback: Function,
-        reason: number
-      ) => {
-        const retry = reason === pdf.PasswordResponses.INCORRECT_PASSWORD
-        emit('password-requested', { callback, retry })
-      }
-      document.value = await documentLoadingTask.value.promise
-    }
-    pageCount.value = document.value!.numPages
-    emit('loaded', document.value)
-  } catch (e) {
-    document.value = null
-    pageCount.value = null
-    pageNums.value = []
-    emit('loading-failed', e as Error)
-  }
-}
-
-/**
  * Prints a PDF document via the browser interface.
  * @param dpi - Print resolution.
  * @param filename - Predefined filename to save.
@@ -225,7 +194,7 @@ const print = async (dpi = 300, filename = '', allPages = false) => {
 
     const pageNums =
       props.page && !allPages
-        ? [props.page]
+        ? [+props.page]
         : [...Array(document.value.numPages + 1).keys()].slice(1)
 
     await Promise.all(
@@ -287,7 +256,7 @@ const render = async () => {
 
   try {
     pageNums.value = props.page
-      ? [props.page]
+      ? [+props.page]
       : [...Array(document.value.numPages + 1).keys()].slice(1)
 
     await Promise.all(
@@ -328,8 +297,6 @@ const render = async () => {
 
     emit('rendered')
   } catch (e) {
-    document.value = null
-    pageCount.value = null
     pageNums.value = []
     emit('rendering-failed', e as Error)
   }
@@ -423,47 +390,49 @@ const renderPageTextLayer = async (
 }
 
 watch(
-  () => [
-    props.source,
-    props.annotationLayer,
-    props.height,
-    props.page,
-    props.rotation,
-    props.textLayer,
-    props.width,
-  ],
-  async ([newSource], [oldSource]) => {
-    if (newSource !== oldSource) {
-      releaseChildCanvases(root.value!)
-      await load()
+  document,
+  () => {
+    if (document.value) {
+      emit('loaded', document.value)
     }
-    render()
+  },
+  { immediate: true }
+)
+
+watch(
+  () => props.source,
+  () => {
+    releaseChildCanvases(root.value!)
   }
 )
 
-onMounted(async () => {
-  await load()
-  render()
-})
+watch(
+  () => [
+    document.value,
+    props.annotationLayer,
+    props.height,
+    props.imageResourcesPath,
+    props.page,
+    props.rotation,
+    props.scale,
+    props.textLayer,
+    props.width,
+  ],
+  () => {
+    if (document.value) {
+      render()
+    }
+  },
+  { immediate: true }
+)
 
-onBeforeUnmount(async () => {
+onBeforeUnmount(() => {
   releaseChildCanvases(root.value!)
-  if (documentLoadingTask.value?.onPassword) {
-    // @ts-expect-error: onPassword must be reset
-    documentLoadingTask.value.onPassword = null
-  }
-  if (documentLoadingTask.value?.onProgress) {
-    // @ts-expect-error: onProgress must be reset
-    documentLoadingTask.value.onProgress = null
-  }
-  document.value?.destroy()
 })
 
 defineExpose({
   document,
   download,
-  pageCount,
-  pageNums,
   print,
 })
 </script>

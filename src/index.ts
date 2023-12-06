@@ -5,3 +5,4 @@ if (window?.Vue) {
 }
 
 export default VuePdfEmbed
+export * from './composable'
