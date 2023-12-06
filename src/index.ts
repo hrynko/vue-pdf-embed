@@ -1,5 +1,5 @@
 import VuePdfEmbed from './vue-pdf-embed.vue'
-import { getDocument } from 'pdfjs-dist/legacy/build/pdf.js'
+import { getDocument } from 'pdfjs-dist/build/pdf'
 
 VuePdfEmbed.getDocument = getDocument
 

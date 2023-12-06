@@ -1,11 +1,22 @@
 export function addPrintStyles(iframe, sizeX, sizeY) {
   const style = iframe.contentWindow.document.createElement('style')
   style.textContent = `
-    @page { margin: 0; size: ${sizeX}pt ${sizeY}pt; }
-    body { margin: 0; }
-    canvas { page-break-after: always; page-break-before: avoid; page-break-inside: avoid; }
+    @page {
+      margin: 0;
+      size: ${sizeX}pt ${sizeY}pt;
+    }
+    body {
+      margin: 0;
+    }
+    canvas {
+      width: 100%;
+      page-break-after: always;
+      page-break-before: avoid;
+      page-break-inside: avoid;
+    }
   `
   iframe.contentWindow.document.head.appendChild(style)
+  iframe.contentWindow.document.body.style.width = '100%'
 }
 
 export function createPrintIframe(container) {
@@ -21,6 +32,24 @@ export function createPrintIframe(container) {
     iframe.onload = () => resolve(iframe)
     container.appendChild(iframe)
   })
+}
+
+export function downloadPdf(data, filename) {
+  const url = URL.createObjectURL(
+    new Blob([data], {
+      type: 'application/pdf',
+    })
+  )
+  const anchor = document.createElement('a')
+  anchor.href = url
+  anchor.download = filename
+  anchor.style.display = 'none'
+  document.body.append(anchor)
+  anchor.click()
+  setTimeout(() => {
+    URL.revokeObjectURL(url)
+    document.body.removeChild(anchor)
+  }, 1000)
 }
 
 export function emptyElement(el) {

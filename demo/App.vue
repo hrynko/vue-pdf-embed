@@ -14,9 +14,9 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import VuePdfEmbed from '../src/vue-pdf-embed.vue'
-import testPdf from './test.pdf?url'
+import testPdf from './test2.pdf?url'
 
 export default {
   components: {

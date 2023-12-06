@@ -6,32 +6,37 @@
       :id="id && `${id}-${pageNum}`"
       ref="elementRefs"
     >
+      <!-- <slot name="before-page" :page="pageNum" /> -->
       <canvas />
 
-      <div v-if="!disableTextLayer" class="textLayer" />
+      <div :id="id && `${id}-${pageNum}`" class="vue-pdf-embed__page">
+        <canvas />
 
-      <div v-if="!disableAnnotationLayer" class="annotationLayer" />
+        <div v-if="textLayer" class="textLayer" />
+
+        <div v-if="annotationLayer" class="annotationLayer" />
+      </div>
+
+      <slot name="after-page" :page="pageNum" />
     </div>
   </div>
 </template>
 
-<script setup>
-/// <reference types="vue/macros-global" />
-
+<script setup lang="ts">
 const props = defineProps({
   /**
-   * Whether the annotation layer should be disabled.
+   * Whether the annotation layer should be enabled.
    * @values Boolean
    */
-  disableAnnotationLayer: {
+  annotationLayer: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   /**
-   * Whether the text layer should be disabled.
+   * Whether the text layer should be enabled.
    * @values Boolean
    */
-  disableTextLayer: Boolean,
+  textLayer: Boolean,
   /**
    * Desired page height.
    * @values Number, String
@@ -86,7 +91,7 @@ const props = defineProps({
   width: [Number, String],
 })
 
-const $emit = defineEmits([
+const emit = defineEmits([
   'loaded',
   'loading-failed',
   'password-requested',
@@ -98,19 +103,19 @@ const $emit = defineEmits([
 ])
 
 let doc = null
-let pageCount = $ref(null)
-let pageNums = $ref([])
+let pageCount = ref(null)
+let pageNums = ref([])
 
-let elementRefs = $ref([])
+let elementRefs = ref([])
 
 const _instance = getCurrentInstance()
 
-const instance = $computed(() => {
+const instance = computed(() => {
   return _instance.proxy
 })
 
-const linkService = $computed(() => {
-  if (!document || props.disableAnnotationLayer) {
+const linkService = computed(() => {
+  if (!document || !props.annotationLayer) {
     return null
   }
 
@@ -118,11 +123,28 @@ const linkService = $computed(() => {
   service.setDocument(doc)
   service.setViewer({
     scrollPageIntoView: ({ pageNumber }) => {
-      $emit('internal-link-clicked', pageNumber)
+      emit('internal-link-clicked', pageNumber)
     },
   })
   return service
 })
+
+/**
+ * Downloads a PDF document.
+ *
+ * NOTE: Ignored if the document is not loaded.
+ *
+ * @param {string} filename - Predefined filename to save.
+ */
+async function download(filename) {
+  if (!this.document) {
+    return
+  }
+
+  const data = await this.document.getData()
+  const metadata = await this.document.getMetadata()
+  downloadPdf(data, filename ?? metadata.contentDispositionFilename ?? '')
+}
 
 /**
  * Returns an array of the actual page width and height based on props and
@@ -136,7 +158,7 @@ function getPageDimensions(ratio) {
     height = props.height
     width = height / ratio
   } else {
-    width = props.width || instance.$el.clientWidth
+    width = props.width || instance.value.$el.clientWidth
     height = width * ratio
   }
 
@@ -161,22 +183,22 @@ async function load() {
     } else {
       const documentLoadingTask = pdf.getDocument(props.source)
       documentLoadingTask.onProgress = (progressParams) => {
-        $emit('progress', progressParams)
+        emit('progress', progressParams)
       }
       documentLoadingTask.onPassword = (callback, reason) => {
         const retry = reason === pdf.PasswordResponses.INCORRECT_PASSWORD
-        $emit('password-requested', callback, retry)
+        emit('password-requested', callback, retry)
       }
       doc = await documentLoadingTask.promise
     }
-    pageCount = doc.numPages
-    $emit('loaded', doc)
+    pageCount.value = doc.numPages
+    emit('loaded', doc)
   } catch (e) {
     console.error('Failed to load', e)
     doc = null
-    pageCount = null
-    pageNums = []
-    $emit('loading-failed', e)
+    pageCount.value = null
+    pageNums.value = []
+    emit('loading-failed', e)
   }
 }
 
@@ -246,7 +268,7 @@ async function print(dpi = 300, filename = '', allPages = false) {
     iframe.contentWindow.focus()
     iframe.contentWindow.print()
   } catch (e) {
-    $emit('printing-failed', e)
+    emit('printing-failed', e)
   } finally {
     if (title) {
       window.document.title = title
@@ -262,7 +284,7 @@ function setPageNums() {
     return
   }
 
-  pageNums = props.page
+  pageNums.value = props.page
     ? [props.page]
     : [...Array(doc.numPages + 1).keys()].slice(1)
 }
@@ -273,15 +295,15 @@ function setPageNums() {
  * NOTE: Ignored if the document is not loaded.
  */
 async function render() {
-  if (!doc || elementRefs.length !== pageNums.length) {
+  if (!doc || elementRefs.value.length !== pageNums.value.length) {
     return
   }
 
   try {
     await Promise.all(
-      pageNums.map(async (pageNum, i) => {
+      pageNums.value.map(async (pageNum, i) => {
         const page = await doc.getPage(pageNum)
-        const [canvas, div1, div2] = elementRefs[i].children
+        const [canvas, div1, div2] = elementRefs.value[i].children
         const [actualWidth, actualHeight] = getPageDimensions(
           page.view[3] / page.view[2]
         )
@@ -296,23 +318,23 @@ async function render() {
 
         renderPage(page, canvas, actualWidth)
 
-        if (!props.disableTextLayer) {
+        if (props.textLayer) {
           await renderPageTextLayer(page, div1, actualWidth)
         }
 
-        if (!props.disableAnnotationLayer) {
+        if (props.annotationLayer) {
           await renderPageAnnotationLayer(page, div2 || div1, actualWidth)
         }
       })
     )
 
-    $emit('rendered')
+    emit('rendered')
   } catch (e) {
     console.error('Failed to render', e)
     doc = null
-    pageCount = null
-    pageNums = []
-    $emit('rendering-failed', e)
+    pageCount.value = null
+    pageNums.value = []
+    emit('rendering-failed', e)
   }
 }
 
@@ -348,7 +370,7 @@ async function renderPageAnnotationLayer(page, container, width) {
   pdf.AnnotationLayer.render({
     annotations: await page.getAnnotations(),
     div: container,
-    linkService: linkService,
+    linkService: linkService.value,
     page,
     renderInteractiveForms: false,
     viewport: page
@@ -382,7 +404,7 @@ async function renderPageTextLayer(page, container, width) {
 }
 
 onBeforeUnmount(() => {
-  releaseChildCanvases(instance.$el)
+  releaseChildCanvases(instance.value.$el)
   doc?.destroy()
 })
 
@@ -395,17 +417,17 @@ onMounted(async () => {
 watch(
   [
     () => props.source,
-    () => props.disableAnnotationLayer,
-    () => props.disableTextLayer,
+    () => props.annotationLayer,
+    () => props.textLayer,
     () => props.height,
     () => props.page,
     () => props.rotation,
     () => props.width,
-    () => elementRefs,
+    () => elementRefs.value,
   ],
   async ([newSource], [oldSource]) => {
     if (newSource !== oldSource) {
-      releaseChildCanvases(instance.$el)
+      releaseChildCanvases(instance.value.$el)
       await load()
     }
     setPageNums()
@@ -418,12 +440,12 @@ watch(
 defineExpose({
   render,
   print,
-  pageCount: readonly($$(pageCount)),
-  pageNums: readonly($$(pageNums)),
+  pageCount: readonly(pageCount),
+  pageNums: readonly(pageNums),
 })
 </script>
 
-<script>
+<script lang="ts">
 import {
   defineProps,
   getCurrentInstance,
@@ -434,13 +456,16 @@ import {
   defineExpose,
   readonly,
   nextTick,
+  ref,
+  computed,
 } from 'vue'
-import * as pdf from 'pdfjs-dist/legacy/build/pdf.js'
-import PdfWorker from 'pdfjs-dist/legacy/build/pdf.worker.js?worker&inline'
-import { PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer.js'
+import * as pdf from 'pdfjs-dist/build/pdf'
+import PdfWorker from 'pdfjs-dist/build/pdf.worker.mjs?worker&inline'
+import { PDFLinkService } from 'pdfjs-dist/web/pdf_viewer'
 import {
   addPrintStyles,
   createPrintIframe,
+  downloadPdf,
   emptyElement,
   releaseChildCanvases,
 } from './util.js'
@@ -453,12 +478,12 @@ pdf.GlobalWorkerOptions.workerPort = new PdfWorker()
 @import 'styles/annotation-layer';
 
 .vue-pdf-embed {
-  & > div {
+  &__page {
     position: relative;
-  }
 
-  canvas {
-    display: block;
+    canvas {
+      display: block;
+    }
   }
 }
 </style>
