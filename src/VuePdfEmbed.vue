@@ -25,12 +25,12 @@ import { computed, onBeforeUnmount, shallowRef, toRef, watch } from 'vue'
 import * as pdf from 'pdfjs-dist/legacy/build/pdf'
 import { PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer'
 import type {
-  GetDocumentParameters,
   OnProgressParameters,
   PDFDocumentProxy,
   PDFPageProxy,
 } from 'pdfjs-dist/types/src/display/api'
 
+import type { PasswordRequestParams, Source } from './types'
 import {
   addPrintStyles,
   createPrintIframe,
@@ -74,7 +74,7 @@ const props = withDefaults(
     /**
      * Source of the document to display.
      */
-    source: GetDocumentParameters | PDFDocumentProxy
+    source: Source
     /**
      * Whether the text layer should be enabled.
      */
@@ -93,7 +93,7 @@ const emit = defineEmits<{
   (e: 'internal-link-clicked', value: number): void
   (e: 'loaded', value: PDFDocumentProxy): void
   (e: 'loading-failed', value: Error): void
-  (e: 'password-requested', value: { callback: Function; retry: boolean }): void
+  (e: 'password-requested', value: PasswordRequestParams): void
   (e: 'progress', value: OnProgressParameters): void
   (e: 'rendered'): void
   (e: 'rendering-failed', value: Error): void

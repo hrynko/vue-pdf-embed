@@ -16,6 +16,8 @@ import type {
   PDFDocumentProxy,
 } from 'pdfjs-dist/types/src/display/api'
 
+import type { PasswordRequestParams, Source } from './types'
+
 export function useVuePdfEmbed({
   onError,
   onPasswordRequest,
@@ -23,15 +25,9 @@ export function useVuePdfEmbed({
   source,
 }: {
   onError?: (e: Error) => unknown
-  onPasswordRequest?: (passwordRequestParams: {
-    callback: Function
-    isWrongPassword: boolean
-  }) => unknown
+  onPasswordRequest?: (passwordRequestParams: PasswordRequestParams) => unknown
   onProgress?: (progressParams: OnProgressParameters) => unknown
-  source:
-    | ComputedRef<GetDocumentParameters | PDFDocumentProxy>
-    | MaybeRef<GetDocumentParameters | PDFDocumentProxy>
-    | ShallowRef<GetDocumentParameters | PDFDocumentProxy>
+  source: ComputedRef<Source> | MaybeRef<Source> | ShallowRef<Source>
 }) {
   if (!pdf.GlobalWorkerOptions?.workerSrc) {
     pdf.GlobalWorkerOptions.workerSrc = PdfWorker
