@@ -16,8 +16,6 @@ import type {
   PDFDocumentProxy,
 } from 'pdfjs-dist/types/src/display/api'
 
-pdf.GlobalWorkerOptions.workerSrc = PdfWorker
-
 export function useVuePdfEmbed({
   onError,
   onPasswordRequest,
@@ -35,6 +33,10 @@ export function useVuePdfEmbed({
     | MaybeRef<GetDocumentParameters | PDFDocumentProxy>
     | ShallowRef<GetDocumentParameters | PDFDocumentProxy>
 }) {
+  if (!pdf.GlobalWorkerOptions?.workerSrc) {
+    pdf.GlobalWorkerOptions.workerSrc = PdfWorker
+  }
+
   const document = shallowRef<PDFDocumentProxy | null>(null)
   const documentLoadingTask = shallowRef<PDFDocumentLoadingTask | null>(null)
 
