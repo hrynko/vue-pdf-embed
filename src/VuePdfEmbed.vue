@@ -60,6 +60,10 @@ const props = withDefaults(
      */
     imageResourcesPath?: string
     /**
+     * Path for worker script.
+     */
+    workerSrc?: string
+    /**
      * Number of the page to display.
      */
     page?: number | string
@@ -115,6 +119,7 @@ const { document } = useVuePdfEmbed({
     emit('progress', progressParams)
   },
   source: toRef(props, 'source'),
+  workerSrc: props.workerSrc,
 })
 
 const linkService = computed(() => {

@@ -74,6 +74,7 @@ export default {
 | annotationLayer    | `boolean`              | `true` or `false`                                          | whether the annotation layer should be enabled                             |
 | height             | `number` <br> `string` | natural numbers                                            | desired page height in pixels (ignored if the width property is specified) |
 | imageResourcesPath | `string`               | URL or path with trailing slash                            | path for icons used in the annotation layer                                |
+| workerSrc          | `string`               | URL                                                        | path for PDF worker script                                                 |
 | page               | `number` <br> `string` | `1` to the last page number                                | number of the page to display (displaying all pages if not specified)      |
 | rotation           | `number` <br> `string` | `0`, `90`, `180`, `270` (multiples of `90`)                | desired page rotation angle in degrees                                     |
 | scale              | `number`               | rational numbers                                           | desired ratio of canvas size to document size                              |

@@ -23,6 +23,7 @@ export function useVuePdfEmbed({
   onPasswordRequest,
   onProgress,
   source,
+  workerSrc,
 }: {
   onError?: (e: Error) => unknown
   onPasswordRequest?: (passwordRequestParams: {
@@ -34,6 +35,7 @@ export function useVuePdfEmbed({
     | ComputedRef<GetDocumentParameters | PDFDocumentProxy>
     | MaybeRef<GetDocumentParameters | PDFDocumentProxy>
     | ShallowRef<GetDocumentParameters | PDFDocumentProxy>
+  workerSrc?: string
 }) {
   const document = shallowRef<PDFDocumentProxy | null>(null)
   const documentLoadingTask = shallowRef<PDFDocumentLoadingTask | null>(null)
@@ -47,6 +49,9 @@ export function useVuePdfEmbed({
     }
 
     try {
+      if (workerSrc) {
+        pdf.GlobalWorkerOptions.workerSrc = workerSrc
+      }
       documentLoadingTask.value = pdf.getDocument(
         sourceValue as GetDocumentParameters
       )
