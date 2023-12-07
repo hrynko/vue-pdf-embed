@@ -93,7 +93,10 @@ const emit = defineEmits<{
   (e: 'internal-link-clicked', value: number): void
   (e: 'loaded', value: PDFDocumentProxy): void
   (e: 'loading-failed', value: Error): void
-  (e: 'password-requested', value: { callback: Function; retry: boolean }): void
+  (
+    e: 'password-requested',
+    value: { callback: Function; isWrongPassword: boolean }
+  ): void
   (e: 'progress', value: OnProgressParameters): void
   (e: 'rendered'): void
   (e: 'rendering-failed', value: Error): void
