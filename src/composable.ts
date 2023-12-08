@@ -39,6 +39,10 @@ export function useVuePdfEmbed({
   watchEffect(async () => {
     const sourceValue = toValue(source)
 
+    if (!sourceValue) {
+      return
+    }
+
     if (Object.prototype.hasOwnProperty.call(sourceValue, '_pdfInfo')) {
       document.value = sourceValue as PDFDocumentProxy
       return
