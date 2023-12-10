@@ -1,25 +1,3 @@
-<template>
-  <div :id="id" ref="root" class="vue-pdf-embed">
-    <div v-for="pageNum in pageNums" :key="pageNum">
-      <slot name="before-page" :page="pageNum" />
-
-      <div
-        :id="id && `${id}-${pageNum}`"
-        ref="pageRefs"
-        class="vue-pdf-embed__page"
-      >
-        <canvas />
-
-        <div v-if="textLayer" class="textLayer" />
-
-        <div v-if="annotationLayer" class="annotationLayer" />
-      </div>
-
-      <slot name="after-page" :page="pageNum" />
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed, onBeforeUnmount, shallowRef, toRef, watch } from 'vue'
 import * as pdf from 'pdfjs-dist/legacy/build/pdf'
@@ -436,6 +414,28 @@ defineExpose({
   print,
 })
 </script>
+
+<template>
+  <div :id="id" ref="root" class="vue-pdf-embed">
+    <div v-for="pageNum in pageNums" :key="pageNum">
+      <slot name="before-page" :page="pageNum" />
+
+      <div
+        :id="id && `${id}-${pageNum}`"
+        ref="pageRefs"
+        class="vue-pdf-embed__page"
+      >
+        <canvas />
+
+        <div v-if="textLayer" class="textLayer" />
+
+        <div v-if="annotationLayer" class="annotationLayer" />
+      </div>
+
+      <slot name="after-page" :page="pageNum" />
+    </div>
+  </div>
+</template>
 
 <style lang="scss">
 .vue-pdf-embed {
