@@ -15,12 +15,12 @@
     ".": {
       "import": "./dist/index.mjs",
       "require": "./dist/index.umd.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/types/index.d.ts"
     },
     "./dist/style/*.css": "./dist/style/*.css"
   },
   "style": "./dist/style/index.css",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/types/index.d.ts",
   "files": [
     "dist"
   ],
