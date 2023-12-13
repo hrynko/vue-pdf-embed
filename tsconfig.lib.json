@@ -4,7 +4,7 @@
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
-    "declarationDir": "dist",
+    "declarationDir": "dist/types",
     "rootDir": "src"
   }
 }
