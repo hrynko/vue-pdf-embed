@@ -1,7 +1,3 @@
-<template>
-  <VuePdfEmbed :source="pdfSource" />
-</template>
-
 <script setup lang="ts">
 import VuePdfEmbed from '../src/index'
 
@@ -22,6 +18,10 @@ const pdfSource =
   'MDAwMDAgbiAKdHJhaWxlcgo8PAogIC9TaXplIDYKICAvUm9vdCAxIDAgUgo+PgpzdGFy' +
   'dHhyZWYKNDkyCiUlRU9G'
 </script>
+
+<template>
+  <VuePdfEmbed :source="pdfSource" />
+</template>
 
 <style lang="scss">
 @import 'pdfjs-dist/web/pdf_viewer.css';

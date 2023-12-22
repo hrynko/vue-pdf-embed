@@ -1,25 +1,3 @@
-<template>
-  <div :id="id" ref="root" class="vue-pdf-embed">
-    <div v-for="pageNum in pageNums" :key="pageNum">
-      <slot name="before-page" :page="pageNum" />
-
-      <div
-        :id="id && `${id}-${pageNum}`"
-        ref="pageRefs"
-        class="vue-pdf-embed__page"
-      >
-        <canvas />
-
-        <div v-if="textLayer" class="textLayer" />
-
-        <div v-if="annotationLayer" class="annotationLayer" />
-      </div>
-
-      <slot name="after-page" :page="pageNum" />
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed, onBeforeUnmount, shallowRef, toRef, watch } from 'vue'
 import * as pdf from 'pdfjs-dist/legacy/build/pdf'
@@ -107,7 +85,7 @@ const pageNums = shallowRef<number[]>([])
 const pageRefs = shallowRef<HTMLDivElement[]>([])
 const root = shallowRef<HTMLDivElement | null>(null)
 
-const { document } = useVuePdfEmbed({
+const { doc } = useVuePdfEmbed({
   onError: (e) => {
     pageNums.value = []
     emit('loading-failed', e)
@@ -123,12 +101,12 @@ const { document } = useVuePdfEmbed({
 })
 
 const linkService = computed(() => {
-  if (!document.value || !props.annotationLayer) {
+  if (!doc.value || !props.annotationLayer) {
     return null
   }
 
   const service = new PDFLinkService()
-  service.setDocument(document.value)
+  service.setDocument(doc.value)
   service.setViewer({
     scrollPageIntoView: ({ pageNumber }: { pageNumber: number }) => {
       emit('internal-link-clicked', pageNumber)
@@ -142,12 +120,12 @@ const linkService = computed(() => {
  * @param filename - Predefined filename to save.
  */
 const download = async (filename: string) => {
-  if (!document.value) {
+  if (!doc.value) {
     return
   }
 
-  const data = await document.value.getData()
-  const metadata = await document.value.getMetadata()
+  const data = await doc.value.getData()
+  const metadata = await doc.value.getMetadata()
   const suggestedFilename =
     // @ts-expect-error: contentDispositionFilename is not typed
     filename ?? metadata.contentDispositionFilename ?? ''
@@ -181,7 +159,7 @@ const getPageDimensions = (ratio: number): [number, number] => {
  * @param allPages - Ignore page prop to print all pages.
  */
 const print = async (dpi = 300, filename = '', allPages = false) => {
-  if (!document.value) {
+  if (!doc.value) {
     return
   }
 
@@ -200,11 +178,11 @@ const print = async (dpi = 300, filename = '', allPages = false) => {
     const pageNums =
       props.page && !allPages
         ? [+props.page]
-        : [...Array(document.value.numPages + 1).keys()].slice(1)
+        : [...Array(doc.value.numPages + 1).keys()].slice(1)
 
     await Promise.all(
       pageNums.map(async (pageNum, i) => {
-        const page = await document.value!.getPage(pageNum)
+        const page = await doc.value!.getPage(pageNum)
         const viewport = page.getViewport({
           scale: 1,
           rotation: 0,
@@ -255,18 +233,18 @@ const print = async (dpi = 300, filename = '', allPages = false) => {
  * Renders the PDF document as canvas element(s) and additional layers.
  */
 const render = async () => {
-  if (!document.value) {
+  if (!doc.value) {
     return
   }
 
   try {
     pageNums.value = props.page
       ? [+props.page]
-      : [...Array(document.value.numPages + 1).keys()].slice(1)
+      : [...Array(doc.value.numPages + 1).keys()].slice(1)
 
     await Promise.all(
       pageNums.value.map(async (pageNum, i) => {
-        const page = await document.value!.getPage(pageNum)
+        const page = await doc.value!.getPage(pageNum)
         const pageRotation =
           (+props.rotation % 90 === 0 ? +props.rotation : 0) + page.rotate
         const [canvas, div1, div2] = Array.from(pageRefs.value[i].children) as [
@@ -395,10 +373,10 @@ const renderPageTextLayer = async (
 }
 
 watch(
-  document,
+  doc,
   () => {
-    if (document.value) {
-      emit('loaded', document.value)
+    if (doc.value) {
+      emit('loaded', doc.value)
     }
   },
   { immediate: true }
@@ -413,7 +391,7 @@ watch(
 
 watch(
   () => [
-    document.value,
+    doc.value,
     props.annotationLayer,
     props.height,
     props.imageResourcesPath,
@@ -424,7 +402,7 @@ watch(
     props.width,
   ],
   () => {
-    if (document.value) {
+    if (doc.value) {
       render()
     }
   },
@@ -436,11 +414,33 @@ onBeforeUnmount(() => {
 })
 
 defineExpose({
-  document,
+  doc,
   download,
   print,
 })
 </script>
+
+<template>
+  <div :id="id" ref="root" class="vue-pdf-embed">
+    <div v-for="pageNum in pageNums" :key="pageNum">
+      <slot name="before-page" :page="pageNum" />
+
+      <div
+        :id="id && `${id}-${pageNum}`"
+        ref="pageRefs"
+        class="vue-pdf-embed__page"
+      >
+        <canvas />
+
+        <div v-if="textLayer" class="textLayer" />
+
+        <div v-if="annotationLayer" class="annotationLayer" />
+      </div>
+
+      <slot name="after-page" :page="pageNum" />
+    </div>
+  </div>
+</template>
 
 <style lang="scss">
 .vue-pdf-embed {

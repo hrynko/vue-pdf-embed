@@ -35,8 +35,8 @@ export function useVuePdfEmbed({
     pdf.GlobalWorkerOptions.workerSrc = PdfWorker
   }
 
-  const document = shallowRef<PDFDocumentProxy | null>(null)
-  const documentLoadingTask = shallowRef<PDFDocumentLoadingTask | null>(null)
+  const doc = shallowRef<PDFDocumentProxy | null>(null)
+  const docLoadingTask = shallowRef<PDFDocumentLoadingTask | null>(null)
 
   watchEffect(async () => {
     const sourceValue = toValue(source)
@@ -46,7 +46,7 @@ export function useVuePdfEmbed({
     }
 
     if (Object.prototype.hasOwnProperty.call(sourceValue, '_pdfInfo')) {
-      document.value = sourceValue as PDFDocumentProxy
+      doc.value = sourceValue as PDFDocumentProxy
       return
     }
 
@@ -54,12 +54,12 @@ export function useVuePdfEmbed({
       if (workerSrc) {
         pdf.GlobalWorkerOptions.workerSrc = workerSrc
       }
-      documentLoadingTask.value = pdf.getDocument(
+      docLoadingTask.value = pdf.getDocument(
         sourceValue as GetDocumentParameters
       )
 
       if (onPasswordRequest) {
-        documentLoadingTask.value.onPassword = (
+        docLoadingTask.value.onPassword = (
           callback: Function,
           response: number
         ) => {
@@ -72,12 +72,12 @@ export function useVuePdfEmbed({
       }
 
       if (onProgress) {
-        documentLoadingTask.value.onProgress = onProgress
+        docLoadingTask.value.onProgress = onProgress
       }
 
-      document.value = await documentLoadingTask.value.promise
+      doc.value = await docLoadingTask.value.promise
     } catch (e) {
-      document.value = null
+      doc.value = null
 
       if (onError) {
         onError(e as Error)
@@ -88,18 +88,18 @@ export function useVuePdfEmbed({
   })
 
   onBeforeUnmount(() => {
-    if (documentLoadingTask.value?.onPassword) {
+    if (docLoadingTask.value?.onPassword) {
       // @ts-expect-error: onPassword must be reset
-      documentLoadingTask.value.onPassword = null
+      docLoadingTask.value.onPassword = null
     }
-    if (documentLoadingTask.value?.onProgress) {
+    if (docLoadingTask.value?.onProgress) {
       // @ts-expect-error: onProgress must be reset
-      documentLoadingTask.value.onProgress = null
+      docLoadingTask.value.onProgress = null
     }
-    document.value?.destroy()
+    doc.value?.destroy()
   })
 
   return {
-    document,
+    doc,
   }
 }
