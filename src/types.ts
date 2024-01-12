@@ -1,9 +1,6 @@
-import type {
-  GetDocumentParameters,
-  PDFDocumentProxy,
-} from 'pdfjs-dist/types/src/display/api'
+import { getDocument, type PDFDocumentProxy } from 'pdfjs-dist'
 
-export type Source = GetDocumentParameters | PDFDocumentProxy | null
+export type Source = Parameters<typeof getDocument> | PDFDocumentProxy | null
 
 export type PasswordRequestParams = {
   callback: Function

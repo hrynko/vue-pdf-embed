@@ -13,8 +13,8 @@ export default defineConfig({
     copy({
       hook: 'writeBundle',
       targets: Object.entries({
-        textLayer: [0, 107],
-        annotationLayer: [109, 385],
+        textLayer: [0, 116],
+        annotationLayer: [118, 486],
       }).map(([key, [start, end]]) => ({
         src: 'node_modules/pdfjs-dist/web/pdf_viewer.css',
         dest: 'dist/style',

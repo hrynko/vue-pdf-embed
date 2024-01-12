@@ -9,12 +9,12 @@ import {
 } from 'vue'
 import * as pdf from 'pdfjs-dist/legacy/build/pdf'
 import PdfWorker from 'pdfjs-dist/legacy/build/pdf.worker.min?url'
-import type {
-  GetDocumentParameters,
-  OnProgressParameters,
-  PDFDocumentLoadingTask,
-  PDFDocumentProxy,
-} from 'pdfjs-dist/types/src/display/api'
+import {
+  PasswordResponses,
+  type OnProgressParameters,
+  type PDFDocumentLoadingTask,
+  type PDFDocumentProxy,
+} from 'pdfjs-dist'
 
 import type { PasswordRequestParams, Source } from './types'
 
@@ -54,19 +54,19 @@ export function useVuePdfEmbed({
       if (workerSrc) {
         pdf.GlobalWorkerOptions.workerSrc = workerSrc
       }
+
       docLoadingTask.value = pdf.getDocument(
-        sourceValue as GetDocumentParameters
+        sourceValue as Parameters<typeof pdf.getDocument>
       )
 
       if (onPasswordRequest) {
-        docLoadingTask.value.onPassword = (
+        docLoadingTask.value!.onPassword = (
           callback: Function,
           response: number
         ) => {
           onPasswordRequest({
             callback,
-            isWrongPassword:
-              response === pdf.PasswordResponses.INCORRECT_PASSWORD,
+            isWrongPassword: response === PasswordResponses.INCORRECT_PASSWORD,
           })
         }
       }

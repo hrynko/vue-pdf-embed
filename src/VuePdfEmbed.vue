@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, shallowRef, toRef, watch } from 'vue'
-import * as pdf from 'pdfjs-dist/legacy/build/pdf'
-import { PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer'
+import { computed, onBeforeUnmount, ref, shallowRef, toRef, watch } from 'vue'
+import * as pdf from 'pdfjs-dist'
+import { PDFLinkService } from 'pdfjs-dist/web/pdf_viewer'
 import type {
   OnProgressParameters,
   PDFDocumentProxy,
   PDFPageProxy,
-} from 'pdfjs-dist/types/src/display/api'
+} from 'pdfjs-dist'
 
 import type { PasswordRequestParams, Source } from './types'
 import {
@@ -38,10 +38,6 @@ const props = withDefaults(
      */
     imageResourcesPath?: string
     /**
-     * Path for worker script.
-     */
-    workerSrc?: string
-    /**
      * Number of the page to display.
      */
     page?: number | string
@@ -65,6 +61,10 @@ const props = withDefaults(
      * Desired page width.
      */
     width?: number | string
+    /**
+     * Path for worker script.
+     */
+    workerSrc?: string
   }>(),
   {
     rotation: 0,
@@ -83,6 +83,7 @@ const emit = defineEmits<{
 
 const pageNums = shallowRef<number[]>([])
 const pageRefs = shallowRef<HTMLDivElement[]>([])
+const pageScales = ref<number[]>([])
 const root = shallowRef<HTMLDivElement | null>(null)
 
 const { doc } = useVuePdfEmbed({
@@ -116,7 +117,7 @@ const linkService = computed(() => {
 })
 
 /**
- * Downloads a PDF document.
+ * Downloads the PDF document.
  * @param filename - Predefined filename to save.
  */
 const download = async (filename: string) => {
@@ -156,7 +157,7 @@ const getPageDimensions = (ratio: number): [number, number] => {
  * Prints a PDF document via the browser interface.
  * @param dpi - Print resolution.
  * @param filename - Predefined filename to save.
- * @param allPages - Ignore page prop to print all pages.
+ * @param allPages - Whether to ignore the page prop and print all pages.
  */
 const print = async (dpi = 300, filename = '', allPages = false) => {
   if (!doc.value) {
@@ -241,37 +242,59 @@ const render = async () => {
     pageNums.value = props.page
       ? [+props.page]
       : [...Array(doc.value.numPages + 1).keys()].slice(1)
+    pageScales.value = Array(pageNums.value.length).fill(1)
 
     await Promise.all(
       pageNums.value.map(async (pageNum, i) => {
         const page = await doc.value!.getPage(pageNum)
         const pageRotation =
-          (+props.rotation % 90 === 0 ? +props.rotation : 0) + page.rotate
+          ((+props.rotation % 90 === 0 ? +props.rotation : 0) + page.rotate) %
+          360
         const [canvas, div1, div2] = Array.from(pageRefs.value[i].children) as [
           HTMLCanvasElement,
           HTMLDivElement,
           HTMLDivElement,
         ]
+        const isTransposed = !!((pageRotation / 90) % 2)
         const [actualWidth, actualHeight] = getPageDimensions(
-          (pageRotation / 90) % 2
+          isTransposed
             ? page.view[2] / page.view[3]
             : page.view[3] / page.view[2]
         )
+        const cssWidth = `${Math.floor(actualWidth)}px`
+        const cssHeight = `${Math.floor(actualHeight)}px`
+        const pageWidth = isTransposed ? page.view[3] : page.view[2]
+        pageScales.value[i] = props.scale ?? actualWidth / pageWidth
 
-        canvas.style.width = `${Math.floor(actualWidth)}px`
-        canvas.style.height = `${Math.floor(actualHeight)}px`
+        canvas.style.width = cssWidth
+        canvas.style.height = cssHeight
 
-        await renderPage(page, canvas, actualWidth, pageRotation)
+        if (div1) {
+          div1.style.width = isTransposed ? cssHeight : cssWidth
+          div1.style.height = isTransposed ? cssWidth : cssHeight
+        }
+
+        if (div2) {
+          div2.style.width = isTransposed ? cssHeight : cssWidth
+          div2.style.height = isTransposed ? cssWidth : cssHeight
+        }
+
+        await renderPage(page, canvas, pageScales.value[i], pageRotation)
 
         if (props.textLayer) {
-          await renderPageTextLayer(page, div1, actualWidth, pageRotation)
+          await renderPageTextLayer(
+            page,
+            div1,
+            pageScales.value[i],
+            pageRotation
+          )
         }
 
         if (props.annotationLayer) {
           await renderPageAnnotationLayer(
             page,
             div2 || div1,
-            actualWidth,
+            pageScales.value[i],
             pageRotation
           )
         }
@@ -281,6 +304,7 @@ const render = async () => {
     emit('rendered')
   } catch (e) {
     pageNums.value = []
+    pageScales.value = []
     emit('rendering-failed', e as Error)
   }
 }
@@ -289,18 +313,17 @@ const render = async () => {
  * Renders the page content.
  * @param page - Page proxy.
  * @param canvas - HTML canvas.
- * @param width - Actual page width.
+ * @param scale - Actual page scale.
  * @param rotation - Total page rotation.
  */
 const renderPage = async (
   page: PDFPageProxy,
   canvas: HTMLCanvasElement,
-  width: number,
+  scale: number,
   rotation: number
 ) => {
-  const pageWidth = (rotation / 90) % 2 ? page.view[3] : page.view[2]
   const viewport = page.getViewport({
-    scale: props.scale ?? Math.ceil(width / pageWidth) + 1,
+    scale,
     rotation,
   })
 
@@ -317,33 +340,41 @@ const renderPage = async (
  * Renders the annotation layer for the specified page.
  * @param page - Page proxy.
  * @param container - HTML container.
- * @param width - Actual page width.
+ * @param scale - Actual page scale.
  * @param rotation - Total page rotation.
  */
 const renderPageAnnotationLayer = async (
   page: PDFPageProxy,
   container: HTMLDivElement,
-  width: number,
+  scale: number,
   rotation: number
 ) => {
   emptyElement(container)
-  const pageWidth = (rotation / 90) % 2 ? page.view[3] : page.view[2]
-  pdf.AnnotationLayer.render({
+  const viewport = page
+    .getViewport({
+      scale,
+      rotation,
+    })
+    .clone({
+      dontFlip: true,
+    })
+  new pdf.AnnotationLayer({
+    accessibilityManager: null,
+    annotationCanvasMap: null,
+    div: container,
+    l10n: null,
+    page,
+    viewport,
+  }).render({
     annotations: await page.getAnnotations(),
     div: container,
+    // @ts-expect-error: no downloading assumed
     downloadManager: null,
     imageResourcesPath: props.imageResourcesPath,
     linkService: linkService.value!,
     page,
     renderForms: false,
-    viewport: page
-      .getViewport({
-        scale: width / pageWidth,
-        rotation,
-      })
-      .clone({
-        dontFlip: true,
-      }),
+    viewport,
   })
 }
 
@@ -351,22 +382,21 @@ const renderPageAnnotationLayer = async (
  * Renders the text layer for the specified page.
  * @param page - Page proxy.
  * @param container - HTML container.
- * @param width - Actual page width.
+ * @param scale - Actual page scale.
  * @param rotation - Total page rotation.
  */
 const renderPageTextLayer = async (
   page: PDFPageProxy,
   container: HTMLElement,
-  width: number,
+  scale: number,
   rotation: number
 ) => {
   emptyElement(container)
-  const pageWidth = (rotation / 90) % 2 ? page.view[3] : page.view[2]
   await pdf.renderTextLayer({
     container,
-    textContent: await page.getTextContent(),
+    textContentSource: await page.getTextContent(),
     viewport: page.getViewport({
-      scale: width / pageWidth,
+      scale,
       rotation,
     }),
   }).promise
@@ -422,13 +452,16 @@ defineExpose({
 
 <template>
   <div :id="id" ref="root" class="vue-pdf-embed">
-    <div v-for="pageNum in pageNums" :key="pageNum">
+    <div v-for="(pageNum, i) in pageNums" :key="pageNum">
       <slot name="before-page" :page="pageNum" />
 
       <div
         :id="id && `${id}-${pageNum}`"
         ref="pageRefs"
         class="vue-pdf-embed__page"
+        :style="{
+          '--scale-factor': pageScales[i],
+        }"
       >
         <canvas />
 
