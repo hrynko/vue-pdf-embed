@@ -6,6 +6,7 @@ import type {
   OnProgressParameters,
   PDFDocumentProxy,
   PDFPageProxy,
+  PageViewport,
 } from 'pdfjs-dist'
 
 import type { PasswordRequestParams, Source } from './types'
@@ -264,7 +265,13 @@ const render = async () => {
         const cssWidth = `${Math.floor(actualWidth)}px`
         const cssHeight = `${Math.floor(actualHeight)}px`
         const pageWidth = isTransposed ? page.view[3] : page.view[2]
-        pageScales.value[i] = props.scale ?? actualWidth / pageWidth
+        const pageScale = props.scale ?? actualWidth / pageWidth
+        const viewport = page.getViewport({
+          scale: pageScale,
+          rotation: pageRotation,
+        })
+
+        pageScales.value[i] = pageScale
 
         canvas.style.width = cssWidth
         canvas.style.height = cssHeight
@@ -279,23 +286,25 @@ const render = async () => {
           div2.style.height = isTransposed ? cssWidth : cssHeight
         }
 
-        await renderPage(page, canvas, pageScales.value[i], pageRotation)
+        await renderPage(page, viewport, canvas)
 
         if (props.textLayer) {
           await renderPageTextLayer(
             page,
-            div1,
-            pageScales.value[i],
-            pageRotation
+            viewport.clone({
+              dontFlip: true,
+            }),
+            div1
           )
         }
 
         if (props.annotationLayer) {
           await renderPageAnnotationLayer(
             page,
-            div2 || div1,
-            pageScales.value[i],
-            pageRotation
+            viewport.clone({
+              dontFlip: true,
+            }),
+            div2 || div1
           )
         }
       })
@@ -312,24 +321,16 @@ const render = async () => {
 /**
  * Renders the page content.
  * @param page - Page proxy.
+ * @param viewport - Page viewport.
  * @param canvas - HTML canvas.
- * @param scale - Actual page scale.
- * @param rotation - Total page rotation.
  */
 const renderPage = async (
   page: PDFPageProxy,
-  canvas: HTMLCanvasElement,
-  scale: number,
-  rotation: number
+  viewport: PageViewport,
+  canvas: HTMLCanvasElement
 ) => {
-  const viewport = page.getViewport({
-    scale,
-    rotation,
-  })
-
   canvas.width = viewport.width
   canvas.height = viewport.height
-
   await page.render({
     canvasContext: canvas.getContext('2d')!,
     viewport,
@@ -339,25 +340,15 @@ const renderPage = async (
 /**
  * Renders the annotation layer for the specified page.
  * @param page - Page proxy.
+ * @param viewport - Page viewport.
  * @param container - HTML container.
- * @param scale - Actual page scale.
- * @param rotation - Total page rotation.
  */
 const renderPageAnnotationLayer = async (
   page: PDFPageProxy,
-  container: HTMLDivElement,
-  scale: number,
-  rotation: number
+  viewport: PageViewport,
+  container: HTMLDivElement
 ) => {
   emptyElement(container)
-  const viewport = page
-    .getViewport({
-      scale,
-      rotation,
-    })
-    .clone({
-      dontFlip: true,
-    })
   new pdf.AnnotationLayer({
     accessibilityManager: null,
     annotationCanvasMap: null,
@@ -381,24 +372,19 @@ const renderPageAnnotationLayer = async (
 /**
  * Renders the text layer for the specified page.
  * @param page - Page proxy.
+ * @param viewport - Page viewport.
  * @param container - HTML container.
- * @param scale - Actual page scale.
- * @param rotation - Total page rotation.
  */
 const renderPageTextLayer = async (
   page: PDFPageProxy,
-  container: HTMLElement,
-  scale: number,
-  rotation: number
+  viewport: PageViewport,
+  container: HTMLElement
 ) => {
   emptyElement(container)
   await pdf.renderTextLayer({
     container,
     textContentSource: await page.getTextContent(),
-    viewport: page.getViewport({
-      scale,
-      rotation,
-    }),
+    viewport,
   }).promise
 }
 
