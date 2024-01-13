@@ -1,6 +1,6 @@
 # 📄 vue-pdf-embed
 
-PDF embed component for Vue 3 and Vue 2 (see [Compatibility](#compatibility))
+PDF embed component for Vue 3 (see [Compatibility](#compatibility) for Vue 2 support)
 
 [![Awesome](https://raw.githubusercontent.com/sindresorhus/awesome/main/media/mentioned-badge.svg)](https://github.com/vuejs/awesome-vue)
 [![npm](https://img.shields.io/npm/v/vue-pdf-embed)](https://npmjs.com/package/vue-pdf-embed)
