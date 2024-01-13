@@ -69,18 +69,18 @@ export default {
 
 ### Props
 
-| Name               | Type                   | Accepted values                                            | Description                                                                |
-| ------------------ | ---------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------- |
-| annotationLayer    | `boolean`              | `true` or `false`                                          | whether the annotation layer should be enabled                             |
-| height             | `number` <br> `string` | natural numbers                                            | desired page height in pixels (ignored if the width property is specified) |
-| imageResourcesPath | `string`               | URL or path with trailing slash                            | path for icons used in the annotation layer                                |
-| workerSrc          | `string`               | URL                                                        | path for PDF worker script                                                 |
-| page               | `number` <br> `string` | `1` to the last page number                                | number of the page to display (displaying all pages if not specified)      |
-| rotation           | `number` <br> `string` | `0`, `90`, `180`, `270` (multiples of `90`)                | desired page rotation angle in degrees                                     |
-| scale              | `number`               | rational numbers                                           | desired ratio of canvas size to document size                              |
-| source             | `string` <br> `object` | document URL or Base64 or typed array pre-filled with data | source of the document to display                                          |
-| textLayer          | `boolean`              | `true` or `false`                                          | whether the text layer should be enabled                                   |
-| width              | `number` <br> `string` | natural numbers                                            | desired page width in pixels                                               |
+| Name               | Type                   | Accepted values                                         | Description                                                                |
+| ------------------ | ---------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------- |
+| annotationLayer    | `boolean`              | `true` or `false`                                       | whether the annotation layer should be enabled                             |
+| height             | `number`               | natural numbers                                         | desired page height in pixels (ignored if the width property is specified) |
+| imageResourcesPath | `string`               | URL or path with trailing slash                         | path for icons used in the annotation layer                                |
+| page               | `number`               | `1` to the last page number                             | number of the page to display (displaying all pages if not specified)      |
+| rotation           | `number`               | `0`, `90`, `180`, `270` (multiples of `90`)             | desired page rotation angle in degrees                                     |
+| scale              | `number`               | rational numbers                                        | desired ratio of canvas size to document size                              |
+| source             | `string` <br> `object` | document URL or Base64 or typed array or document proxy | source of the document to display                                          |
+| textLayer          | `boolean`              | `true` or `false`                                       | whether the text layer should be enabled                                   |
+| width              | `number`               | natural numbers                                         | desired page width in pixels                                               |
+| workerSrc          | `string`               | URL                                                     | path for PDF worker script                                                 |
 
 ### Events
 

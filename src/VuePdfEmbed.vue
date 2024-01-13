@@ -22,15 +22,15 @@ import { useVuePdfEmbed } from './composable'
 const props = withDefaults(
   defineProps<{
     /**
-     * Whether the annotation layer should be enabled.
+     * Whether to enable an annotation layer.
      */
     annotationLayer?: boolean
     /**
      * Desired page height.
      */
-    height?: number | string
+    height?: number
     /**
-     * Component identifier (inherited by page containers with page number
+     * Root element identifier (inherited by page containers with page number
      * postfixes).
      */
     id?: string
@@ -41,11 +41,11 @@ const props = withDefaults(
     /**
      * Number of the page to display.
      */
-    page?: number | string
+    page?: number
     /**
      * Desired page rotation angle.
      */
-    rotation?: number | string
+    rotation?: number
     /**
      * Desired ratio of canvas size to document size.
      */
@@ -55,13 +55,13 @@ const props = withDefaults(
      */
     source: Source
     /**
-     * Whether the text layer should be enabled.
+     * Whether to enable a text layer.
      */
     textLayer?: boolean
     /**
      * Desired page width.
      */
-    width?: number | string
+    width?: number
     /**
      * Path for worker script.
      */
@@ -144,10 +144,10 @@ const getPageDimensions = (ratio: number): [number, number] => {
   let height: number
 
   if (props.height && !props.width) {
-    height = +props.height
+    height = props.height
     width = height / ratio
   } else {
-    width = +(props.width || root.value!.clientWidth)
+    width = props.width ?? root.value!.clientWidth
     height = width * ratio
   }
 
@@ -179,7 +179,7 @@ const print = async (dpi = 300, filename = '', allPages = false) => {
 
     const pageNums =
       props.page && !allPages
-        ? [+props.page]
+        ? [props.page]
         : [...Array(doc.value.numPages + 1).keys()].slice(1)
 
     await Promise.all(
@@ -241,7 +241,7 @@ const render = async () => {
 
   try {
     pageNums.value = props.page
-      ? [+props.page]
+      ? [props.page]
       : [...Array(doc.value.numPages + 1).keys()].slice(1)
     pageScales.value = Array(pageNums.value.length).fill(1)
 
@@ -249,8 +249,7 @@ const render = async () => {
       pageNums.value.map(async (pageNum, i) => {
         const page = await doc.value!.getPage(pageNum)
         const pageRotation =
-          ((+props.rotation % 90 === 0 ? +props.rotation : 0) + page.rotate) %
-          360
+          ((props.rotation % 90 === 0 ? props.rotation : 0) + page.rotate) % 360
         const [canvas, div1, div2] = Array.from(pageRefs.value[i].children) as [
           HTMLCanvasElement,
           HTMLDivElement,
