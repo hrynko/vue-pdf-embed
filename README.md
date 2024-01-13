@@ -2,11 +2,11 @@
 
 PDF embed component for Vue 3 (see [Compatibility](#compatibility) for Vue 2 support)
 
-[![Awesome](https://raw.githubusercontent.com/sindresorhus/awesome/main/media/mentioned-badge.svg)](https://github.com/vuejs/awesome-vue)
-[![npm](https://img.shields.io/npm/v/vue-pdf-embed)](https://npmjs.com/package/vue-pdf-embed)
-[![npm](https://img.shields.io/npm/dm/vue-pdf-embed)](https://npmjs.com/package/vue-pdf-embed)
-[![GitHub Repo stars](https://img.shields.io/github/stars/hrynko/vue-pdf-embed)](https://github.com/hrynko/vue-pdf-embed)
-[![npm](https://img.shields.io/npm/l/vue-pdf-embed)](https://github.com/hrynko/vue-pdf-embed/blob/main/LICENSE)
+[![Awesome List](https://raw.githubusercontent.com/sindresorhus/awesome/main/media/mentioned-badge.svg)](https://github.com/vuejs/awesome-vue)
+[![npm Version](https://img.shields.io/npm/v/vue-pdf-embed?style=flat)](https://npmjs.com/package/vue-pdf-embed?style=flat)
+[![npm Downloads](https://img.shields.io/npm/dm/vue-pdf-embed?style=flat)](https://npmjs.com/package/vue-pdf-embed)
+[![GitHub Stars](https://img.shields.io/github/stars/hrynko/vue-pdf-embed?style=flat)](https://github.com/hrynko/vue-pdf-embed)
+[![License](https://img.shields.io/npm/l/vue-pdf-embed?style=flat)](https://github.com/hrynko/vue-pdf-embed/blob/main/LICENSE)
 
 ## Features
 
