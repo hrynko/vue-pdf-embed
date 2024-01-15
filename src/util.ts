@@ -1,3 +1,4 @@
+// @internal
 export function addPrintStyles(
   iframe: HTMLIFrameElement,
   sizeX: number,
@@ -23,6 +24,7 @@ export function addPrintStyles(
   iframe.contentWindow!.document.body.style.width = '100%'
 }
 
+// @internal
 export function createPrintIframe(
   container: HTMLDivElement
 ): Promise<HTMLIFrameElement> {
@@ -40,6 +42,7 @@ export function createPrintIframe(
   })
 }
 
+// @internal
 export function downloadPdf(data: Uint8Array, filename: string) {
   const url = URL.createObjectURL(
     new Blob([data], {
@@ -58,12 +61,14 @@ export function downloadPdf(data: Uint8Array, filename: string) {
   }, 1000)
 }
 
+// @internal
 export function emptyElement(el?: HTMLElement) {
   while (el?.firstChild) {
     el.removeChild(el.firstChild)
   }
 }
 
+// @internal
 export function releaseChildCanvases(el?: HTMLElement) {
   el?.querySelectorAll('canvas').forEach((canvas: HTMLCanvasElement) => {
     canvas.width = 1
