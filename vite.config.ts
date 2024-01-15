@@ -2,10 +2,27 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import copy from 'rollup-plugin-copy'
 import CleanCSS from 'clean-css'
+import type { RollupOptions } from 'rollup'
 
 const globals = {
   'pdfjs-dist': 'PDFJS',
   vue: 'Vue',
+}
+
+export const rollupOptions: RollupOptions = {
+  external: Object.keys(globals),
+  output: {
+    globals,
+    assetFileNames: (assetInfo) => {
+      switch (assetInfo.name) {
+        case 'style.css':
+          return 'style/index.css'
+        default:
+          return assetInfo.name as string
+      }
+    },
+    compact: true,
+  },
 }
 
 export default defineConfig({
@@ -37,19 +54,6 @@ export default defineConfig({
       name: 'VuePdfEmbed',
       fileName: 'index',
     },
-    rollupOptions: {
-      external: Object.keys(globals),
-      output: {
-        globals,
-        assetFileNames: (assetInfo) => {
-          switch (assetInfo.name) {
-            case 'style.css':
-              return 'style/index.css'
-            default:
-              return assetInfo.name as string
-          }
-        },
-      },
-    },
+    rollupOptions,
   },
 })

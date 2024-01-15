@@ -17,6 +17,10 @@
       "require": "./dist/index.umd.js",
       "types": "./dist/types/index.d.ts"
     },
+    "./dist/index.essential.mjs": {
+      "import": "./dist/index.essential.mjs",
+      "types": "./dist/types/index.essential.d.ts"
+    },
     "./dist/style/*.css": "./dist/style/*.css"
   },
   "style": "./dist/style/index.css",
@@ -26,9 +30,9 @@
   ],
   "repository": "github:hrynko/vue-pdf-embed",
   "scripts": {
-    "prepare": "husky install && vite build",
+    "prepare": "husky install && vite build && vite build -c vite.config.essential.ts --emptyOutDir false",
     "dev": "vite -c vite.config.dev.ts",
-    "build": "vite build",
+    "build": "vite build && vite build -c vite.config.essential.ts --emptyOutDir false",
     "postbuild": "vue-tsc -p tsconfig.lib.json --declaration --emitDeclarationOnly",
     "test": "vitest",
     "lint": "eslint . --ext .js,.ts,.vue --fix --ignore-path .gitignore",

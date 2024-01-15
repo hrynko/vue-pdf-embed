@@ -7,14 +7,13 @@ import {
   type MaybeRef,
   type ShallowRef,
 } from 'vue'
-import * as pdf from 'pdfjs-dist/legacy/build/pdf'
-import PdfWorker from 'pdfjs-dist/legacy/build/pdf.worker.min?url'
 import {
   PasswordResponses,
   type OnProgressParameters,
   type PDFDocumentLoadingTask,
   type PDFDocumentProxy,
 } from 'pdfjs-dist'
+import { getDocument } from 'pdfjs-dist/legacy/build/pdf'
 
 import type { PasswordRequestParams, Source } from './types'
 
@@ -23,18 +22,12 @@ export function useVuePdfEmbed({
   onPasswordRequest,
   onProgress,
   source,
-  workerSrc,
 }: {
   onError?: (e: Error) => unknown
   onPasswordRequest?: (passwordRequestParams: PasswordRequestParams) => unknown
   onProgress?: (progressParams: OnProgressParameters) => unknown
   source: ComputedRef<Source> | MaybeRef<Source> | ShallowRef<Source>
-  workerSrc?: string
 }) {
-  if (!pdf.GlobalWorkerOptions?.workerSrc) {
-    pdf.GlobalWorkerOptions.workerSrc = PdfWorker
-  }
-
   const doc = shallowRef<PDFDocumentProxy | null>(null)
   const docLoadingTask = shallowRef<PDFDocumentLoadingTask | null>(null)
 
@@ -51,12 +44,8 @@ export function useVuePdfEmbed({
     }
 
     try {
-      if (workerSrc) {
-        pdf.GlobalWorkerOptions.workerSrc = workerSrc
-      }
-
-      docLoadingTask.value = pdf.getDocument(
-        sourceValue as Parameters<typeof pdf.getDocument>
+      docLoadingTask.value = getDocument(
+        sourceValue as Parameters<typeof getDocument>
       )
 
       if (onPasswordRequest) {

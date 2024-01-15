@@ -80,7 +80,6 @@ export default {
 | source             | `string` <br> `object` | document URL or Base64 or typed array or document proxy | source of the document to display                                          |
 | textLayer          | `boolean`              | `true` or `false`                                       | whether the text layer should be enabled                                   |
 | width              | `number`               | natural numbers                                         | desired page width in pixels                                               |
-| workerSrc          | `string`               | URL                                                     | path for PDF worker script                                                 |
 
 ### Events
 

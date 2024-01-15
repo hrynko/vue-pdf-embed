@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, shallowRef, toRef, watch } from 'vue'
-import * as pdf from 'pdfjs-dist'
+import { AnnotationLayer, renderTextLayer } from 'pdfjs-dist/legacy/build/pdf'
 import { PDFLinkService } from 'pdfjs-dist/web/pdf_viewer'
 import type {
   OnProgressParameters,
@@ -62,10 +62,6 @@ const props = withDefaults(
      * Desired page width.
      */
     width?: number
-    /**
-     * Path for worker script.
-     */
-    workerSrc?: string
   }>(),
   {
     rotation: 0,
@@ -99,7 +95,6 @@ const { doc } = useVuePdfEmbed({
     emit('progress', progressParams)
   },
   source: toRef(props, 'source'),
-  workerSrc: props.workerSrc,
 })
 
 const linkService = computed(() => {
@@ -348,7 +343,7 @@ const renderPageAnnotationLayer = async (
   container: HTMLDivElement
 ) => {
   emptyElement(container)
-  new pdf.AnnotationLayer({
+  new AnnotationLayer({
     accessibilityManager: null,
     annotationCanvasMap: null,
     div: container,
@@ -380,7 +375,7 @@ const renderPageTextLayer = async (
   container: HTMLElement
 ) => {
   emptyElement(container)
-  await pdf.renderTextLayer({
+  await renderTextLayer({
     container,
     textContentSource: await page.getTextContent(),
     viewport,
