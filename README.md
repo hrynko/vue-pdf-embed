@@ -112,16 +112,45 @@ export default {
 
 ## Common Issues and Caveats
 
+### Server-Side Rendering
+
 This is a client-side library, so it is important to keep this in mind when working with SSR (server-side rendering) frameworks such as Nuxt. Depending on the framework used, you may need to properly configure the library import or use a wrapper.
+
+### Web Worker Loading
 
 The web worker used to handle PDF documents is loaded by default. However, this may not be acceptable due to bundler restrictions or CSP (Content Security Policy). In such cases it is recommended to use the essential build (`index.essential.mjs`) and set up the worker manually using the exposed `GlobalWorkerOptions`.
 
+```js
+import { GlobalWorkerOptions } from 'vue-pdf-embed/dist/index.essential.mjs'
+import PdfWorker from 'pdfjs-dist/build/pdf.worker.js?url'
+
+GlobalWorkerOptions.workerSrc = PdfWorker
+```
+
+### Document Loading
+
 Typically, document loading is internally handled within the component. However, for optimization purposes, the document can be loaded in the `useVuePdfEmbed` composable function and then passed as the `source` prop of the component (e.g. when sharing the source between multiple instances of the component).
+
+```vue
+<script setup>
+import VuePdfEmbed, { useVuePdfEmbed } from 'vue-pdf-embed'
+
+const { doc } = useVuePdfEmbed({
+  source: '<PDF_URL>',
+})
+</script>
+
+<template>
+  <VuePdfEmbed :source="doc" />
+</template>
+```
+
+### Resources
 
 The path to predefined CMaps should be specified to ensure correct rendering of documents containing non-Latin characters, as well as in case of CMap-related errors:
 
 ```vue
-<vue-pdf-embed
+<VuePdfEmbed
   :source="{
     cMapUrl: 'https://unpkg.com/pdfjs-dist/cmaps/',
     url: pdfSource,
@@ -132,7 +161,7 @@ The path to predefined CMaps should be specified to ensure correct rendering of 
 The image resource path must be specified for annotations to display correctly:
 
 ```vue
-<vue-pdf-embed
+<VuePdfEmbed
   image-resources-path="https://unpkg.com/pdfjs-dist/web/images/"
   :source="pdfSource"
 />
