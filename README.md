@@ -114,6 +114,8 @@ export default {
 
 This is a client-side library, so it is important to keep this in mind when working with SSR (server-side rendering) frameworks such as Nuxt. Depending on the framework used, you may need to properly configure the library import or use a wrapper.
 
+The web worker used to handle PDF documents is loaded by default. However, this may not be acceptable due to bundler restrictions or CSP (Content Security Policy). In such cases it is recommended to use the essential build (`index.essential.mjs`) and set up the worker manually using the exposed `GlobalWorkerOptions`.
+
 Typically, document loading is internally handled within the component. However, for optimization purposes, the document can be loaded in the `useVuePdfEmbed` composable function and then passed as the `source` prop of the component (e.g. when sharing the source between multiple instances of the component).
 
 The path to predefined CMaps should be specified to ensure correct rendering of documents containing non-Latin characters, as well as in case of CMap-related errors:
