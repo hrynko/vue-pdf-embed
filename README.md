@@ -108,11 +108,13 @@ export default {
 | print    | print resolution (`number`), filename (`string`), all pages flag (`boolean`) | print document via browser interface |
 | render   | –                                                                            | manually (re)render document         |
 
-**Note:** Public methods can be accessed via a [template ref](https://vuejs.org/guide/essentials/template-refs.html).
+**Note:** Public methods can be accessed through a [template ref](https://vuejs.org/guide/essentials/template-refs.html).
 
-## Common Issues
+## Common Issues and Caveats
 
 This is a client-side library, so it is important to keep this in mind when working with SSR (server-side rendering) frameworks such as Nuxt. Depending on the framework used, you may need to properly configure the library import or use a wrapper.
+
+Typically, document loading is internally handled within the component. However, for optimization purposes, the document can be loaded in the `useVuePdfEmbed` composable function and then passed as the `source` prop of the component (e.g. when sharing the source between multiple instances of the component).
 
 The path to predefined CMaps should be specified to ensure correct rendering of documents containing non-Latin characters, as well as in case of CMap-related errors:
 
