@@ -40,31 +40,23 @@ yarn add vue-pdf-embed
 ## Usage
 
 ```vue
-<template>
-  <div>
-    <h1>File</h1>
-    <vue-pdf-embed :source="source1" />
-
-    <h1>Base64</h1>
-    <vue-pdf-embed :source="source2" />
-  </div>
-</template>
-
-<script>
+<script setup>
 import VuePdfEmbed from 'vue-pdf-embed'
 
-export default {
-  components: {
-    VuePdfEmbed,
-  },
-  data() {
-    return {
-      source1: '<PDF_URL>',
-      source2: 'data:application/pdf;base64,<BASE64_ENCODED_PDF>',
-    }
-  },
-}
+// essential styles
+import 'vue-pdf-embed/dist/style/index.css'
+
+// optional styles
+import 'vue-pdf-embed/dist/style/annotationLayer.css'
+import 'vue-pdf-embed/dist/style/textLayer.css'
+
+// either URL, Base64, binary, or document proxy
+const pdfSource = '<PDF_URL>'
 </script>
+
+<template>
+  <VuePdfEmbed annotation-layer text-layer :source="pdfSource" />
+</template>
 ```
 
 ### Props
