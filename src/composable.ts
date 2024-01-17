@@ -45,7 +45,7 @@ export function useVuePdfEmbed({
 
     try {
       docLoadingTask.value = getDocument(
-        sourceValue as Parameters<typeof getDocument>
+        sourceValue as Parameters<typeof getDocument>[0]
       )
 
       if (onPasswordRequest) {
