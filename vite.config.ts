@@ -4,15 +4,12 @@ import copy from 'rollup-plugin-copy'
 import CleanCSS from 'clean-css'
 import type { RollupOptions } from 'rollup'
 
-const globals = {
-  'pdfjs-dist': 'PDFJS',
-  vue: 'Vue',
-}
-
 export const rollupOptions: RollupOptions = {
-  external: Object.keys(globals),
+  external: ['pdfjs-dist', 'vue'],
   output: {
-    globals,
+    globals: {
+      vue: 'Vue',
+    },
     assetFileNames: (assetInfo) => {
       switch (assetInfo.name) {
         case 'style.css':
