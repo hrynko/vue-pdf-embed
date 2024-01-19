@@ -17,7 +17,7 @@ import {
   emptyElement,
   releaseChildCanvases,
 } from './utils'
-import { useVuePdfEmbed } from './composable'
+import { useVuePdfEmbed } from './composables'
 
 const props = withDefaults(
   defineProps<{
