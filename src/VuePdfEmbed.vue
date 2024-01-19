@@ -16,7 +16,7 @@ import {
   downloadPdf,
   emptyElement,
   releaseChildCanvases,
-} from './util'
+} from './utils'
 import { useVuePdfEmbed } from './composable'
 
 const props = withDefaults(
