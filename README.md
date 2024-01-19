@@ -162,11 +162,9 @@ The image resource path must be specified for annotations to display correctly:
 
 ## Examples
 
-[Basic Usage Demo (JSFiddle)](https://jsfiddle.net/hrynko/ct6p8r7k)
+[Basic Usage Demo (JSFiddle)](https://jsfiddle.net/hrynko/atcn32yp)
 
-[Advanced Usage Demo (JSFiddle)](https://jsfiddle.net/hrynko/we7p5uq4)
-
-[Advanced Usage Demo (StackBlitz)](https://stackblitz.com/fork/vue-pdf-embed)
+[Advanced Usage Demo (JSFiddle)](https://jsfiddle.net/hrynko/273a59qr)
 
 ## License
 
