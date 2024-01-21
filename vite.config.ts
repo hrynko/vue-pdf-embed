@@ -27,18 +27,23 @@ export default defineConfig({
     copy({
       hook: 'writeBundle',
       targets: Object.entries({
-        textLayer: [0, 116],
-        annotationLayer: [118, 486],
-      }).map(([key, [start, end]]) => ({
+        textLayer: [
+          [0, 116],
+          [1835, 1845],
+        ],
+        annotationLayer: [
+          [118, 486],
+          [1835, 1845],
+        ],
+      }).map(([key, ranges]) => ({
         src: 'node_modules/pdfjs-dist/web/pdf_viewer.css',
         dest: 'dist/style',
         rename: `${key}.css`,
         transform: (contents) => {
-          const css = contents
-            .toString()
-            .split('\n')
-            .slice(start, end)
-            .join('\n')
+          const lines = contents.toString().split('\n')
+          const css = ranges.reduce((acc, [start, end]) => {
+            return acc + lines.slice(start, end).join('\n')
+          }, '')
           return new CleanCSS().minify(css).styles + '\n'
         },
       })),
