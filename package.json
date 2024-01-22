@@ -30,7 +30,7 @@
   ],
   "repository": "github:hrynko/vue-pdf-embed",
   "scripts": {
-    "postinstall": "husky install && npm run build",
+    "prepare": "husky install && npm run build",
     "dev": "vite -c vite.config.dev.ts",
     "build": "vite build && vite build -c vite.config.essential.ts --emptyOutDir false",
     "postbuild": "vue-tsc -p tsconfig.build.json",
