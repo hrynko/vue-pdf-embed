@@ -7,7 +7,7 @@ export function addPrintStyles(
   const style = iframe.contentWindow!.document.createElement('style')
   style.textContent = `
     @page {
-      margin: 0;
+      margin: 3mm;
       size: ${sizeX}pt ${sizeY}pt;
     }
     body {
