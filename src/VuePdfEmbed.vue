@@ -65,6 +65,7 @@ const props = withDefaults(
   }>(),
   {
     rotation: 0,
+    scale: 1,
   }
 )
 
@@ -259,7 +260,7 @@ const render = async () => {
         const cssWidth = `${Math.floor(actualWidth)}px`
         const cssHeight = `${Math.floor(actualHeight)}px`
         const pageWidth = isTransposed ? page.view[3] : page.view[2]
-        const pageScale = props.scale ?? actualWidth / pageWidth
+        const pageScale = actualWidth / pageWidth
         const viewport = page.getViewport({
           scale: pageScale,
           rotation: pageRotation,
@@ -280,7 +281,13 @@ const render = async () => {
           div2.style.height = isTransposed ? cssWidth : cssHeight
         }
 
-        await renderPage(page, viewport, canvas)
+        await renderPage(
+          page,
+          viewport.clone({
+            scale: viewport.scale * window.devicePixelRatio * props.scale,
+          }),
+          canvas
+        )
 
         if (props.textLayer) {
           await renderPageTextLayer(
