@@ -68,7 +68,7 @@ const pdfSource = '<PDF_URL>'
 | imageResourcesPath | `string`               | URL or path with trailing slash                         | path for icons used in the annotation layer                                |
 | page               | `number`               | `1` to the last page number                             | number of the page to display (displaying all pages if not specified)      |
 | rotation           | `number`               | `0`, `90`, `180`, `270` (multiples of `90`)             | desired page rotation angle in degrees                                     |
-| scale              | `number`               | rational numbers                                        | desired ratio of canvas size to document size                              |
+| scale              | `number`               | rational numbers                                        | desired page viewport scale                                                |
 | source             | `string` <br> `object` | document URL or Base64 or typed array or document proxy | source of the document to display                                          |
 | textLayer          | `boolean`              | `true` or `false`                                       | whether the text layer should be enabled                                   |
 | width              | `number`               | natural numbers                                         | desired page width in pixels                                               |
