@@ -12,7 +12,9 @@ vi.mock('pdfjs-dist/legacy/build/pdf', () => ({
       numPages: 3,
       getPage: () => ({
         view: [],
-        getViewport: () => ({}),
+        getViewport: () => ({
+          clone: () => ({}),
+        }),
         render: () => ({}),
       }),
     },
