@@ -22,11 +22,13 @@ export function useVuePdfEmbed({
   onPasswordRequest,
   onProgress,
   source,
+  isEvalSupported = false,
 }: {
   onError?: (e: Error) => unknown
   onPasswordRequest?: (passwordRequestParams: PasswordRequestParams) => unknown
   onProgress?: (progressParams: OnProgressParameters) => unknown
   source: ComputedRef<Source> | MaybeRef<Source> | ShallowRef<Source>
+  isEvalSupported?: boolean
 }) {
   const doc = shallowRef<PDFDocumentProxy | null>(null)
   const docLoadingTask = shallowRef<PDFDocumentLoadingTask | null>(null)
@@ -44,27 +46,58 @@ export function useVuePdfEmbed({
     }
 
     try {
-      docLoadingTask.value = getDocument(
-        sourceValue as Parameters<typeof getDocument>[0]
-      )
+      if (typeof sourceValue === 'string' || sourceValue instanceof URL) {
+        docLoadingTask.value = getDocument({
+          url: sourceValue,
+          isEvalSupported,
+        })
+      } else if (sourceValue instanceof ArrayBuffer) {
+        docLoadingTask.value = getDocument({
+          data: sourceValue,
+          isEvalSupported,
+        })
+      } else if (
+        sourceValue instanceof Int8Array ||
+        sourceValue instanceof Uint8Array ||
+        sourceValue instanceof Uint8ClampedArray ||
+        sourceValue instanceof Int16Array ||
+        sourceValue instanceof Uint16Array ||
+        sourceValue instanceof Int32Array ||
+        sourceValue instanceof Uint32Array ||
+        sourceValue instanceof Float32Array ||
+        sourceValue instanceof Float64Array
+      ) {
+        docLoadingTask.value = getDocument({
+          data: sourceValue,
+          isEvalSupported,
+        })
+      } else if (typeof sourceValue === 'object' && sourceValue !== null) {
+        docLoadingTask.value = getDocument({
+          ...sourceValue,
+          isEvalSupported,
+        })
+      }
 
-      if (onPasswordRequest) {
-        docLoadingTask.value!.onPassword = (
-          callback: Function,
-          response: number
-        ) => {
-          onPasswordRequest({
-            callback,
-            isWrongPassword: response === PasswordResponses.INCORRECT_PASSWORD,
-          })
+      if (docLoadingTask.value) {
+        if (onPasswordRequest) {
+          docLoadingTask.value!.onPassword = (
+            callback: Function,
+            response: number
+          ) => {
+            onPasswordRequest({
+              callback,
+              isWrongPassword:
+                response === PasswordResponses.INCORRECT_PASSWORD,
+            })
+          }
         }
-      }
 
-      if (onProgress) {
-        docLoadingTask.value.onProgress = onProgress
-      }
+        if (onProgress) {
+          docLoadingTask.value.onProgress = onProgress
+        }
 
-      doc.value = await docLoadingTask.value.promise
+        doc.value = await docLoadingTask.value.promise
+      }
     } catch (e) {
       doc.value = null
 
