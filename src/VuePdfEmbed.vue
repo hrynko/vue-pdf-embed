@@ -96,6 +96,7 @@ const { doc } = useVuePdfEmbed({
     emit('progress', progressParams)
   },
   source: toRef(props, 'source'),
+  isEvalSupported: false,
 })
 
 const linkService = computed(() => {
