@@ -8,6 +8,7 @@ export const rollupOptions: RollupOptions = {
   external: ['pdfjs-dist', 'vue'],
   output: {
     globals: {
+      'pdfjs-dist': 'pdfjsLib',
       vue: 'Vue',
     },
     assetFileNames: (assetInfo) => {
@@ -19,6 +20,7 @@ export const rollupOptions: RollupOptions = {
       }
     },
     compact: true,
+    inlineDynamicImports: true,
   },
 }
 
@@ -28,12 +30,15 @@ export default defineConfig({
       hook: 'writeBundle',
       targets: Object.entries({
         textLayer: [
-          [0, 116],
-          [1835, 1845],
+          [1323, 1348],
+          [2543, 2553],
+          [231, 349],
+          [1362, 1373],
         ],
         annotationLayer: [
-          [118, 486],
-          [1835, 1845],
+          [1323, 1348],
+          [2543, 2553],
+          [350, 712],
         ],
       }).map(([key, ranges]) => ({
         src: 'node_modules/pdfjs-dist/web/pdf_viewer.css',

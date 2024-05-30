@@ -5,7 +5,7 @@ import VuePdfEmbed from '../src/VuePdfEmbed.vue'
 
 HTMLCanvasElement.prototype.getContext = () => null
 
-vi.mock('pdfjs-dist/legacy/build/pdf', () => ({
+vi.mock('pdfjs-dist/legacy/build/pdf.mjs', () => ({
   GlobalWorkerOptions: {},
   getDocument: () => ({
     promise: {
@@ -20,6 +20,8 @@ vi.mock('pdfjs-dist/legacy/build/pdf', () => ({
     },
   }),
 }))
+
+vi.mock('pdfjs-dist/web/pdf_viewer.mjs', () => ({}))
 
 test('sets correct data', async () => {
   const wrapper = mount(VuePdfEmbed, {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, shallowRef, toRef, watch } from 'vue'
-import { AnnotationLayer, renderTextLayer } from 'pdfjs-dist/legacy/build/pdf'
-import { PDFLinkService } from 'pdfjs-dist/web/pdf_viewer'
+import { AnnotationLayer, TextLayer } from 'pdfjs-dist/legacy/build/pdf.mjs'
+import { PDFLinkService } from 'pdfjs-dist/web/pdf_viewer.mjs'
 import type {
   OnProgressParameters,
   PDFDocumentProxy,
@@ -353,15 +353,13 @@ const renderPageAnnotationLayer = async (
   new AnnotationLayer({
     accessibilityManager: null,
     annotationCanvasMap: null,
+    annotationEditorUIManager: null,
     div: container,
-    l10n: null,
     page,
     viewport,
   }).render({
     annotations: await page.getAnnotations(),
     div: container,
-    // @ts-expect-error: no downloading assumed
-    downloadManager: null,
     imageResourcesPath: props.imageResourcesPath,
     linkService: linkService.value!,
     page,
@@ -382,11 +380,11 @@ const renderPageTextLayer = async (
   container: HTMLElement
 ) => {
   emptyElement(container)
-  await renderTextLayer({
+  new TextLayer({
     container,
     textContentSource: await page.getTextContent(),
     viewport,
-  }).promise
+  }).render()
 }
 
 watch(
