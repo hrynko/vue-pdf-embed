@@ -42,7 +42,7 @@
     "pdfjs-dist": "^4.3.136"
   },
   "devDependencies": {
-    "@tsconfig/node18": "^18.2.2",
+    "@tsconfig/node20": "^20.1.4",
     "@types/clean-css": "^4.2.11",
     "@types/node": "^18.18.9",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
