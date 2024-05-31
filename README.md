@@ -144,7 +144,7 @@ The path to predefined CMaps should be specified to ensure correct rendering of 
 <VuePdfEmbed
   :source="{
     cMapUrl: 'https://unpkg.com/pdfjs-dist/cmaps/',
-    url: pdfSource,
+    url: '<PDF_URL>',
   }"
 />
 ```
@@ -154,7 +154,7 @@ The image resource path must be specified for annotations to display correctly:
 ```vue
 <VuePdfEmbed
   image-resources-path="https://unpkg.com/pdfjs-dist/web/images/"
-  :source="pdfSource"
+  source="<PDF_URL>"
 />
 ```
 
