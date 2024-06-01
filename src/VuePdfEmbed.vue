@@ -268,33 +268,41 @@ const render = async () => {
         canvas.style.width = cssWidth
         canvas.style.height = cssHeight
 
-        await renderPage(
-          page,
-          viewport.clone({
-            scale: viewport.scale * window.devicePixelRatio * props.scale,
-          }),
-          canvas
-        )
-
-        if (props.textLayer) {
-          await renderPageTextLayer(
+        const renderTasks = [
+          renderPage(
             page,
             viewport.clone({
-              dontFlip: true,
+              scale: viewport.scale * window.devicePixelRatio * props.scale,
             }),
-            div1
+            canvas
+          ),
+        ]
+
+        if (props.textLayer) {
+          renderTasks.push(
+            renderPageTextLayer(
+              page,
+              viewport.clone({
+                dontFlip: true,
+              }),
+              div1
+            )
           )
         }
 
         if (props.annotationLayer) {
-          await renderPageAnnotationLayer(
-            page,
-            viewport.clone({
-              dontFlip: true,
-            }),
-            div2 || div1
+          renderTasks.push(
+            renderPageAnnotationLayer(
+              page,
+              viewport.clone({
+                dontFlip: true,
+              }),
+              div2 || div1
+            )
           )
         }
+
+        return Promise.all(renderTasks)
       })
     )
 
