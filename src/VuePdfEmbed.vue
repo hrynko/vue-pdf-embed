@@ -268,16 +268,6 @@ const render = async () => {
         canvas.style.width = cssWidth
         canvas.style.height = cssHeight
 
-        if (div1) {
-          div1.style.width = isTransposed ? cssHeight : cssWidth
-          div1.style.height = isTransposed ? cssWidth : cssHeight
-        }
-
-        if (div2) {
-          div2.style.width = isTransposed ? cssHeight : cssWidth
-          div2.style.height = isTransposed ? cssWidth : cssHeight
-        }
-
         await renderPage(
           page,
           viewport.clone({
