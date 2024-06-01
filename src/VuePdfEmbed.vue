@@ -80,7 +80,6 @@ const emit = defineEmits<{
 }>()
 
 const pageNums = shallowRef<number[]>([])
-const pageRefs = shallowRef<HTMLDivElement[]>([])
 const pageScales = ref<number[]>([])
 const root = shallowRef<HTMLDivElement | null>(null)
 
@@ -246,11 +245,9 @@ const render = async () => {
         const page = await doc.value!.getPage(pageNum)
         const pageRotation =
           ((props.rotation % 90 === 0 ? props.rotation : 0) + page.rotate) % 360
-        const [canvas, div1, div2] = Array.from(pageRefs.value[i].children) as [
-          HTMLCanvasElement,
-          HTMLDivElement,
-          HTMLDivElement,
-        ]
+        const [canvas, div1, div2] = Array.from(
+          root.value!.getElementsByClassName('vue-pdf-embed__page')[i].children
+        ) as [HTMLCanvasElement, HTMLDivElement, HTMLDivElement]
         const isTransposed = !!((pageRotation / 90) % 2)
         const [actualWidth, actualHeight] = getPageDimensions(
           isTransposed
@@ -442,7 +439,6 @@ defineExpose({
 
       <div
         :id="id && `${id}-${pageNum}`"
-        ref="pageRefs"
         class="vue-pdf-embed__page"
         :style="{
           '--scale-factor': pageScales[i],
