@@ -258,6 +258,10 @@ const render = async () => {
   }
 
   const _render = async () => {
+    if (!doc.value) {
+      return
+    }
+
     try {
       pageNums.value = props.page
         ? [props.page]
