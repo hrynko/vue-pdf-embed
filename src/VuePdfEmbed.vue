@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, shallowRef, toRef, watch } from 'vue'
+import { watchDebounced } from '@vueuse/core'
 import { AnnotationLayer, TextLayer } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import { PDFLinkService } from 'pdfjs-dist/web/pdf_viewer.mjs'
 import type {
@@ -230,10 +231,22 @@ const print = async (dpi = 300, filename = '', allPages = false) => {
 /**
  * Renders the PDF document as canvas element(s) and additional layers.
  */
+
+let renderAbortController: AbortController | undefined = undefined
+
 const render = async () => {
-  if (!doc.value) {
+  if (!doc.value || renderAbortController?.signal.aborted) {
     return
   }
+
+  // abort previous rendering
+  renderAbortController?.abort()
+
+  // create a new abort controller for next rendering
+  renderAbortController = new AbortController()
+
+  // keep a reference to the controller to check if it's still the current one
+  const controller = renderAbortController
 
   try {
     pageNums.value = props.page
@@ -243,6 +256,7 @@ const render = async () => {
 
     await Promise.all(
       pageNums.value.map(async (pageNum, i) => {
+        if (controller.signal.aborted) return
         const page = await doc.value!.getPage(pageNum)
         const pageRotation =
           ((props.rotation % 90 === 0 ? props.rotation : 0) + page.rotate) % 360
@@ -281,6 +295,8 @@ const render = async () => {
           div2.style.height = isTransposed ? cssWidth : cssHeight
         }
 
+        if (controller?.signal.aborted) return
+
         await renderPage(
           page,
           viewport.clone({
@@ -290,6 +306,8 @@ const render = async () => {
         )
 
         if (props.textLayer) {
+          if (controller?.signal.aborted) return
+
           await renderPageTextLayer(
             page,
             viewport.clone({
@@ -300,6 +318,8 @@ const render = async () => {
         }
 
         if (props.annotationLayer) {
+          if (controller.signal.aborted) return
+
           await renderPageAnnotationLayer(
             page,
             viewport.clone({
@@ -311,11 +331,16 @@ const render = async () => {
       })
     )
 
+    if (controller.signal.aborted) return
+
     emit('rendered')
   } catch (e) {
     pageNums.value = []
     pageScales.value = []
     emit('rendering-failed', e as Error)
+  } finally {
+    // release the controller
+    renderAbortController = undefined
   }
 }
 
@@ -404,7 +429,7 @@ watch(
   }
 )
 
-watch(
+watchDebounced(
   () => [
     doc.value,
     props.annotationLayer,
@@ -421,7 +446,7 @@ watch(
       render()
     }
   },
-  { immediate: true }
+  { immediate: true, debounce: 100 }
 )
 
 onBeforeUnmount(() => {
@@ -432,6 +457,7 @@ defineExpose({
   doc,
   download,
   print,
+  render,
 })
 </script>
 

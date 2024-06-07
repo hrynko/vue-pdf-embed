@@ -1,6 +1,6 @@
 {
-  "name": "vue-pdf-embed",
-  "version": "2.0.4",
+  "name": "@artesa/vue-pdf-embed",
+  "version": "5.0.0",
   "description": "PDF embed component for Vue",
   "keywords": [
     "vue",
@@ -39,6 +39,7 @@
     "format": "prettier . --write --ignore-path .gitignore"
   },
   "dependencies": {
+    "@vueuse/core": "^10.10.0",
     "pdfjs-dist": "^4.3.136"
   },
   "devDependencies": {
