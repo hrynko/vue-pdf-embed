@@ -12,6 +12,7 @@ export default defineConfig({
       fileName: 'index.essential',
       formats: ['es'],
     },
+    minify: false,
     rollupOptions,
   },
 })

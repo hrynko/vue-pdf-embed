@@ -270,8 +270,9 @@ const render = async () => {
 
       await Promise.all(
         pageNums.value.map(async (pageNum, i) => {
-          if (renderQueue?.requestedStop) return
-          const page = await doc.value!.getPage(pageNum)
+          if (!doc.value || renderQueue?.requestedStop) return
+          const page = await doc.value.getPage(pageNum)
+          if (!doc.value || renderQueue?.requestedStop) return
           const pageRotation =
             ((props.rotation % 90 === 0 ? props.rotation : 0) + page.rotate) %
             360
@@ -308,7 +309,7 @@ const render = async () => {
             div2.style.height = isTransposed ? cssWidth : cssHeight
           }
 
-          if (renderQueue?.requestedStop) return
+          if (!doc.value || renderQueue?.requestedStop) return
 
           await renderPage(
             page,
@@ -319,7 +320,7 @@ const render = async () => {
           )
 
           if (props.textLayer) {
-            if (renderQueue?.requestedStop) return
+            if (!doc.value || renderQueue?.requestedStop) return
 
             await renderPageTextLayer(
               page,
@@ -331,7 +332,7 @@ const render = async () => {
           }
 
           if (props.annotationLayer) {
-            if (renderQueue?.requestedStop) return
+            if (!doc.value || renderQueue?.requestedStop) return
 
             await renderPageAnnotationLayer(
               page,
@@ -344,7 +345,7 @@ const render = async () => {
         })
       )
 
-      if (renderQueue?.requestedStop) return
+      if (!doc.value || renderQueue?.requestedStop) return
 
       emit('rendered')
     } catch (e) {
@@ -460,10 +461,12 @@ watchDebounced(
     props.textLayer,
     props.width,
   ],
-  () => {
-    if (doc.value) {
-      render()
+  ([doc]) => {
+    if (!doc) {
+      return
     }
+
+    render()
   },
   { immediate: true, debounce: 100 }
 )

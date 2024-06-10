@@ -61,6 +61,7 @@ export default defineConfig({
       name: 'VuePdfEmbed',
       fileName: 'index',
     },
+    minify: false,
     rollupOptions,
   },
 })
