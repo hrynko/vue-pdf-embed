@@ -82,8 +82,6 @@ const pdfSource = '<PDF_URL>'
 | loading-failed        | error object                                                            | failed to load document                    |
 | password-requested    | object with `callback` function and `isWrongPassword` flag              | password is needed to display the document |
 | progress              | object with number of `loaded` pages along with `total` number of pages | tracking document loading progress         |
-| rendered              | –                                                                       | finished rendering the document            |
-| rendering-failed      | error object                                                            | failed to render document                  |
 
 ### Slots
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, shallowRef, toRef, watch } from 'vue'
-import { AnnotationLayer, TextLayer } from 'pdfjs-dist/legacy/build/pdf.mjs'
+import { computed, shallowRef, toRef, watch } from 'vue'
 import { PDFLinkService } from 'pdfjs-dist/web/pdf_viewer.mjs'
 import type {
   OnProgressParameters,
@@ -14,10 +13,14 @@ import {
   addPrintStyles,
   createPrintIframe,
   downloadPdf,
-  emptyElement,
   releaseChildCanvases,
 } from './utils'
 import { useVuePdfEmbed } from './composables'
+import AnnotationLayer from './AnnotationLayer.vue'
+import BaseLayer from './BaseLayer.vue'
+import TextLayer from './TextLayer.vue'
+
+const { devicePixelRatio } = window
 
 const props = withDefaults(
   defineProps<{
@@ -75,17 +78,17 @@ const emit = defineEmits<{
   (e: 'loading-failed', value: Error): void
   (e: 'password-requested', value: PasswordRequestParams): void
   (e: 'progress', value: OnProgressParameters): void
-  (e: 'rendered'): void
-  (e: 'rendering-failed', value: Error): void
 }>()
 
-const pageNums = shallowRef<number[]>([])
-const pageScales = ref<number[]>([])
+const pageProxies = shallowRef<PDFPageProxy[]>([])
+const pageScales = shallowRef<number[]>([])
+const pageStyles = shallowRef<Record<string, string>[]>([])
+const pageViewports = shallowRef<PageViewport[]>([])
 const root = shallowRef<HTMLDivElement | null>(null)
 
 const { doc } = useVuePdfEmbed({
   onError: (e) => {
-    pageNums.value = []
+    reset()
     emit('loading-failed', e)
   },
   onPasswordRequest({ callback, isWrongPassword }) {
@@ -231,155 +234,54 @@ const print = async (dpi = 300, filename = '', allPages = false) => {
  */
 const render = async () => {
   if (!doc.value) {
+    reset()
     return
   }
 
   try {
-    pageNums.value = props.page
+    const pageNums = props.page
       ? [props.page]
       : [...Array(doc.value.numPages + 1).keys()].slice(1)
-    pageScales.value = Array(pageNums.value.length).fill(1)
 
-    await Promise.all(
-      pageNums.value.map(async (pageNum, i) => {
-        const page = await doc.value!.getPage(pageNum)
-        const pageRotation =
-          ((props.rotation % 90 === 0 ? props.rotation : 0) + page.rotate) % 360
-        const [canvas, div1, div2] = Array.from(
-          root.value!.getElementsByClassName('vue-pdf-embed__page')[i].children
-        ) as [HTMLCanvasElement, HTMLDivElement, HTMLDivElement]
-        const isTransposed = !!((pageRotation / 90) % 2)
-        const [actualWidth, actualHeight] = getPageDimensions(
-          isTransposed
-            ? page.view[2] / page.view[3]
-            : page.view[3] / page.view[2]
-        )
-        const cssWidth = `${Math.floor(actualWidth)}px`
-        const cssHeight = `${Math.floor(actualHeight)}px`
-        const pageWidth = isTransposed ? page.view[3] : page.view[2]
-        const pageScale = actualWidth / pageWidth
-        const viewport = page.getViewport({
+    pageProxies.value = []
+    pageScales.value = []
+    pageStyles.value = []
+    pageViewports.value = []
+
+    pageNums.forEach(async (pageNum) => {
+      const page = await doc.value!.getPage(pageNum)
+      const pageRotation =
+        ((props.rotation % 90 === 0 ? props.rotation : 0) + page.rotate) % 360
+      const isTransposed = !!((pageRotation / 90) % 2)
+      const [actualWidth, actualHeight] = getPageDimensions(
+        isTransposed ? page.view[2] / page.view[3] : page.view[3] / page.view[2]
+      )
+      const pageWidth = isTransposed ? page.view[3] : page.view[2]
+      const pageScale = actualWidth / pageWidth
+
+      pageProxies.value = [...pageProxies.value, page]
+      pageScales.value.push(pageScale)
+      pageStyles.value.push({
+        width: `${Math.floor(actualWidth)}px`,
+        height: `${Math.floor(actualHeight)}px`,
+      })
+      pageViewports.value.push(
+        page.getViewport({
           scale: pageScale,
           rotation: pageRotation,
         })
-
-        pageScales.value[i] = pageScale
-
-        canvas.style.width = cssWidth
-        canvas.style.height = cssHeight
-
-        const renderTasks = [
-          renderPage(
-            page,
-            viewport.clone({
-              scale: viewport.scale * window.devicePixelRatio * props.scale,
-            }),
-            canvas
-          ),
-        ]
-
-        if (props.textLayer) {
-          renderTasks.push(
-            renderPageTextLayer(
-              page,
-              viewport.clone({
-                dontFlip: true,
-              }),
-              div1
-            )
-          )
-        }
-
-        if (props.annotationLayer) {
-          renderTasks.push(
-            renderPageAnnotationLayer(
-              page,
-              viewport.clone({
-                dontFlip: true,
-              }),
-              div2 || div1
-            )
-          )
-        }
-
-        return Promise.all(renderTasks)
-      })
-    )
-
-    emit('rendered')
-  } catch (e) {
-    pageNums.value = []
-    pageScales.value = []
-    emit('rendering-failed', e as Error)
+      )
+    })
+  } catch {
+    reset()
   }
 }
 
-/**
- * Renders the page content.
- * @param page - Page proxy.
- * @param viewport - Page viewport.
- * @param canvas - HTML canvas.
- */
-const renderPage = async (
-  page: PDFPageProxy,
-  viewport: PageViewport,
-  canvas: HTMLCanvasElement
-) => {
-  canvas.width = viewport.width
-  canvas.height = viewport.height
-  await page.render({
-    canvasContext: canvas.getContext('2d')!,
-    viewport,
-  }).promise
-}
-
-/**
- * Renders the annotation layer for the specified page.
- * @param page - Page proxy.
- * @param viewport - Page viewport.
- * @param container - HTML container.
- */
-const renderPageAnnotationLayer = async (
-  page: PDFPageProxy,
-  viewport: PageViewport,
-  container: HTMLDivElement
-) => {
-  emptyElement(container)
-  new AnnotationLayer({
-    accessibilityManager: null,
-    annotationCanvasMap: null,
-    annotationEditorUIManager: null,
-    div: container,
-    page,
-    viewport,
-  }).render({
-    annotations: await page.getAnnotations(),
-    div: container,
-    imageResourcesPath: props.imageResourcesPath,
-    linkService: linkService.value!,
-    page,
-    renderForms: false,
-    viewport,
-  })
-}
-
-/**
- * Renders the text layer for the specified page.
- * @param page - Page proxy.
- * @param viewport - Page viewport.
- * @param container - HTML container.
- */
-const renderPageTextLayer = async (
-  page: PDFPageProxy,
-  viewport: PageViewport,
-  container: HTMLElement
-) => {
-  emptyElement(container)
-  new TextLayer({
-    container,
-    textContentSource: await page.getTextContent(),
-    viewport,
-  }).render()
+const reset = async () => {
+  pageProxies.value = []
+  pageScales.value = []
+  pageStyles.value = []
+  pageViewports.value = []
 }
 
 watch(
@@ -390,13 +292,6 @@ watch(
     }
   },
   { immediate: true }
-)
-
-watch(
-  () => props.source,
-  () => {
-    releaseChildCanvases(root.value!)
-  }
 )
 
 watch(
@@ -419,10 +314,6 @@ watch(
   { immediate: true }
 )
 
-onBeforeUnmount(() => {
-  releaseChildCanvases(root.value!)
-})
-
 defineExpose({
   doc,
   download,
@@ -432,24 +323,41 @@ defineExpose({
 
 <template>
   <div :id="id" ref="root" class="vue-pdf-embed">
-    <div v-for="(pageNum, i) in pageNums" :key="pageNum">
-      <slot name="before-page" :page="pageNum" />
+    <div v-for="(pageProxy, i) in pageProxies" :key="pageProxy.pageNumber">
+      <slot name="before-page" :page="pageProxy.pageNumber" />
 
       <div
-        :id="id && `${id}-${pageNum}`"
+        :id="id && `${id}-${pageProxy.pageNumber}`"
         class="vue-pdf-embed__page"
         :style="{
           '--scale-factor': pageScales[i],
         }"
       >
-        <canvas />
+        <BaseLayer
+          :page="pageProxy"
+          :viewport="
+            pageViewports[i].clone({
+              scale: pageViewports[i].scale * devicePixelRatio * scale,
+            })
+          "
+          :style="pageStyles[i]"
+        />
 
-        <div v-if="textLayer" class="textLayer" />
+        <TextLayer
+          v-if="textLayer"
+          :page="pageProxy"
+          :viewport="pageViewports[i].clone({ dontFlip: true })"
+        />
 
-        <div v-if="annotationLayer" class="annotationLayer" />
+        <AnnotationLayer
+          v-if="annotationLayer"
+          :page="pageProxy"
+          :viewport="pageViewports[i].clone({ dontFlip: true })"
+          :link-service="linkService"
+        />
       </div>
 
-      <slot name="after-page" :page="pageNum" />
+      <slot name="after-page" :page="pageProxy.pageNumber" />
     </div>
   </div>
 </template>

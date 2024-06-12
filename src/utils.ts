@@ -70,9 +70,12 @@ export function emptyElement(el?: HTMLElement) {
 
 // @internal
 export function releaseChildCanvases(el?: HTMLElement) {
-  el?.querySelectorAll('canvas').forEach((canvas: HTMLCanvasElement) => {
-    canvas.width = 1
-    canvas.height = 1
-    canvas.getContext('2d')?.clearRect(0, 0, 1, 1)
-  })
+  el?.querySelectorAll('canvas').forEach(releaseCanvas)
+}
+
+// @internal
+export function releaseCanvas(canvas: HTMLCanvasElement) {
+  canvas.width = 1
+  canvas.height = 1
+  canvas.getContext('2d')?.clearRect(0, 0, 1, 1)
 }
