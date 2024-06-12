@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { computed, shallowRef, toRef, watch } from 'vue'
 import { PDFLinkService } from 'pdfjs-dist/web/pdf_viewer.mjs'
-import type {
-  OnProgressParameters,
-  PDFDocumentProxy,
-  PDFPageProxy,
-  PageViewport,
-} from 'pdfjs-dist'
+import type { OnProgressParameters, PDFDocumentProxy } from 'pdfjs-dist'
 
 import type { PasswordRequestParams, Source } from './types'
 import {
@@ -16,11 +11,7 @@ import {
   releaseChildCanvases,
 } from './utils'
 import { useVuePdfEmbed } from './composables'
-import AnnotationLayer from './AnnotationLayer.vue'
-import BaseLayer from './BaseLayer.vue'
-import TextLayer from './TextLayer.vue'
-
-const { devicePixelRatio } = window
+import PageLayers from './PageLayers.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -80,15 +71,11 @@ const emit = defineEmits<{
   (e: 'progress', value: OnProgressParameters): void
 }>()
 
-const pageProxies = shallowRef<PDFPageProxy[]>([])
-const pageScales = shallowRef<number[]>([])
-const pageStyles = shallowRef<Record<string, string>[]>([])
-const pageViewports = shallowRef<PageViewport[]>([])
-const root = shallowRef<HTMLDivElement | null>(null)
+const pageNums = shallowRef<number[]>([])
 
 const { doc } = useVuePdfEmbed({
   onError: (e) => {
-    reset()
+    pageNums.value = []
     emit('loading-failed', e)
   },
   onPasswordRequest({ callback, isWrongPassword }) {
@@ -130,26 +117,6 @@ const download = async (filename: string) => {
     // @ts-expect-error: contentDispositionFilename is not typed
     filename ?? metadata.contentDispositionFilename ?? ''
   downloadPdf(data, suggestedFilename)
-}
-
-/**
- * Returns an array of the actual page width and height based on props and
- * aspect ratio.
- * @param ratio - Page aspect ratio.
- */
-const getPageDimensions = (ratio: number): [number, number] => {
-  let width: number
-  let height: number
-
-  if (props.height && !props.width) {
-    height = props.height
-    width = height / ratio
-  } else {
-    width = props.width ?? root.value!.clientWidth
-    height = width * ratio
-  }
-
-  return [width, height]
 }
 
 /**
@@ -229,61 +196,6 @@ const print = async (dpi = 300, filename = '', allPages = false) => {
   }
 }
 
-/**
- * Renders the PDF document as canvas element(s) and additional layers.
- */
-const render = async () => {
-  if (!doc.value) {
-    reset()
-    return
-  }
-
-  try {
-    const pageNums = props.page
-      ? [props.page]
-      : [...Array(doc.value.numPages + 1).keys()].slice(1)
-
-    pageProxies.value = []
-    pageScales.value = []
-    pageStyles.value = []
-    pageViewports.value = []
-
-    pageNums.forEach(async (pageNum) => {
-      const page = await doc.value!.getPage(pageNum)
-      const pageRotation =
-        ((props.rotation % 90 === 0 ? props.rotation : 0) + page.rotate) % 360
-      const isTransposed = !!((pageRotation / 90) % 2)
-      const [actualWidth, actualHeight] = getPageDimensions(
-        isTransposed ? page.view[2] / page.view[3] : page.view[3] / page.view[2]
-      )
-      const pageWidth = isTransposed ? page.view[3] : page.view[2]
-      const pageScale = actualWidth / pageWidth
-
-      pageProxies.value = [...pageProxies.value, page]
-      pageScales.value.push(pageScale)
-      pageStyles.value.push({
-        width: `${Math.floor(actualWidth)}px`,
-        height: `${Math.floor(actualHeight)}px`,
-      })
-      pageViewports.value.push(
-        page.getViewport({
-          scale: pageScale,
-          rotation: pageRotation,
-        })
-      )
-    })
-  } catch {
-    reset()
-  }
-}
-
-const reset = async () => {
-  pageProxies.value = []
-  pageScales.value = []
-  pageStyles.value = []
-  pageViewports.value = []
-}
-
 watch(
   doc,
   () => {
@@ -307,9 +219,11 @@ watch(
     props.width,
   ],
   () => {
-    if (doc.value) {
-      render()
-    }
+    pageNums.value = doc.value
+      ? props.page
+        ? [props.page]
+        : [...Array(doc.value.numPages + 1).keys()].slice(1)
+      : []
   },
   { immediate: true }
 )
@@ -322,43 +236,24 @@ defineExpose({
 </script>
 
 <template>
-  <div :id="id" ref="root" class="vue-pdf-embed">
-    <div v-for="(pageProxy, i) in pageProxies" :key="pageProxy.pageNumber">
-      <slot name="before-page" :page="pageProxy.pageNumber" />
-
-      <div
-        :id="id && `${id}-${pageProxy.pageNumber}`"
-        class="vue-pdf-embed__page"
-        :style="{
-          '--scale-factor': pageScales[i],
-        }"
-      >
-        <BaseLayer
-          :page="pageProxy"
-          :viewport="
-            pageViewports[i].clone({
-              scale: pageViewports[i].scale * devicePixelRatio * scale,
-            })
-          "
-          :style="pageStyles[i]"
-        />
-
-        <TextLayer
-          v-if="textLayer"
-          :page="pageProxy"
-          :viewport="pageViewports[i].clone({ dontFlip: true })"
-        />
-
-        <AnnotationLayer
-          v-if="annotationLayer"
-          :page="pageProxy"
-          :viewport="pageViewports[i].clone({ dontFlip: true })"
-          :link-service="linkService"
-        />
-      </div>
-
-      <slot name="after-page" :page="pageProxy.pageNumber" />
-    </div>
+  <div :id="id" class="vue-pdf-embed">
+    <template v-if="doc">
+      <PageLayers
+        v-for="pageNum in pageNums"
+        :id="id"
+        :key="pageNum"
+        :annotation-layer="annotationLayer"
+        :doc="doc"
+        :height="height"
+        :image-resources-path="imageResourcesPath"
+        :link-service="linkService"
+        :page="pageNum"
+        :rotation="rotation"
+        :scale="scale"
+        :text-layer="textLayer"
+        :width="width"
+      />
+    </template>
   </div>
 </template>
 
