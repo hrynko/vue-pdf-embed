@@ -23,7 +23,6 @@
     },
     "./dist/style/*.css": "./dist/style/*.css"
   },
-  "style": "./dist/style/index.css",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist"

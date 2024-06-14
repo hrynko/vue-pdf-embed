@@ -265,6 +265,7 @@ const render = async () => {
 
         pageScales.value[i] = pageScale
 
+        canvas.style.display = 'block'
         canvas.style.width = cssWidth
         canvas.style.height = cssHeight
 
@@ -440,6 +441,7 @@ defineExpose({
         class="vue-pdf-embed__page"
         :style="{
           '--scale-factor': pageScales[i],
+          position: 'relative',
         }"
       >
         <canvas />
@@ -453,15 +455,3 @@ defineExpose({
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.vue-pdf-embed {
-  &__page {
-    position: relative;
-
-    canvas {
-      display: block;
-    }
-  }
-}
-</style>

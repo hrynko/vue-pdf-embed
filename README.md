@@ -43,9 +43,6 @@ yarn add vue-pdf-embed
 <script setup>
 import VuePdfEmbed from 'vue-pdf-embed'
 
-// essential styles
-import 'vue-pdf-embed/dist/style/index.css'
-
 // optional styles
 import 'vue-pdf-embed/dist/style/annotationLayer.css'
 import 'vue-pdf-embed/dist/style/textLayer.css'
