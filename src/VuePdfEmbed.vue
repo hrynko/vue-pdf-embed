@@ -249,14 +249,16 @@ const render = async () => {
           root.value!.getElementsByClassName('vue-pdf-embed__page')[i].children
         ) as [HTMLCanvasElement, HTMLDivElement, HTMLDivElement]
         const isTransposed = !!((pageRotation / 90) % 2)
+        const viewWidth = page.view[2] - page.view[0];
+        const viewHeight = page.view[3] - page.view[1];
         const [actualWidth, actualHeight] = getPageDimensions(
           isTransposed
-            ? page.view[2] / page.view[3]
-            : page.view[3] / page.view[2]
+            ? viewWidth / viewHeight
+            : viewHeight / viewWidth
         )
         const cssWidth = `${Math.floor(actualWidth)}px`
         const cssHeight = `${Math.floor(actualHeight)}px`
-        const pageWidth = isTransposed ? page.view[3] : page.view[2]
+        const pageWidth = isTransposed ? viewHeight : viewWidth
         const pageScale = actualWidth / pageWidth
         const viewport = page.getViewport({
           scale: pageScale,
