@@ -2,6 +2,7 @@ import {
   onBeforeUnmount,
   shallowRef,
   toValue,
+  watch,
   watchEffect,
   type ComputedRef,
   type MaybeRef,
@@ -75,6 +76,10 @@ export function useVuePdfEmbed({
     }
   })
 
+  watch(doc, (_, oldDoc) => {
+    oldDoc?.destroy()
+  })
+
   onBeforeUnmount(() => {
     if (docLoadingTask.value?.onPassword) {
       // @ts-expect-error: onPassword must be reset
@@ -84,6 +89,7 @@ export function useVuePdfEmbed({
       // @ts-expect-error: onProgress must be reset
       docLoadingTask.value.onProgress = null
     }
+    docLoadingTask.value?.destroy()
     doc.value?.destroy()
   })
 

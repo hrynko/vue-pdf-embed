@@ -83,6 +83,9 @@ const pageNums = shallowRef<number[]>([])
 const pageScales = ref<number[]>([])
 const root = shallowRef<HTMLDivElement | null>(null)
 
+let renderingController: { isAborted: boolean; promise: Promise<void> } | null =
+  null
+
 const { doc } = useVuePdfEmbed({
   onError: (e) => {
     pageNums.value = []
@@ -230,7 +233,7 @@ const print = async (dpi = 300, filename = '', allPages = false) => {
  * Renders the PDF document as canvas element(s) and additional layers.
  */
 const render = async () => {
-  if (!doc.value) {
+  if (!doc.value || renderingController?.isAborted) {
     return
   }
 
@@ -243,6 +246,9 @@ const render = async () => {
     await Promise.all(
       pageNums.value.map(async (pageNum, i) => {
         const page = await doc.value!.getPage(pageNum)
+        if (renderingController?.isAborted) {
+          return
+        }
         const pageRotation =
           ((props.rotation % 90 === 0 ? props.rotation : 0) + page.rotate) % 360
         const [canvas, div1, div2] = Array.from(
@@ -307,11 +313,16 @@ const render = async () => {
       })
     )
 
-    emit('rendered')
+    if (!renderingController?.isAborted) {
+      emit('rendered')
+    }
   } catch (e) {
     pageNums.value = []
     pageScales.value = []
-    emit('rendering-failed', e as Error)
+
+    if (!renderingController?.isAborted) {
+      emit('rendering-failed', e as Error)
+    }
   }
 }
 
@@ -385,19 +396,12 @@ const renderPageTextLayer = async (
 
 watch(
   doc,
-  () => {
-    if (doc.value) {
-      emit('loaded', doc.value)
+  (newDoc) => {
+    if (newDoc) {
+      emit('loaded', newDoc)
     }
   },
   { immediate: true }
-)
-
-watch(
-  () => props.source,
-  () => {
-    releaseChildCanvases(root.value!)
-  }
 )
 
 watch(
@@ -412,16 +416,28 @@ watch(
     props.textLayer,
     props.width,
   ],
-  () => {
-    if (doc.value) {
-      render()
+  async ([newDoc]) => {
+    if (newDoc) {
+      if (renderingController) {
+        renderingController.isAborted = true
+        await renderingController.promise
+      }
+
+      releaseChildCanvases(root.value)
+      renderingController = {
+        isAborted: false,
+        promise: render(),
+      }
+
+      await renderingController.promise
+      renderingController = null
     }
   },
   { immediate: true }
 )
 
 onBeforeUnmount(() => {
-  releaseChildCanvases(root.value!)
+  releaseChildCanvases(root.value)
 })
 
 defineExpose({

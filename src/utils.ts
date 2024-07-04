@@ -62,14 +62,14 @@ export function downloadPdf(data: Uint8Array, filename: string) {
 }
 
 // @internal
-export function emptyElement(el?: HTMLElement) {
+export function emptyElement(el?: HTMLElement | null) {
   while (el?.firstChild) {
     el.removeChild(el.firstChild)
   }
 }
 
 // @internal
-export function releaseChildCanvases(el?: HTMLElement) {
+export function releaseChildCanvases(el?: HTMLElement | null) {
   el?.querySelectorAll('canvas').forEach((canvas: HTMLCanvasElement) => {
     canvas.width = 1
     canvas.height = 1
