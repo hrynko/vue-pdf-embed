@@ -34,7 +34,7 @@ export default defineConfig({
         ],
       }).map(([key, ranges]) => ({
         src: 'node_modules/pdfjs-dist/web/pdf_viewer.css',
-        dest: 'dist/style',
+        dest: 'dist/styles',
         rename: `${key}.css`,
         transform: (contents) => {
           const lines = contents.toString().split('\n')

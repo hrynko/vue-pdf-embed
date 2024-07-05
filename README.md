@@ -44,8 +44,8 @@ yarn add vue-pdf-embed
 import VuePdfEmbed from 'vue-pdf-embed'
 
 // optional styles
-import 'vue-pdf-embed/dist/style/annotationLayer.css'
-import 'vue-pdf-embed/dist/style/textLayer.css'
+import 'vue-pdf-embed/dist/styles/annotationLayer.css'
+import 'vue-pdf-embed/dist/styles/textLayer.css'
 
 // either URL, Base64, binary, or document proxy
 const pdfSource = '<PDF_URL>'

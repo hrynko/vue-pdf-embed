@@ -21,7 +21,7 @@
       "import": "./dist/index.essential.mjs",
       "types": "./dist/types/index.essential.d.ts"
     },
-    "./dist/style/*.css": "./dist/style/*.css"
+    "./dist/styles/*.css": "./dist/styles/*.css"
   },
   "types": "./dist/types/index.d.ts",
   "files": [
