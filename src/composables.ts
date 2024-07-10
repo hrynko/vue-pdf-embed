@@ -17,6 +17,11 @@ import type {
 
 import type { PasswordRequestParams, Source } from './types'
 
+function isDocument(doc: MaybeRef<Source>) {
+  const docValue = toValue(doc)
+  return docValue && Object.prototype.hasOwnProperty.call(docValue, '_pdfInfo')
+}
+
 export function useVuePdfEmbed({
   onError,
   onPasswordRequest,
@@ -38,7 +43,7 @@ export function useVuePdfEmbed({
       return
     }
 
-    if (Object.prototype.hasOwnProperty.call(sourceValue, '_pdfInfo')) {
+    if (isDocument(sourceValue)) {
       doc.value = sourceValue as PDFDocumentProxy
       return
     }
@@ -90,7 +95,9 @@ export function useVuePdfEmbed({
       docLoadingTask.value.onProgress = null
     }
     docLoadingTask.value?.destroy()
-    doc.value?.destroy()
+    if (!isDocument(source)) {
+      doc.value?.destroy()
+    }
   })
 
   return {
