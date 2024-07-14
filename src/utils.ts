@@ -1,3 +1,6 @@
+import type { Source } from './types'
+import type { PDFDocumentProxy } from 'pdfjs-dist'
+
 // @internal
 export function addPrintStyles(
   iframe: HTMLIFrameElement,
@@ -75,4 +78,9 @@ export function releaseChildCanvases(el?: HTMLElement | null) {
     canvas.height = 1
     canvas.getContext('2d')?.clearRect(0, 0, 1, 1)
   })
+}
+
+// @internal
+export function isDocument(document: Source): document is PDFDocumentProxy {
+  return Object.prototype.hasOwnProperty.call(document, '_pdfInfo')
 }
