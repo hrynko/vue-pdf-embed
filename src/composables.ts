@@ -9,7 +9,6 @@ import {
   type ShallowRef,
 } from 'vue'
 import { PasswordResponses, getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
-import { isDocument } from './utils'
 import type {
   OnProgressParameters,
   PDFDocumentLoadingTask,
@@ -17,6 +16,7 @@ import type {
 } from 'pdfjs-dist'
 
 import type { PasswordRequestParams, Source } from './types'
+import { isDocument } from './utils'
 
 export function useVuePdfEmbed({
   onError,
@@ -40,7 +40,7 @@ export function useVuePdfEmbed({
     }
 
     if (isDocument(sourceValue)) {
-      doc.value = sourceValue
+      doc.value = sourceValue as PDFDocumentProxy
       return
     }
 
