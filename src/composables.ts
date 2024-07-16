@@ -16,6 +16,7 @@ import type {
 } from 'pdfjs-dist'
 
 import type { PasswordRequestParams, Source } from './types'
+import { isDocument } from './utils'
 
 export function useVuePdfEmbed({
   onError,
@@ -38,7 +39,7 @@ export function useVuePdfEmbed({
       return
     }
 
-    if (Object.prototype.hasOwnProperty.call(sourceValue, '_pdfInfo')) {
+    if (isDocument(sourceValue)) {
       doc.value = sourceValue as PDFDocumentProxy
       return
     }
@@ -90,7 +91,9 @@ export function useVuePdfEmbed({
       docLoadingTask.value.onProgress = null
     }
     docLoadingTask.value?.destroy()
-    doc.value?.destroy()
+    if (!isDocument(toValue(source))) {
+      doc.value?.destroy()
+    }
   })
 
   return {

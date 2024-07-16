@@ -76,3 +76,8 @@ export function releaseChildCanvases(el?: HTMLElement | null) {
     canvas.getContext('2d')?.clearRect(0, 0, 1, 1)
   })
 }
+
+// @internal
+export function isDocument(document: unknown) {
+  return Object.prototype.hasOwnProperty.call(document, '_pdfInfo')
+}
