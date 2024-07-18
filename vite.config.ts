@@ -30,15 +30,11 @@ export default defineConfig({
       hook: 'writeBundle',
       targets: Object.entries({
         textLayer: [
-          [1323, 1343],
-          [1347, 1348],
-          [2549, 2559],
+          [2546, 2555],
           [231, 349],
         ],
         annotationLayer: [
-          [1323, 1343],
-          [1347, 1348],
-          [2549, 2559],
+          [2546, 2555],
           [350, 712],
         ],
       }).map(([key, ranges]) => ({
