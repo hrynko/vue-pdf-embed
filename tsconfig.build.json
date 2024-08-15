@@ -2,8 +2,10 @@
   "extends": "./tsconfig.lib.json",
   "compilerOptions": {
     "rootDir": "src",
+    "declaration": true,
     "declarationDir": "dist/types",
     "emitDeclarationOnly": true,
-    "stripInternal": true
+    "stripInternal": true,
+    "composite": false
   }
 }
