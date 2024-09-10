@@ -38,7 +38,7 @@
     "format": "prettier . --write --ignore-path .gitignore"
   },
   "dependencies": {
-    "pdfjs-dist": "^4.4.168"
+    "pdfjs-dist": "^4.6.82"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",
