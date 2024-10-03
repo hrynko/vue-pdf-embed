@@ -22,12 +22,12 @@ export default defineConfig({
       hook: 'writeBundle',
       targets: Object.entries({
         textLayer: [
-          [2546, 2555],
-          [231, 349],
+          [2933, 2942],
+          [440, 560],
         ],
         annotationLayer: [
-          [2546, 2555],
-          [350, 712],
+          [2933, 2942],
+          [561, 925],
         ],
       }).map(([key, ranges]) => ({
         src: 'node_modules/pdfjs-dist/web/pdf_viewer.css',
