@@ -363,6 +363,7 @@ const renderPageAnnotationLayer = async (
     annotationEditorUIManager: null,
     div: container,
     page,
+    structTreeLayer: null,
     viewport,
   }).render({
     annotations: await page.getAnnotations(),
