@@ -24,6 +24,9 @@
     "test": "jest",
     "lint": "eslint src demo --ext js,vue --fix"
   },
+  "dependencies": {
+    "pdfjs-dist": "^4.7.76"
+  },
   "devDependencies": {
     "@babel/core": "^7.14.2",
     "@babel/preset-env": "^7.14.2",
@@ -41,7 +44,6 @@
     "husky": "^8.0.0",
     "jest": "^26.6.3",
     "lint-staged": "^13.2.2",
-    "pdfjs-dist": "^2.9.359",
     "prettier": "^2.3.0",
     "sass": "^1.49.8",
     "sass-loader": "^12.6.0",
