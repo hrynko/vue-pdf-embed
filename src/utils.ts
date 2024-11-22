@@ -81,3 +81,15 @@ export function releaseChildCanvases(el?: HTMLElement | null) {
 export function isDocument(document: unknown) {
   return Object.prototype.hasOwnProperty.call(document, '_pdfInfo')
 }
+
+// @internal
+export function releaseCanvas(canvas: HTMLCanvasElement) {
+  if (canvas) {
+    canvas.width = 0
+    canvas.height = 0
+    const context = canvas.getContext('2d')
+    if (context) {
+      context.clearRect(0, 0, canvas.width, canvas.height)
+    }
+  }
+}
