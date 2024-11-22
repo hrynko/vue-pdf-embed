@@ -25,6 +25,8 @@ const emit = defineEmits([
   'rendering-failed',
 ])
 
+const isEnabledLogging = true
+
 const root = ref<HTMLElement | null>(null)
 const isVisible = ref(false)
 let observer: IntersectionObserver | null = null
@@ -63,12 +65,10 @@ const renderPage = async () => {
       return
     }
     const pageRotation = ((props.rotation % 90 === 0 ? props.rotation : 0) + page.rotate) % 360
-    
-     // Determine if the page is transposed
-     const isTransposed = !!((pageRotation / 90) % 2)
+    // Determine if the page is transposed
+    const isTransposed = !!((pageRotation / 90) % 2)
     const viewWidth = page.view[2] - page.view[0]
     const viewHeight = page.view[3] - page.view[1]
-    
     // Calculate the actual width and height of the page
     const [actualWidth, actualHeight] = getPageDimensions(
       isTransposed ? viewWidth / viewHeight : viewHeight / viewWidth
@@ -84,7 +84,7 @@ const renderPage = async () => {
       scale: pageScale,
       rotation: pageRotation,
     })
-    
+
     const canvas = root.value.querySelector('canvas') as HTMLCanvasElement
     const textLayerDiv = root.value.querySelector('.textLayer') as HTMLDivElement
     const annotationLayerDiv = root.value.querySelector('.annotationLayer') as HTMLDivElement
@@ -110,9 +110,8 @@ const renderPage = async () => {
       return
     }
 
-     // Clear the canvas before rendering
-     context.clearRect(0, 0, canvas.width, canvas.height)
-
+    // Clear the canvas before rendering
+    context.clearRect(0, 0, canvas.width, canvas.height)
 
     // Cancel any previous rendering task
     if (cancelRender) {
@@ -176,11 +175,13 @@ const renderPage = async () => {
 // Function to clean up resources when the page is not visible
 const cleanup = () => {
   if (renderingTask && renderingTask.cancel) {
+    if (isEnabledLogging) console.log('Cancelling rendering task 1/2')
     renderingTask.cancel()
     renderingTask = null
   }
 
   if (cancelRender) {
+    if (isEnabledLogging) console.log('Cancelling render task 2/2')
     cancelRender()
     cancelRender = null
   }
@@ -188,21 +189,25 @@ const cleanup = () => {
   // Release canvas
   const canvas = root.value?.querySelector('canvas') as HTMLCanvasElement
   if (canvas) {
+    if (isEnabledLogging) console.log('Releasing canvas')
     releaseCanvas(canvas)
   }
 
   // Empty text and annotation layers
   const textLayerDiv = root.value?.querySelector('.textLayer') as HTMLElement
   if (textLayerDiv) {
+    if (isEnabledLogging) console.log('Emptying text layer')
     emptyElement(textLayerDiv)
   }
   const annotationLayerDiv = root.value?.querySelector('.annotationLayer') as HTMLElement
   if (annotationLayerDiv) {
+    if (isEnabledLogging) console.log('Emptying annotation layer')
     emptyElement(annotationLayerDiv)
   }
 
   // Clean up page resources
   if (page) {
+    if (isEnabledLogging) console.log('Cleaning up page resources')
     page.cleanup()
     page = null
   }
@@ -216,6 +221,7 @@ onMounted(() => {
       if (isVisible.value) {
         renderPage()
       } else {
+        if (isEnabledLogging) console.log('Page is not visible, cleaning up resources')
         cleanup()
       }
     },
@@ -249,9 +255,9 @@ watch(
 <template>
   <div
     :id="id"
+    ref="root"
     class="vue-pdf-embed__page"
     :style="{ position: 'relative' }"
-    ref="root"
   >
     <canvas></canvas>
     <div

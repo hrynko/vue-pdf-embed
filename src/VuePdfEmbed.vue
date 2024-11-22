@@ -82,7 +82,7 @@ const pageNums = computed(() => {
   return props.page
     ? [props.page]
     : doc.value
-    ? Array.from({ length: doc.value.numPages }, (_, i) => i + 1)
+      ? Array.from({ length: doc.value.numPages }, (_, i) => i + 1)
     : []
 })
 
