@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, provide, ref, shallowRef, toRef, type Ref } from 'vue'
+import { computed, onBeforeUnmount, provide, shallowRef, toRef, type Ref } from 'vue'
 import { PDFLinkService } from 'pdfjs-dist/web/pdf_viewer.mjs'
 import type { OnProgressParameters, PDFDocumentProxy } from 'pdfjs-dist'
 
@@ -62,6 +62,9 @@ const props = withDefaults(
     scale: 1,
   }
 )
+
+const height = computed(() => props.height ?? 0)
+const width = computed(() => props.width ?? 0)
 
 const emit = defineEmits<{
   (e: 'internal-link-clicked', value: number): void
