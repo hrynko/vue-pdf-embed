@@ -175,13 +175,13 @@ const renderPage = async () => {
 // Function to clean up resources when the page is not visible
 const cleanup = () => {
   if (renderingTask && renderingTask.cancel) {
-    if (isEnabledLogging) console.log('Cancelling rendering task 1/2')
+    console.log(2)
     renderingTask.cancel()
     renderingTask = null
   }
 
   if (cancelRender) {
-    if (isEnabledLogging) console.log('Cancelling render task 2/2')
+    console.log(3)
     cancelRender()
     cancelRender = null
   }
@@ -221,7 +221,7 @@ onMounted(() => {
       if (isVisible.value) {
         renderPage()
       } else {
-        if (isEnabledLogging) console.log('Page is not visible, cleaning up resources')
+        console.log(1)
         cleanup()
       }
     },
