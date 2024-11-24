@@ -83,7 +83,7 @@ const pageNums = computed(() => {
     ? [props.page]
     : doc.value
       ? Array.from({ length: doc.value.numPages }, (_, i) => i + 1)
-    : []
+      : []
 })
 
 const { doc } = useVuePdfEmbed({

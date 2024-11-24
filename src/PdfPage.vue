@@ -27,6 +27,9 @@ const emit = defineEmits([
 
 const isEnabledLogging = true
 
+const pageWidth = ref<number>(0)
+const pageHeight = ref<number>(0)
+
 const root = ref<HTMLElement | null>(null)
 const isVisible = ref(false)
 let observer: IntersectionObserver | null = null
@@ -63,7 +66,7 @@ const renderPage = async () => {
     if (!page) {
       return
     }
-    const pageRotation = ((props.rotation % 90 === 0 ? props.rotation : 0) + page.rotate) % 360
+    const pageRotation = ((props.rotation % 360) + page.rotate) % 360
     // Determine if the page is transposed
     const isTransposed = !!((pageRotation / 90) % 2)
     const viewWidth = page.view[2] - page.view[0]
@@ -73,10 +76,14 @@ const renderPage = async () => {
       isTransposed ? viewWidth / viewHeight : viewHeight / viewWidth
     )
 
+    // Update pageWidth and pageHeight
+    pageWidth.value = actualWidth
+    pageHeight.value = actualHeight
+
     const cssWidth = `${Math.floor(actualWidth)}px`
     const cssHeight = `${Math.floor(actualHeight)}px`
-    const pageWidth = isTransposed ? viewHeight : viewWidth
-    const pageScale = actualWidth / pageWidth
+    const pageWidthInPDF = isTransposed ? viewHeight : viewWidth
+    const pageScale = actualWidth / pageWidthInPDF
 
     // Calculate viewport with appropriate scale and rotation
     const viewport = page.getViewport({
@@ -214,24 +221,66 @@ const cleanup = () => {
   }
 }
 
-onMounted(() => {
-  observer = new IntersectionObserver(
-    (entries) => {
-      const entry = entries[0]
-      isVisible.value = entry.isIntersecting
-      if (isVisible.value) {
-        renderPage()
-      } else {
-        console.log('Page not visible', props.pageNum)
-        cleanup()
+onMounted(async () => {
+  if (!props.doc) {
+    // Wait for props.doc to be available
+    const unwatch = watch(
+      () => props.doc,
+      (newDoc) => {
+        if (newDoc) {
+          unwatch()
+          setup()
+        }
       }
-    },
-    { root: null, threshold: 0.1 }
-  )
-  if (root.value) {
-    observer.observe(root.value)
+    )
+  } else {
+    setup()
   }
 })
+
+const setup = async () => {
+  if (!props.doc || !root.value) {
+    return
+  }
+
+  // Get the page to calculate dimensions
+  try {
+    page = await props.doc.getPage(props.pageNum)
+    if (!page) {
+      return
+    }
+    const pageRotation = ((props.rotation % 360) + page.rotate) % 360
+    const isTransposed = !!((pageRotation / 90) % 2)
+    const viewWidth = page.view[2] - page.view[0]
+    const viewHeight = page.view[3] - page.view[1]
+    const ratio = isTransposed ? viewWidth / viewHeight : viewHeight / viewWidth
+    const [actualWidth, actualHeight] = getPageDimensions(ratio)
+
+    // Update pageWidth and pageHeight
+    pageWidth.value = actualWidth
+    pageHeight.value = actualHeight
+
+    // Now set up the observer
+    observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        isVisible.value = entry.isIntersecting
+        if (isVisible.value) {
+          renderPage()
+        } else {
+          console.log('Page not visible', props.pageNum)
+          cleanup()
+        }
+      },
+      { root: null, threshold: 0.1 }
+    )
+    if (root.value) {
+      observer.observe(root.value)
+    }
+  } catch (error) {
+    console.error('Failed to get page for dimensions:', error)
+  }
+}
 
 onBeforeUnmount(() => {
   if (observer && root.value) {
@@ -258,7 +307,11 @@ watch(
     :id="id"
     ref="root"
     class="vue-pdf-embed__page"
-    :style="{ position: 'relative' }"
+    :style="{
+      position: 'relative',
+      width: pageWidth + 'px',
+      height: pageHeight + 'px',
+    }"
   >
     <canvas></canvas>
     <div
@@ -274,7 +327,14 @@ watch(
     <div
       v-if="!isVisible"
       class="placeholder"
-      :style="{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: '#444' }"
+      :style="{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: pageWidth + 'px',
+        height: pageHeight + 'px',
+        background: '#444',
+      }"
     ></div>
   </div>
 </template>
@@ -286,9 +346,8 @@ watch(
 }
 
 .vue-pdf-embed__page canvas {
-  /* Ensure the canvas fills the parent container */
   width: 100%;
-  height: auto;
+  height: 100%;
 }
 
 .textLayer,
@@ -296,7 +355,6 @@ watch(
   position: absolute;
   top: 0;
   left: 0;
-  /* Ensure layers fill the parent container */
   width: 100%;
   height: 100%;
 }
