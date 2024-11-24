@@ -175,13 +175,13 @@ const renderPage = async () => {
 // Function to clean up resources when the page is not visible
 const cleanup = () => {
   if (renderingTask && renderingTask.cancel) {
-    if (isEnabledLogging) console.log('Cancelling rendering task 1/2', props.id)
+    if (isEnabledLogging) console.log('Cancelling rendering task 1/2')
     renderingTask.cancel()
     renderingTask = null
   }
 
   if (cancelRender) {
-    if (isEnabledLogging) console.log('Cancelling render task 2/2', props.id)
+    if (isEnabledLogging) console.log('Cancelling render task 2/2')
     cancelRender()
     cancelRender = null
   }
