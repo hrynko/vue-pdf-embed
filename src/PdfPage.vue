@@ -162,11 +162,25 @@ const renderPage = async () => {
       renderTasks.push(annotationRenderTask)
     }
 
-    await Promise.all(renderTasks)
-
-    emit('rendered')
+    try {
+      await Promise.all(renderTasks)
+      emit('rendered')
+    } catch (error) {
+      handleRenderError(error as Error)
+    }
   } catch (error) {
     emit('rendering-failed', error as Error)
+  }
+}
+
+// Function to handle rendering errors
+const handleRenderError = (error: Error) => {
+  if (error.name === 'RenderingCancelledException') {
+    // Rendering was cancelled; no need to do anything
+    if (isEnabledLogging) console.log('Rendering cancelled:', error.message)
+  } else {
+    // Emit rendering-failed event for other errors
+    emit('rendering-failed', error)
   }
 }
 
