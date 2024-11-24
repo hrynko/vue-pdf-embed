@@ -25,7 +25,7 @@ const emit = defineEmits([
   'rendering-failed',
 ])
 
-const isEnabledLogging = false
+const isEnabledLogging = true
 
 const root = ref<HTMLElement | null>(null)
 const isVisible = ref(false)
@@ -125,7 +125,7 @@ const renderPage = async () => {
 
     renderingTask = page.render(renderContext)
 
-    const renderTasks = [renderingTask.promise]
+    const renderTasks = [renderingTask.promise.catch(handleRenderError)]
 
     // Render text layer if enabled
     if (props.textLayer && textLayerDiv) {
