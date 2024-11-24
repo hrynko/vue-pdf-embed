@@ -214,8 +214,10 @@ const cleanup = () => {
 }
 
 onMounted(() => {
+  console.log('Mounted')
   observer = new IntersectionObserver(
     (entries) => {
+      console.log('Intersection observer', entries)
       const entry = entries[0]
       isVisible.value = entry.isIntersecting
       if (isVisible.value) {
@@ -229,6 +231,7 @@ onMounted(() => {
   )
   if (root.value) {
     observer.observe(root.value)
+    console.log('Observing', root.value)
   }
 })
 
