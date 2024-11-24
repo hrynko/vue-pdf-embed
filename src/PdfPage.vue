@@ -226,7 +226,7 @@ onMounted(() => {
       if (isVisible.value) {
         renderPage()
       } else {
-        console.log(1)
+        console.log('Page not visible', props.pageNum)
         cleanup()
       }
     },
