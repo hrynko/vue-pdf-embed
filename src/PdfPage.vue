@@ -194,25 +194,21 @@ const cleanup = () => {
   // Release canvas
   const canvas = root.value?.querySelector('canvas') as HTMLCanvasElement
   if (canvas) {
-    if (isEnabledLogging) console.log('Releasing canvas')
     releaseCanvas(canvas)
   }
 
   // Empty text and annotation layers
   const textLayerDiv = root.value?.querySelector('.textLayer') as HTMLElement
   if (textLayerDiv) {
-    if (isEnabledLogging) console.log('Emptying text layer')
     emptyElement(textLayerDiv)
   }
   const annotationLayerDiv = root.value?.querySelector('.annotationLayer') as HTMLElement
   if (annotationLayerDiv) {
-    if (isEnabledLogging) console.log('Emptying annotation layer')
     emptyElement(annotationLayerDiv)
   }
 
   // Clean up page resources
   if (page) {
-    if (isEnabledLogging) console.log('Cleaning up page resources')
     page.cleanup()
     page = null
   }

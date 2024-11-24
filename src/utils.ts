@@ -85,11 +85,22 @@ export function isDocument(document: unknown) {
 // @internal
 export function releaseCanvas(canvas: HTMLCanvasElement) {
   if (canvas) {
+    // Store the current CSS dimensions to reapply them later
+    const cssWidth = canvas.style.width
+    const cssHeight = canvas.style.height
+
+    // Reset the internal drawing buffer size to free up memory
     canvas.width = 0
     canvas.height = 0
-    const context = canvas.getContext('2d')
-    if (context) {
-      context.clearRect(0, 0, canvas.width, canvas.height)
-    }
+
+    // Reapply the CSS dimensions to maintain the layout size
+    canvas.style.width = cssWidth
+    canvas.style.height = cssHeight
+
+    // Optionally clear the canvas context (not necessary since dimensions are zero)
+    // const context = canvas.getContext('2d')
+    // if (context) {
+    //   context.clearRect(0, 0, canvas.width, canvas.height)
+    // }
   }
 }
