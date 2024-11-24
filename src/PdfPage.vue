@@ -271,11 +271,33 @@ watch(
       class="annotationLayer"
       :style="{ position: 'absolute', top: 0, left: 0 }"
     ></div>
+    <div
+      v-if="!isVisible"
+      class="placeholder"
+      :style="{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: '#444' }"
+    ></div>
   </div>
 </template>
 
 <style scoped>
 .vue-pdf-embed__page {
+  position: relative;
   overflow: hidden;
+}
+
+.vue-pdf-embed__page canvas {
+  /* Ensure the canvas fills the parent container */
+  width: 100%;
+  height: auto;
+}
+
+.textLayer,
+.annotationLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* Ensure layers fill the parent container */
+  width: 100%;
+  height: 100%;
 }
 </style>
