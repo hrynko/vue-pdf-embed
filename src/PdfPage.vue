@@ -32,7 +32,6 @@ const isVisible = ref(false)
 let observer: IntersectionObserver | null = null
 let renderingTask: { promise: Promise<void>; cancel: () => void } | null = null
 let page: PDFPageProxy | null = null
-let cancelRender: (() => void) | null = null
 
 // Inject the linkService from the parent component
 const linkService = inject('linkService') as PDFLinkService
@@ -114,9 +113,9 @@ const renderPage = async () => {
     context.clearRect(0, 0, canvas.width, canvas.height)
 
     // Cancel any previous rendering task
-    if (cancelRender) {
-      cancelRender()
-      cancelRender = null
+    if (renderingTask) {
+      renderingTask.cancel()
+      renderingTask = null
     }
 
     const renderContext = {
@@ -125,7 +124,6 @@ const renderPage = async () => {
     }
 
     renderingTask = page.render(renderContext)
-    cancelRender = renderingTask.cancel
 
     const renderTasks = [renderingTask.promise]
 
@@ -174,15 +172,10 @@ const renderPage = async () => {
 
 // Function to clean up resources when the page is not visible
 const cleanup = () => {
-  /* if (renderingTask && renderingTask.cancel) {
+  if (renderingTask) {
     renderingTask.cancel()
     renderingTask = null
-  } */
-
-  /* if (cancelRender) {
-    cancelRender()
-    cancelRender = null
-  } */
+  }
 
   // Release canvas
   const canvas = root.value?.querySelector('canvas') as HTMLCanvasElement
