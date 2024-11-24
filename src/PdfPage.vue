@@ -174,17 +174,15 @@ const renderPage = async () => {
 
 // Function to clean up resources when the page is not visible
 const cleanup = () => {
-  if (renderingTask && renderingTask.cancel) {
-    console.log(2)
+  /* if (renderingTask && renderingTask.cancel) {
     renderingTask.cancel()
     renderingTask = null
-  }
+  } */
 
-  if (cancelRender) {
-    console.log(3)
+  /* if (cancelRender) {
     cancelRender()
     cancelRender = null
-  }
+  } */
 
   // Release canvas
   const canvas = root.value?.querySelector('canvas') as HTMLCanvasElement
