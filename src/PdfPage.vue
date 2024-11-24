@@ -25,7 +25,7 @@ const emit = defineEmits([
   'rendering-failed',
 ])
 
-const isEnabledLogging = true
+const isEnabledLogging = false
 
 const root = ref<HTMLElement | null>(null)
 const isVisible = ref(false)
@@ -175,13 +175,13 @@ const renderPage = async () => {
 // Function to clean up resources when the page is not visible
 const cleanup = () => {
   if (renderingTask && renderingTask.cancel) {
-    if (isEnabledLogging) console.log('Cancelling rendering task 1/2')
+    if (isEnabledLogging) console.log('Cancelling rendering task 1/2', props.id)
     renderingTask.cancel()
     renderingTask = null
   }
 
   if (cancelRender) {
-    if (isEnabledLogging) console.log('Cancelling render task 2/2')
+    if (isEnabledLogging) console.log('Cancelling render task 2/2', props.id)
     cancelRender()
     cancelRender = null
   }
@@ -189,25 +189,25 @@ const cleanup = () => {
   // Release canvas
   const canvas = root.value?.querySelector('canvas') as HTMLCanvasElement
   if (canvas) {
-    if (isEnabledLogging) console.log('Releasing canvas')
+    if (isEnabledLogging) console.log('Releasing canvas', props.id)
     releaseCanvas(canvas)
   }
 
   // Empty text and annotation layers
   const textLayerDiv = root.value?.querySelector('.textLayer') as HTMLElement
   if (textLayerDiv) {
-    if (isEnabledLogging) console.log('Emptying text layer')
+    if (isEnabledLogging) console.log('Emptying text layer', props.id)
     emptyElement(textLayerDiv)
   }
   const annotationLayerDiv = root.value?.querySelector('.annotationLayer') as HTMLElement
   if (annotationLayerDiv) {
-    if (isEnabledLogging) console.log('Emptying annotation layer')
+    if (isEnabledLogging) console.log('Emptying annotation layer', props.id)
     emptyElement(annotationLayerDiv)
   }
 
   // Clean up page resources
   if (page) {
-    if (isEnabledLogging) console.log('Cleaning up page resources')
+    if (isEnabledLogging) console.log('Cleaning up page resources', props.id)
     page.cleanup()
     page = null
   }
@@ -221,7 +221,7 @@ onMounted(() => {
       if (isVisible.value) {
         renderPage()
       } else {
-        if (isEnabledLogging) console.log('Page is not visible, cleaning up resources')
+        if (isEnabledLogging) console.log('Page is not visible, cleaning up resources', props.id)
         cleanup()
       }
     },
