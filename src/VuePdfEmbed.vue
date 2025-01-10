@@ -39,6 +39,10 @@ const props = withDefaults(
      */
     imageResourcesPath?: string
     /**
+     * Document navigation service.
+     */
+    linkService?: PDFLinkService
+    /**
      * Number of the page to display.
      */
     page?: number
@@ -103,6 +107,8 @@ const { doc } = useVuePdfEmbed({
 const linkService = computed(() => {
   if (!doc.value || !props.annotationLayer) {
     return null
+  } else if (props.linkService) {
+    return props.linkService
   }
 
   const service = new PDFLinkService()
