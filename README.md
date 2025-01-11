@@ -161,6 +161,8 @@ The image resource path must be specified for annotations to display correctly:
 
 [Advanced Usage Demo (JSFiddle)](https://jsfiddle.net/hrynko/273a59qr)
 
+[Lazy Loading Demo (JSFiddle)](https://jsfiddle.net/hrynko/u149my7h)
+
 ## License
 
 MIT License. Please see [LICENSE file](LICENSE) for more information.
