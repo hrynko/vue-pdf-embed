@@ -80,8 +80,6 @@ export function releaseChildCanvases(el?: HTMLElement | null) {
 }
 
 // @internal
-export function isDocument(document: unknown): document is PDFDocumentProxy {
-  return document
-    ? Object.prototype.hasOwnProperty.call(document, '_pdfInfo')
-    : false
+export function isDocument(doc: unknown): doc is PDFDocumentProxy {
+  return doc ? Object.prototype.hasOwnProperty.call(doc, '_pdfInfo') : false
 }
