@@ -37,9 +37,7 @@ export function useVuePdfEmbed({
 
     if (!sourceValue) {
       return
-    }
-
-    if (isDocument(sourceValue)) {
+    } else if (isDocument(sourceValue)) {
       doc.value = sourceValue
       return
     }
