@@ -37,10 +37,8 @@ export function useVuePdfEmbed({
 
     if (!sourceValue) {
       return
-    }
-
-    if (isDocument(sourceValue)) {
-      doc.value = sourceValue as PDFDocumentProxy
+    } else if (isDocument(sourceValue)) {
+      doc.value = sourceValue
       return
     }
 
