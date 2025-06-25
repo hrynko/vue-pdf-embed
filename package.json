@@ -39,8 +39,9 @@
     "format": "prettier . --write --ignore-path .gitignore"
   },
   "dependencies": {
-    "@vueuse/core": "^10.10.0",
-    "pdfjs-dist": "^4.3.136"
+    "@vueuse/core": "^13.4.0",
+    "pdfjs-dist": "^5.3.31",
+    "vue": "^3.5.17"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",
@@ -48,7 +49,7 @@
     "@types/node": "^18.18.9",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
     "@typescript-eslint/parser": "^6.12.0",
-    "@vitejs/plugin-vue": "^4.5.0",
+    "@vitejs/plugin-vue": "^6.0.0",
     "@vue/eslint-config-typescript": "^12.0.0",
     "@vue/test-utils": "^2.4.2",
     "@vue/tsconfig": "^0.4.0",
@@ -62,15 +63,14 @@
     "lint-staged": "^15.1.0",
     "prettier": "^3.1.0",
     "rollup-plugin-copy": "^3.5.0",
-    "sass": "^1.65.1",
-    "typescript": "^5.2.2",
-    "vite": "^4.4.7",
-    "vitest": "^0.34.6",
-    "vue": "^3.3.0",
+    "sass": "^1.89.2",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.0",
+    "vitest": "^3.2.4",
     "vue-eslint-parser": "^9.3.2",
-    "vue-tsc": "^1.8.22"
+    "vue-tsc": "^2.2.10"
   },
   "peerDependencies": {
-    "vue": "^3.3.0"
+    "vue": "^3.5.0"
   }
 }
