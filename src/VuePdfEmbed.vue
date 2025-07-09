@@ -43,9 +43,9 @@ const props = withDefaults(
      */
     linkService?: PDFLinkService
     /**
-     * Number of the page to display (single page or range "1-5" or list "1,3,5").
+     * Page number(s) to display.
      */
-    page?: string | number
+    page?: number | number[]
     /**
      * Desired page rotation angle.
      */
@@ -183,7 +183,7 @@ const print = async (dpi = 300, filename = '', allPages = false) => {
 
     const pageNums =
       props.page && !allPages
-        ? parsePageInput(props.page)
+        ? [].concat(props.page)
         : [...Array(doc.value.numPages + 1).keys()].slice(1)
 
     await Promise.all(
@@ -236,31 +236,6 @@ const print = async (dpi = 300, filename = '', allPages = false) => {
 }
 
 /**
- * Parses the page input and returns an array of page numbers.
- * Supported formats:
- * - Single page (e.g., "1")
- * - Range of pages (e.g., "1-5")
- * - List of pages (e.g., "1,3,5")
- *
- * @param input - The page input as a string or number.
- * @returns An array of page numbers.
- */
-const parsePageInput = (input: string | number): number[] => {
-  if (typeof input === 'number') return [input]
-  if (typeof input === 'string') {
-    if (/^\d+$/.test(input)) return [parseInt(input, 10)]
-    if (/^\d+-\d+$/.test(input)) {
-      const [start, end] = input.split('-').map(Number)
-      return Array.from({ length: end - start + 1 }, (_, i) => start + i)
-    }
-    if (/^(\d+,)+\d+$/.test(input)) {
-      return input.split(',').map(Number)
-    }
-  }
-  return []
-}
-
-/**
  * Renders the PDF document as canvas element(s) and additional layers.
  */
 const render = async () => {
@@ -270,7 +245,7 @@ const render = async () => {
 
   try {
     pageNums.value = props.page
-      ? parsePageInput(props.page)
+      ? [].concat(props.page)
       : [...Array(doc.value.numPages + 1).keys()].slice(1)
     pageScales.value = Array(pageNums.value.length).fill(1)
 
