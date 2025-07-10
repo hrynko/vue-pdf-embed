@@ -43,9 +43,9 @@ const props = withDefaults(
      */
     linkService?: PDFLinkService
     /**
-     * Number of the page to display.
+     * Page number(s) to display.
      */
-    page?: number
+    page?: number | number[]
     /**
      * Desired page rotation angle.
      */
@@ -183,7 +183,7 @@ const print = async (dpi = 300, filename = '', allPages = false) => {
 
     const pageNums =
       props.page && !allPages
-        ? [props.page]
+        ? [].concat(props.page)
         : [...Array(doc.value.numPages + 1).keys()].slice(1)
 
     await Promise.all(
@@ -245,7 +245,7 @@ const render = async () => {
 
   try {
     pageNums.value = props.page
-      ? [props.page]
+      ? [].concat(props.page)
       : [...Array(doc.value.numPages + 1).keys()].slice(1)
     pageScales.value = Array(pageNums.value.length).fill(1)
 
