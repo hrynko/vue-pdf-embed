@@ -183,7 +183,9 @@ const print = async (dpi = 300, filename = '', allPages = false) => {
 
     const pageNums =
       props.page && !allPages
-        ? [].concat(props.page)
+        ? Array.isArray(props.page)
+          ? props.page
+          : [props.page]
         : [...Array(doc.value.numPages + 1).keys()].slice(1)
 
     await Promise.all(
@@ -245,7 +247,9 @@ const render = async () => {
 
   try {
     pageNums.value = props.page
-      ? [].concat(props.page)
+      ? Array.isArray(props.page)
+        ? props.page
+        : [props.page]
       : [...Array(doc.value.numPages + 1).keys()].slice(1)
     pageScales.value = Array(pageNums.value.length).fill(1)
 
