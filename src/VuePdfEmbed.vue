@@ -301,6 +301,10 @@ const renderPageTextLayer = async (
     textContentSource: await page.getTextContent(),
     viewport,
   }).render()
+
+  const endOfContent = document.createElement('div')
+  endOfContent.className = 'endOfContent'
+  container.append(endOfContent)
 }
 
 watch(
