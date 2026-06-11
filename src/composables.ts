@@ -171,7 +171,7 @@ export function useVuePdfEmbed({
               iframe.contentWindow!.document.body.appendChild(canvasClone)
 
               await page.render({
-                canvasContext: canvas.getContext('2d')!,
+                canvas,
                 intent: 'print',
                 transform: [printUnits, 0, 0, printUnits, 0, 0],
                 viewport,

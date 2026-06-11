@@ -19,6 +19,11 @@ vi.mock('pdfjs-dist/legacy/build/pdf.mjs', () => ({
 }))
 
 vi.mock('pdfjs-dist/legacy/web/pdf_viewer.mjs', () => ({
+  EventBus: vi.fn().mockImplementation(() => ({
+    on: vi.fn(),
+    off: vi.fn(),
+    dispatch: vi.fn(),
+  })),
   PDFLinkService: vi.fn().mockImplementation(() => ({
     setDocument: vi.fn(),
     setViewer: vi.fn(),

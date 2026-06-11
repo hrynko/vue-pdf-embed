@@ -38,7 +38,7 @@
     "format": "prettier . --write --ignore-unknown"
   },
   "dependencies": {
-    "pdfjs-dist": "^4.10.38"
+    "pdfjs-dist": "^5.7.284"
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.3",

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, shallowRef, toRef, watch } from 'vue'
 import { AnnotationLayer, TextLayer } from 'pdfjs-dist/legacy/build/pdf.mjs'
-import { PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer.mjs'
+import { EventBus, PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer.mjs'
 import type {
   OnProgressParameters,
   PDFDocumentProxy,
@@ -105,7 +105,7 @@ const linkService = computed(() => {
     return props.linkService
   }
 
-  const service = new PDFLinkService()
+  const service = new PDFLinkService({ eventBus: new EventBus() })
   service.setDocument(doc.value)
   service.setViewer({
     scrollPageIntoView: ({ pageNumber }: { pageNumber: number }) => {
@@ -248,7 +248,7 @@ const renderPage = async (
   canvas.width = viewport.width
   canvas.height = viewport.height
   await page.render({
-    canvasContext: canvas.getContext('2d')!,
+    canvas,
     viewport,
   }).promise
 }
@@ -269,7 +269,10 @@ const renderPageAnnotationLayer = async (
     accessibilityManager: null,
     annotationCanvasMap: null,
     annotationEditorUIManager: null,
+    annotationStorage: null,
+    commentManager: null,
     div: container,
+    linkService: linkService.value!,
     page,
     structTreeLayer: null,
     viewport,
@@ -370,7 +373,9 @@ defineExpose({
         :id="id && `${id}-${pageNum}`"
         class="vue-pdf-embed__page"
         :style="{
-          '--scale-factor': pageScales[i],
+          '--scale-round-x': '1px',
+          '--scale-round-y': '1px',
+          '--total-scale-factor': pageScales[i],
           position: 'relative',
         }"
       >
