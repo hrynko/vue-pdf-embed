@@ -110,7 +110,9 @@ export function useVuePdfEmbed({
       return
     }
 
-    const data = await doc.value.getData()
+    const data = doc.value.annotationStorage.size
+      ? await doc.value.saveDocument()
+      : await doc.value.getData()
     const metadata = await doc.value.getMetadata()
     const suggestedFilename =
       // @ts-expect-error: contentDispositionFilename is not typed

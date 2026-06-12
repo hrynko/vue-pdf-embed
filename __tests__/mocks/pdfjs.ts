@@ -28,11 +28,13 @@ export const createMockDoc = (
   const pages = Array.from({ length: numPages }, () => createMockPage())
   return {
     _pdfInfo: {},
+    annotationStorage: { size: 0 },
     getData: vi.fn(() => Promise.resolve(new Uint8Array([1, 2, 3]))),
     getMetadata: vi.fn(() =>
       Promise.resolve({ contentDispositionFilename: 'document.pdf' })
     ),
     getPage: vi.fn((num: number) => Promise.resolve(pages[num - 1])),
+    saveDocument: vi.fn(() => Promise.resolve(new Uint8Array([4, 5, 6]))),
     destroy: vi.fn(),
     numPages,
     ...overrides,

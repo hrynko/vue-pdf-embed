@@ -13,6 +13,7 @@ vi.mock('pdfjs-dist/legacy/build/pdf.mjs', async (importOriginal) => {
   const originalModule =
     await importOriginal<typeof import('pdfjs-dist/legacy/build/pdf.mjs')>()
   return {
+    AnnotationMode: originalModule.AnnotationMode,
     PasswordResponses: originalModule.PasswordResponses,
     getDocument: (...args: unknown[]) => mockGetDocument(...args),
   }
@@ -234,6 +235,26 @@ describe('useVuePdfEmbed', () => {
       await flushPromises()
       await result.download('file.pdf')
       expect(mockDoc.getData).toHaveBeenCalled()
+      expect(mockDoc.saveDocument).not.toHaveBeenCalled()
+      expect(downloadPdf).toHaveBeenCalledWith(
+        expect.any(Uint8Array),
+        'file.pdf'
+      )
+      app.unmount()
+    })
+
+    it('should call saveDocument when form values are present', async () => {
+      const mockDoc = createMockDoc(3, { annotationStorage: { size: 1 } })
+      mockGetDocument.mockReturnValue(createMockLoadingTask(mockDoc))
+
+      const { app, result } = withSetup(() =>
+        useVuePdfEmbed({ source: 'test.pdf' })
+      )
+
+      await flushPromises()
+      await result.download('file.pdf')
+      expect(mockDoc.saveDocument).toHaveBeenCalled()
+      expect(mockDoc.getData).not.toHaveBeenCalled()
       expect(downloadPdf).toHaveBeenCalledWith(
         expect.any(Uint8Array),
         'file.pdf'
