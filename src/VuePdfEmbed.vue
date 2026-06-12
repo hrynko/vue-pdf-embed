@@ -20,6 +20,11 @@ const props = withDefaults(
      */
     annotationLayer?: boolean
     /**
+     * Whether to render interactive form fields (AcroForm). Requires the
+     * annotation layer to be enabled.
+     */
+    forms?: boolean
+    /**
      * Desired page height.
      */
     height?: number
@@ -269,7 +274,7 @@ const renderPageAnnotationLayer = async (
     accessibilityManager: null,
     annotationCanvasMap: null,
     annotationEditorUIManager: null,
-    annotationStorage: null,
+    annotationStorage: doc.value!.annotationStorage,
     commentManager: null,
     div: container,
     linkService: linkService.value!,
@@ -282,7 +287,7 @@ const renderPageAnnotationLayer = async (
     imageResourcesPath: props.imageResourcesPath,
     linkService: linkService.value!,
     page,
-    renderForms: false,
+    renderForms: !!props.forms,
     viewport,
   })
 }
@@ -324,6 +329,7 @@ watch(
   () => [
     doc.value,
     props.annotationLayer,
+    props.forms,
     props.height,
     props.imageResourcesPath,
     props.page,

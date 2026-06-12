@@ -8,7 +8,11 @@ import {
   type MaybeRef,
   type ShallowRef,
 } from 'vue'
-import { PasswordResponses, getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
+import {
+  AnnotationMode,
+  PasswordResponses,
+  getDocument,
+} from 'pdfjs-dist/legacy/build/pdf.mjs'
 import type {
   OnProgressParameters,
   PDFDocumentLoadingTask,
@@ -171,6 +175,7 @@ export function useVuePdfEmbed({
               iframe.contentWindow!.document.body.appendChild(canvasClone)
 
               await page.render({
+                annotationMode: AnnotationMode.ENABLE_STORAGE,
                 canvas,
                 intent: 'print',
                 transform: [printUnits, 0, 0, printUnits, 0, 0],
