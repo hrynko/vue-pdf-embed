@@ -13,7 +13,7 @@ import type {
 import type { PasswordRequestParams, Source } from './types'
 import { emptyElement, releaseChildCanvases } from './utils'
 import { TextHighlighter } from './highlighter'
-import { usePdfDocument, usePdfSearch } from './composables'
+import { usePdfDocument } from './composables'
 
 const props = withDefaults(
   defineProps<{
@@ -109,12 +109,6 @@ const { doc, download, print } = usePdfDocument({
   },
   source: toRef(props, 'source'),
 })
-
-const internalSearch = !props.findController ? usePdfSearch(doc) : null
-
-const findController = computed(
-  () => props.findController ?? internalSearch?.controller
-)
 
 const linkService = computed(() => {
   if (!doc.value || !props.annotationLayer) {
@@ -328,9 +322,9 @@ const renderPageTextLayer = async (
   endOfContent.className = 'endOfContent'
   container.append(endOfContent)
 
-  if (findController.value) {
+  if (props.findController) {
     const highlighter = new TextHighlighter({
-      findController: findController.value,
+      findController: props.findController,
       pageIndex: page.pageNumber - 1,
     })
     highlighter.setTextMapping(
@@ -396,17 +390,6 @@ defineExpose({
   download,
   print: (dpi?: number, filename?: string, allPages = false) =>
     print(dpi, filename, allPages ? undefined : props.page),
-  search: internalSearch
-    ? {
-        clear: internalSearch.clear,
-        currentMatch: internalSearch.currentMatch,
-        currentPage: internalSearch.currentPage,
-        find: internalSearch.find,
-        matchCount: internalSearch.matchCount,
-        next: internalSearch.next,
-        previous: internalSearch.previous,
-      }
-    : undefined,
 })
 </script>
 
