@@ -1,11 +1,13 @@
 import {
   onBeforeUnmount,
+  ref,
   shallowRef,
   toValue,
   watch,
   watchEffect,
   type ComputedRef,
   type MaybeRef,
+  type MaybeRefOrGetter,
   type ShallowRef,
 } from 'vue'
 import {
@@ -13,6 +15,11 @@ import {
   PasswordResponses,
   getDocument,
 } from 'pdfjs-dist/legacy/build/pdf.mjs'
+import {
+  EventBus,
+  PDFFindController,
+} from 'pdfjs-dist/legacy/web/pdf_viewer.mjs'
+import type { PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer.mjs'
 import type {
   OnProgressParameters,
   PDFDocumentLoadingTask,
@@ -29,7 +36,12 @@ import {
   releaseChildCanvases,
 } from './utils'
 
-export function useVuePdfEmbed({
+/**
+ * @deprecated renamed to {@link usePdfDocument}
+ */
+export const useVuePdfEmbed = usePdfDocument
+
+export function usePdfDocument({
   onError,
   onPasswordRequest,
   onProgress,
@@ -212,5 +224,100 @@ export function useVuePdfEmbed({
     doc,
     download,
     print,
+  }
+}
+
+export type SearchOptions = {
+  caseSensitive?: boolean
+  entireWord?: boolean
+  highlightAll?: boolean
+  matchDiacritics?: boolean
+}
+
+export function usePdfSearch(doc: MaybeRefOrGetter<PDFDocumentProxy | null>) {
+  const currentMatch = ref(0)
+  const currentPage = ref(1)
+  const defaultOptions: Required<SearchOptions> = {
+    caseSensitive: false,
+    entireWord: false,
+    matchDiacritics: false,
+    highlightAll: true,
+  }
+  const eventBus = new EventBus()
+  const matchCount = ref(0)
+  const query = ref('')
+  let activeOptions: Required<SearchOptions> = { ...defaultOptions }
+
+  const findController = new PDFFindController({
+    eventBus,
+    linkService: {
+      get page() {
+        return currentPage.value
+      },
+      set page(value: number) {
+        currentPage.value = value
+      },
+      get pagesCount() {
+        return toValue(doc)?.numPages ?? 0
+      },
+    } as PDFLinkService,
+  })
+
+  const dispatch = (type: string, findPrevious = false) => {
+    eventBus.dispatch('find', {
+      type,
+      query: query.value,
+      findPrevious,
+      ...activeOptions,
+    })
+  }
+
+  const find = (newQuery: string, options: SearchOptions = {}) => {
+    query.value = newQuery
+    activeOptions = { ...defaultOptions, ...options }
+    dispatch('')
+  }
+
+  const clear = () => {
+    query.value = ''
+    activeOptions = { ...defaultOptions }
+    currentPage.value = 1
+    currentMatch.value = 0
+    matchCount.value = 0
+    dispatch('')
+  }
+
+  watch(
+    () => toValue(doc),
+    (newDoc) => {
+      if (newDoc) {
+        clear()
+        findController.setDocument(newDoc)
+      }
+    },
+    { immediate: true }
+  )
+
+  const handleMatchUpdate = ({
+    matchesCount,
+  }: {
+    matchesCount?: { current: number; total: number }
+  }) => {
+    matchCount.value = matchesCount?.total ?? 0
+    currentMatch.value = matchesCount?.current ?? 0
+  }
+
+  eventBus.on('updatefindmatchescount', handleMatchUpdate)
+  eventBus.on('updatefindcontrolstate', handleMatchUpdate)
+
+  return {
+    controller: findController,
+    find,
+    next: () => dispatch('again', false),
+    previous: () => dispatch('again', true),
+    clear,
+    currentPage,
+    currentMatch,
+    matchCount,
   }
 }

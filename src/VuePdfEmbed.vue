@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, ref, shallowRef, toRef, watch } from 'vue'
 import { AnnotationLayer, TextLayer } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import { EventBus, PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer.mjs'
+import type { PDFFindController } from 'pdfjs-dist/legacy/web/pdf_viewer.mjs'
 import type {
   OnProgressParameters,
   PDFDocumentProxy,
@@ -11,7 +12,8 @@ import type {
 
 import type { PasswordRequestParams, Source } from './types'
 import { emptyElement, releaseChildCanvases } from './utils'
-import { useVuePdfEmbed } from './composables'
+import { TextHighlighter } from './highlighter'
+import { usePdfDocument, usePdfSearch } from './composables'
 
 const props = withDefaults(
   defineProps<{
@@ -19,6 +21,11 @@ const props = withDefaults(
      * Whether to enable an annotation layer.
      */
     annotationLayer?: boolean
+    /**
+     * Find controller for highlighting text matches. Requires the text layer
+     * to be enabled.
+     */
+    findController?: PDFFindController
     /**
      * Whether to render interactive form fields (AcroForm). Requires the
      * annotation layer to be enabled.
@@ -85,11 +92,11 @@ const emit = defineEmits<{
 const pageNums = shallowRef<number[]>([])
 const pageScales = ref<number[]>([])
 const root = shallowRef<HTMLDivElement | null>(null)
-
+let highlighters: TextHighlighter[] = []
 let renderingController: { isAborted: boolean; promise: Promise<void> } | null =
   null
 
-const { doc, download, print } = useVuePdfEmbed({
+const { doc, download, print } = usePdfDocument({
   onError: (e) => {
     pageNums.value = []
     emit('loading-failed', e)
@@ -102,6 +109,12 @@ const { doc, download, print } = useVuePdfEmbed({
   },
   source: toRef(props, 'source'),
 })
+
+const internalSearch = !props.findController ? usePdfSearch(doc) : null
+
+const findController = computed(
+  () => props.findController ?? internalSearch?.controller
+)
 
 const linkService = computed(() => {
   if (!doc.value || !props.annotationLayer) {
@@ -149,6 +162,9 @@ const render = async () => {
   }
 
   try {
+    highlighters.forEach((highlighter) => highlighter.disable())
+    highlighters = []
+
     pageNums.value = props.page
       ? Array.isArray(props.page)
         ? props.page
@@ -173,8 +189,6 @@ const render = async () => {
         const [actualWidth, actualHeight] = getPageDimensions(
           isTransposed ? viewWidth / viewHeight : viewHeight / viewWidth
         )
-        const cssWidth = `${Math.floor(actualWidth)}px`
-        const cssHeight = `${Math.floor(actualHeight)}px`
         const pageWidth = isTransposed ? viewHeight : viewWidth
         const pageScale = actualWidth / pageWidth
         const viewport = page.getViewport({
@@ -183,10 +197,9 @@ const render = async () => {
         })
 
         pageScales.value[i] = pageScale
-
         canvas.style.display = 'block'
-        canvas.style.width = cssWidth
-        canvas.style.height = cssHeight
+        canvas.style.width = `${Math.floor(actualWidth)}px`
+        canvas.style.height = `${Math.floor(actualHeight)}px`
 
         const renderTasks = [
           renderPage(
@@ -304,15 +317,29 @@ const renderPageTextLayer = async (
   container: HTMLElement
 ) => {
   emptyElement(container)
-  await new TextLayer({
+  const textLayer = new TextLayer({
     container,
     textContentSource: await page.getTextContent(),
     viewport,
-  }).render()
+  })
+  await textLayer.render()
 
   const endOfContent = document.createElement('div')
   endOfContent.className = 'endOfContent'
   container.append(endOfContent)
+
+  if (findController.value) {
+    const highlighter = new TextHighlighter({
+      findController: findController.value,
+      pageIndex: page.pageNumber - 1,
+    })
+    highlighter.setTextMapping(
+      textLayer.textDivs,
+      textLayer.textContentItemsStr
+    )
+    highlighter.enable()
+    highlighters.push(highlighter)
+  }
 }
 
 watch(
@@ -329,6 +356,7 @@ watch(
   () => [
     doc.value,
     props.annotationLayer,
+    props.findController,
     props.forms,
     props.height,
     props.imageResourcesPath,
@@ -359,6 +387,7 @@ watch(
 )
 
 onBeforeUnmount(() => {
+  highlighters.forEach((highlighter) => highlighter.disable())
   releaseChildCanvases(root.value)
 })
 
@@ -367,6 +396,17 @@ defineExpose({
   download,
   print: (dpi?: number, filename?: string, allPages = false) =>
     print(dpi, filename, allPages ? undefined : props.page),
+  search: internalSearch
+    ? {
+        clear: internalSearch.clear,
+        currentMatch: internalSearch.currentMatch,
+        currentPage: internalSearch.currentPage,
+        find: internalSearch.find,
+        matchCount: internalSearch.matchCount,
+        next: internalSearch.next,
+        previous: internalSearch.previous,
+      }
+    : undefined,
 })
 </script>
 

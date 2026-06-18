@@ -24,6 +24,10 @@ vi.mock('pdfjs-dist/legacy/web/pdf_viewer.mjs', () => ({
     off: vi.fn(),
     dispatch: vi.fn(),
   })),
+  PDFFindController: vi.fn().mockImplementation(({ eventBus }) => ({
+    _eventBus: eventBus,
+    setDocument: vi.fn(),
+  })),
   PDFLinkService: vi.fn().mockImplementation(() => ({
     setDocument: vi.fn(),
     setViewer: vi.fn(),
@@ -335,6 +339,43 @@ describe('VuePdfEmbed', () => {
 
       await flushPromises()
       expect(wrapper.find('.annotationLayer').exists()).toBe(true)
+    })
+  })
+
+  describe('search', () => {
+    it('should expose search controls', async () => {
+      mockGetDocument.mockReturnValue(createMockLoadingTask(createMockDoc()))
+
+      const wrapper = mount(VuePdfEmbed, {
+        props: {
+          source: 'test.pdf',
+          textLayer: true,
+        },
+      })
+
+      await flushPromises()
+      const vm = wrapper.vm as unknown as { search: Record<string, unknown> }
+      expect(typeof vm.search.find).toBe('function')
+      expect(typeof vm.search.next).toBe('function')
+      expect(typeof vm.search.previous).toBe('function')
+      expect((vm.search.matchCount as { value: number }).value).toBe(0)
+      expect(() => (vm.search.find as (q: string) => void)('foo')).not.toThrow()
+    })
+
+    it('should not expose search controls when controller is provied', async () => {
+      mockGetDocument.mockReturnValue(createMockLoadingTask(createMockDoc()))
+
+      const wrapper = mount(VuePdfEmbed, {
+        props: {
+          findController: {} as never,
+          source: 'test.pdf',
+          textLayer: true,
+        },
+      })
+
+      await flushPromises()
+      const vm = wrapper.vm as unknown as Record<string, unknown>
+      expect(vm.search).toBeUndefined()
     })
   })
 })
