@@ -68,22 +68,22 @@ const pdfSource = '<PDF_URL>'
 | linkService        | `PDFLinkService`                               |                                                         | document navigation service (replaces the default one that emits `internal-link-clicked`) |
 | page               | `number` <br> `number[]`                       | `1` to the last page number                             | page number(s) to display (displaying all pages if not specified)                         |
 | rotation           | `number`                                       | `0`, `90`, `180`, `270` (multiples of `90`)             | desired page rotation angle in degrees                                                    |
-| scale              | `number`                                       | rational numbers                                        | desired page viewport scale                                                               |
+| scale              | `number`                                       | rational numbers                                        | rendering resolution multiplier (controls sharpness)                                      |
 | source             | `string` <br> `object` <br> `PDFDocumentProxy` | document URL or Base64 or typed array or document proxy | source of the document to display                                                         |
 | textLayer          | `boolean`                                      |                                                         | whether the text layer should be enabled                                                  |
 | width              | `number`                                       | natural numbers                                         | desired page width in pixels                                                              |
 
 ### Events
 
-| Name                  | Value                                                                   | Description                                    |
-| --------------------- | ----------------------------------------------------------------------- | ---------------------------------------------- |
-| internal-link-clicked | destination page number                                                 | an internal link was clicked                   |
-| loaded                | PDF document proxy                                                      | finished loading the document                  |
-| loading-failed        | error object                                                            | failed to load the document                    |
-| password-requested    | object with `callback` function and `isWrongPassword` flag              | a password is required to display the document |
-| progress              | object with number of `loaded` pages along with `total` number of pages | tracks the document's loading progress         |
-| rendered              | –                                                                       | finished rendering the document                |
-| rendering-failed      | error object                                                            | failed to render the document                  |
+| Name                  | Value                                                      | Description                                    |
+| --------------------- | ---------------------------------------------------------- | ---------------------------------------------- |
+| internal-link-clicked | destination page number                                    | an internal link was clicked                   |
+| loaded                | PDF document proxy                                         | finished loading the document                  |
+| loading-failed        | error object                                               | failed to load the document                    |
+| password-requested    | object with `callback` function and `isWrongPassword` flag | a password is required to display the document |
+| progress              | object with `loaded` and `total` byte counts               | tracks the document's loading progress         |
+| rendered              | –                                                          | finished rendering the document                |
+| rendering-failed      | error object                                               | failed to render the document                  |
 
 ### Slots
 
@@ -105,7 +105,7 @@ const pdfSource = '<PDF_URL>'
 
 ### Server-Side Rendering
 
-This is a client-side library, so it is important to keep this in mind when working with SSR (server-side rendering) frameworks such as Nuxt. Depending on the framework used, you may need to properly configure the library import or use a wrapper.
+This is a client-side library that relies on browser APIs and cannot be server-rendered. Wrap it in a client-only boundary (Nuxt's `<ClientOnly>` or equivalent); if that doesn't keep it out of the server bundle, also lazy-load it with `defineAsyncComponent`.
 
 ### Web Worker Loading
 
@@ -127,13 +127,13 @@ GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
 
 ### Document Loading
 
-Typically, document loading is internally handled within the component. However, for optimization purposes, the document can be loaded with the `useVuePdfEmbed` composable and then passed to the component via the `source` prop (e.g., when sharing the source between multiple instances of the component).
+Typically, document loading is internally handled within the component. However, for optimization purposes, the document can be loaded with the `usePdfDocument` composable and then passed to the component via the `source` prop (e.g., when sharing the source between multiple instances of the component).
 
 ```vue
 <script setup>
-import VuePdfEmbed, { useVuePdfEmbed } from 'vue-pdf-embed'
+import VuePdfEmbed, { usePdfDocument } from 'vue-pdf-embed'
 
-const { doc } = useVuePdfEmbed({ source: '<PDF_URL>' })
+const { doc } = usePdfDocument({ source: '<PDF_URL>' })
 </script>
 
 <template>
@@ -160,6 +160,17 @@ The image resource path must be specified for annotations to display correctly:
 <VuePdfEmbed
   image-resources-path="https://unpkg.com/pdfjs-dist/web/images/"
   source="<PDF_URL>"
+/>
+```
+
+For documents containing JPEG 2000 or JBIG2 images, the path to WebAssembly decoders must be specified:
+
+```vue
+<VuePdfEmbed
+  :source="{
+    url: '<PDF_URL>',
+    wasmUrl: 'https://unpkg.com/pdfjs-dist/wasm/',
+  }"
 />
 ```
 

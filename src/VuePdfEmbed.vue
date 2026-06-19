@@ -57,7 +57,8 @@ const props = withDefaults(
      */
     rotation?: number
     /**
-     * Desired ratio of canvas size to document size.
+     * Multiplier for the canvas rendering resolution, controlling the
+     * sharpness of the rendered page.
      */
     scale?: number
     /**
