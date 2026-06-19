@@ -236,7 +236,7 @@ export type SearchOptions = {
 
 export function usePdfSearch(doc: MaybeRefOrGetter<PDFDocumentProxy | null>) {
   const currentMatch = ref(0)
-  const currentPage = ref(1)
+  const currentMatchPage = ref(1)
   const defaultOptions: Required<SearchOptions> = {
     caseSensitive: false,
     entireWord: false,
@@ -252,10 +252,10 @@ export function usePdfSearch(doc: MaybeRefOrGetter<PDFDocumentProxy | null>) {
     eventBus,
     linkService: {
       get page() {
-        return currentPage.value
+        return currentMatchPage.value
       },
       set page(value: number) {
-        currentPage.value = value
+        currentMatchPage.value = value
       },
       get pagesCount() {
         return toValue(doc)?.numPages ?? 0
@@ -281,7 +281,7 @@ export function usePdfSearch(doc: MaybeRefOrGetter<PDFDocumentProxy | null>) {
   const clear = () => {
     query.value = ''
     activeOptions = { ...defaultOptions }
-    currentPage.value = 1
+    currentMatchPage.value = 1
     currentMatch.value = 0
     matchCount.value = 0
     dispatch('')
@@ -311,13 +311,13 @@ export function usePdfSearch(doc: MaybeRefOrGetter<PDFDocumentProxy | null>) {
   eventBus.on('updatefindcontrolstate', handleMatchUpdate)
 
   return {
-    controller: findController,
+    clear,
+    currentMatch,
+    currentMatchPage,
     find,
+    findController,
+    matchCount,
     next: () => dispatch('again', false),
     previous: () => dispatch('again', true),
-    clear,
-    currentPage,
-    currentMatch,
-    matchCount,
   }
 }
