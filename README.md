@@ -141,6 +141,24 @@ const { doc } = usePdfDocument({ source: '<PDF_URL>' })
 </template>
 ```
 
+### Text Search
+
+Full-text search over a loaded document is available through the `usePdfSearch` composable. Pass its `findController` to the `:find-controller` prop (with the text layer enabled) to highlight matches in place:
+
+```vue
+<script setup>
+import VuePdfEmbed, { usePdfDocument, usePdfSearch } from 'vue-pdf-embed'
+
+const { doc } = usePdfDocument({ source: '<PDF_URL>' })
+const { find, findController } = usePdfSearch(doc)
+</script>
+
+<template>
+  <input @keydown.enter="find($event.target.value)" />
+  <VuePdfEmbed :find-controller="findController" text-layer :source="doc" />
+</template>
+```
+
 ### Resources
 
 The path to predefined CMaps should be provided to ensure correct rendering of documents with non-Latin characters and to avoid CMap-related errors:
