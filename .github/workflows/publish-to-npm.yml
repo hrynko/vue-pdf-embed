@@ -1,9 +1,9 @@
 name: Publish to npm
 
 on:
-  release:
-    types:
-      - published
+  push:
+    tags:
+      - v*
 
 permissions:
   contents: read
