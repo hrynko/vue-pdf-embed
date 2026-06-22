@@ -361,7 +361,7 @@ describe('usePdfSearch', () => {
     const { app, result } = withSetup(() => usePdfSearch(source))
 
     await flushPromises()
-    expect(result.controller.setDocument).toHaveBeenCalledWith(mockDoc)
+    expect(result.findController.setDocument).toHaveBeenCalledWith(mockDoc)
     app.unmount()
   })
 
@@ -369,7 +369,7 @@ describe('usePdfSearch', () => {
     const source = shallowRef(createMockDoc() as unknown as PDFDocumentProxy)
 
     const { app, result } = withSetup(() => usePdfSearch(source))
-    const dispatchSpy = vi.spyOn(result.controller._eventBus, 'dispatch')
+    const dispatchSpy = vi.spyOn(result.findController._eventBus, 'dispatch')
 
     await flushPromises()
     result.find('foo')
@@ -384,7 +384,7 @@ describe('usePdfSearch', () => {
     const source = shallowRef(createMockDoc() as unknown as PDFDocumentProxy)
 
     const { app, result } = withSetup(() => usePdfSearch(source))
-    const dispatchSpy = vi.spyOn(result.controller._eventBus, 'dispatch')
+    const dispatchSpy = vi.spyOn(result.findController._eventBus, 'dispatch')
 
     await flushPromises()
     result.find('foo', { caseSensitive: true, matchDiacritics: true })
@@ -405,7 +405,7 @@ describe('usePdfSearch', () => {
     const { app, result } = withSetup(() => usePdfSearch(source))
 
     await flushPromises()
-    result.controller._eventBus.dispatch('updatefindmatchescount', {
+    result.findController._eventBus.dispatch('updatefindmatchescount', {
       matchesCount: { current: 2, total: 7 },
     })
     expect(result.currentMatch.value).toBe(2)
