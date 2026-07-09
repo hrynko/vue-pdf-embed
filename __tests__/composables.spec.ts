@@ -4,7 +4,7 @@ import { flushPromises } from '@vue/test-utils'
 import { PasswordResponses, type PDFDocumentProxy } from 'pdfjs-dist'
 
 import { createMockDoc, createMockLoadingTask } from './mocks/pdfjs'
-import { createPrintIframe, downloadPdf } from '../src/utils'
+import { createPrintIframe, downloadPdf } from '../src/internal/utils'
 import { usePdfDocument, usePdfSearch } from '../src/composables'
 
 const mockGetDocument = vi.fn()
@@ -39,7 +39,7 @@ vi.mock('pdfjs-dist/legacy/build/pdf.mjs', async (importOriginal) => {
   }
 })
 
-vi.mock('../src/utils', async (importOriginal) => {
+vi.mock('../src/internal/utils', async (importOriginal) => {
   return {
     ...(await importOriginal()),
     addPrintStyles: vi.fn(),

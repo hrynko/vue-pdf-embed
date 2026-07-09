@@ -8,7 +8,7 @@ import {
   isDocument,
   releaseCanvas,
   releaseChildCanvases,
-} from '../src/utils'
+} from '../src/internal/utils'
 
 describe('addPrintStyles', () => {
   let iframe: HTMLIFrameElement

@@ -11,8 +11,8 @@ import type {
 } from 'pdfjs-dist'
 
 import type { PasswordRequestParams, Source } from './types'
-import { emptyElement, releaseChildCanvases } from './utils'
-import { TextHighlighter } from './highlighter'
+import { emptyElement, releaseChildCanvases } from './internal/utils'
+import { TextHighlighter } from './internal/highlighter'
 import { usePdfDocument } from './composables'
 
 const props = withDefaults(
