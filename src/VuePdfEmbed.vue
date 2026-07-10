@@ -49,6 +49,11 @@ const props = withDefaults(
      */
     linkService?: PDFLinkService
     /**
+     * Whether to scroll the selected search match into view. Defaults to
+     * `true`.
+     */
+    matchScrolling?: boolean
+    /**
      * Page number(s) to display.
      */
     page?: number | number[]
@@ -75,6 +80,7 @@ const props = withDefaults(
     width?: number
   }>(),
   {
+    matchScrolling: true,
     rotation: 0,
     scale: 1,
   }
@@ -326,6 +332,7 @@ const renderPageTextLayer = async (
   if (props.findController) {
     const highlighter = new TextHighlighter({
       findController: props.findController,
+      matchScrolling: props.matchScrolling,
       pageIndex: page.pageNumber - 1,
     })
     highlighter.setTextMapping(
@@ -355,6 +362,7 @@ watch(
     props.forms,
     props.height,
     props.imageResourcesPath,
+    props.matchScrolling,
     props.page,
     props.rotation,
     props.scale,

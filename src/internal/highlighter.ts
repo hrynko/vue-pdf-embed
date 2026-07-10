@@ -9,18 +9,22 @@ export class TextHighlighter {
   private enabled = false
   private findController: PDFFindController
   private matches: Match[] = []
+  private matchScrolling: boolean
   private pageIndex: number
   private textContentItemsStr: string[] = []
   private textDivs: HTMLElement[] = []
 
   constructor({
     findController,
+    matchScrolling,
     pageIndex,
   }: {
     findController: PDFFindController
+    matchScrolling: boolean
     pageIndex: number
   }) {
     this.findController = findController
+    this.matchScrolling = matchScrolling
     this.pageIndex = pageIndex
   }
 
@@ -204,7 +208,7 @@ export class TextHighlighter {
       }
       prevEnd = end
 
-      if (isSelected) {
+      if (isSelected && this.matchScrolling) {
         this.findController.scrollMatchIntoView({
           element: selectedSpan!,
           pageIndex: this.pageIndex,
