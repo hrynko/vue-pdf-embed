@@ -100,8 +100,8 @@ const pageNums = shallowRef<number[]>([])
 const pageScales = ref<number[]>([])
 const root = shallowRef<HTMLDivElement | null>(null)
 let highlighters: TextHighlighter[] = []
-let renderingController: { isAborted: boolean; promise: Promise<void> } | null =
-  null
+let renderingController: { isAborted: boolean } | null = null
+let renderingQueue: Promise<void> = Promise.resolve()
 
 const { doc, download, print } = usePdfDocument({
   onError: (e) => {
@@ -157,8 +157,8 @@ const getPageDimensions = (ratio: number): [number, number] => {
 /**
  * Renders the PDF document as canvas element(s) and additional layers.
  */
-const render = async () => {
-  if (!doc.value || renderingController?.isAborted) {
+const render = async (controller: { isAborted: boolean }) => {
+  if (!doc.value || controller.isAborted) {
     return
   }
 
@@ -176,7 +176,7 @@ const render = async () => {
     await Promise.all(
       pageNums.value.map(async (pageNum, i) => {
         const page = await doc.value!.getPage(pageNum)
-        if (renderingController?.isAborted) {
+        if (controller.isAborted) {
           return
         }
         const pageRotation =
@@ -240,14 +240,14 @@ const render = async () => {
       })
     )
 
-    if (!renderingController?.isAborted) {
+    if (!controller.isAborted) {
       emit('rendered')
     }
   } catch (e) {
     pageNums.value = []
     pageScales.value = []
 
-    if (!renderingController?.isAborted) {
+    if (!controller.isAborted) {
       emit('rendering-failed', e as Error)
     }
   }
@@ -369,27 +369,38 @@ watch(
     props.textLayer,
     props.width,
   ],
-  async ([newDoc]) => {
+  ([newDoc]) => {
     if (newDoc) {
       if (renderingController) {
         renderingController.isAborted = true
-        await renderingController.promise
       }
 
-      releaseChildCanvases(root.value)
-      renderingController = {
-        isAborted: false,
-        promise: render(),
-      }
+      const controller = { isAborted: false }
+      renderingController = controller
 
-      await renderingController.promise
-      renderingController = null
+      renderingQueue = renderingQueue
+        .then(() => {
+          if (controller.isAborted) {
+            return
+          }
+
+          releaseChildCanvases(root.value)
+          return render(controller)
+        })
+        .finally(() => {
+          if (renderingController === controller) {
+            renderingController = null
+          }
+        })
     }
   },
   { immediate: true }
 )
 
 onBeforeUnmount(() => {
+  if (renderingController) {
+    renderingController.isAborted = true
+  }
   highlighters.forEach((highlighter) => highlighter.disable())
   releaseChildCanvases(root.value)
 })
