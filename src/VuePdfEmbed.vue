@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, shallowRef, toRef, watch } from 'vue'
 import { AnnotationLayer, TextLayer } from 'pdfjs-dist/legacy/build/pdf.mjs'
-import { EventBus, PDFLinkService } from 'pdfjs-dist/legacy/web/pdf_viewer.mjs'
-import type { PDFFindController } from 'pdfjs-dist/legacy/web/pdf_viewer.mjs'
+import {
+  EventBus,
+  PDFLinkService,
+  type PDFFindController,
+} from 'pdfjs-dist/legacy/web/pdf_viewer.mjs'
 import type {
   OnProgressParameters,
   PDFDocumentProxy,
@@ -11,7 +14,11 @@ import type {
 } from 'pdfjs-dist'
 
 import type { PasswordRequestParams, Source } from './types'
-import { emptyElement, releaseChildCanvases } from './internal/utils'
+import {
+  emptyElement,
+  isCancellationError,
+  releaseChildCanvases,
+} from './internal/utils'
 import { TextHighlighter } from './internal/highlighter'
 import { usePdfDocument } from './composables'
 
@@ -100,8 +107,6 @@ const pageNums = shallowRef<number[]>([])
 const pageScales = ref<number[]>([])
 const root = shallowRef<HTMLDivElement | null>(null)
 let highlighters: TextHighlighter[] = []
-let renderingController: { isAborted: boolean } | null = null
-let renderingQueue: Promise<void> = Promise.resolve()
 
 const { doc, download, print } = usePdfDocument({
   onError: (e) => {
@@ -156,9 +161,10 @@ const getPageDimensions = (ratio: number): [number, number] => {
 
 /**
  * Renders the PDF document as canvas element(s) and additional layers.
+ * @param signal - Abort signal.
  */
-const render = async (controller: { isAborted: boolean }) => {
-  if (!doc.value || controller.isAborted) {
+const render = async (signal: AbortSignal) => {
+  if (!doc.value || signal.aborted) {
     return
   }
 
@@ -176,7 +182,7 @@ const render = async (controller: { isAborted: boolean }) => {
     await Promise.all(
       pageNums.value.map(async (pageNum, i) => {
         const page = await doc.value!.getPage(pageNum)
-        if (controller.isAborted) {
+        if (signal.aborted) {
           return
         }
         const pageRotation =
@@ -208,7 +214,8 @@ const render = async (controller: { isAborted: boolean }) => {
             viewport.clone({
               scale: viewport.scale * window.devicePixelRatio * props.scale,
             }),
-            canvas
+            canvas,
+            signal
           ),
         ]
 
@@ -219,7 +226,8 @@ const render = async (controller: { isAborted: boolean }) => {
               viewport.clone({
                 dontFlip: true,
               }),
-              div1
+              div1,
+              signal
             )
           )
         }
@@ -231,7 +239,8 @@ const render = async (controller: { isAborted: boolean }) => {
               viewport.clone({
                 dontFlip: true,
               }),
-              div2 || div1
+              div2 || div1,
+              signal
             )
           )
         }
@@ -240,16 +249,17 @@ const render = async (controller: { isAborted: boolean }) => {
       })
     )
 
-    if (!controller.isAborted) {
+    if (!signal.aborted) {
       emit('rendered')
     }
   } catch (e) {
+    if (signal.aborted || isCancellationError(e)) {
+      return
+    }
+
     pageNums.value = []
     pageScales.value = []
-
-    if (!controller.isAborted) {
-      emit('rendering-failed', e as Error)
-    }
+    emit('rendering-failed', e as Error)
   }
 }
 
@@ -258,18 +268,29 @@ const render = async (controller: { isAborted: boolean }) => {
  * @param page - Page proxy.
  * @param viewport - Page viewport.
  * @param canvas - HTML canvas.
+ * @param signal - Abort signal.
  */
 const renderPage = async (
   page: PDFPageProxy,
   viewport: PageViewport,
-  canvas: HTMLCanvasElement
+  canvas: HTMLCanvasElement,
+  signal: AbortSignal
 ) => {
   canvas.width = viewport.width
   canvas.height = viewport.height
-  await page.render({
-    canvas,
-    viewport,
-  }).promise
+  const task = page.render({ canvas, viewport })
+  const abort = () => task.cancel?.()
+  signal.addEventListener('abort', abort, { once: true })
+
+  try {
+    await task.promise
+  } catch (e) {
+    if (!isCancellationError(e)) {
+      throw e
+    }
+  } finally {
+    signal.removeEventListener('abort', abort)
+  }
 }
 
 /**
@@ -277,13 +298,21 @@ const renderPage = async (
  * @param page - Page proxy.
  * @param viewport - Page viewport.
  * @param container - HTML container.
+ * @param signal - Abort signal.
  */
 const renderPageAnnotationLayer = async (
   page: PDFPageProxy,
   viewport: PageViewport,
-  container: HTMLDivElement
+  container: HTMLDivElement,
+  signal: AbortSignal
 ) => {
+  const annotations = await page.getAnnotations()
+  if (signal.aborted) {
+    return
+  }
+
   emptyElement(container)
+
   await new AnnotationLayer({
     accessibilityManager: null,
     annotationCanvasMap: null,
@@ -296,7 +325,7 @@ const renderPageAnnotationLayer = async (
     structTreeLayer: null,
     viewport,
   }).render({
-    annotations: await page.getAnnotations(),
+    annotations,
     div: container,
     imageResourcesPath: props.imageResourcesPath,
     linkService: linkService.value!,
@@ -311,19 +340,42 @@ const renderPageAnnotationLayer = async (
  * @param page - Page proxy.
  * @param viewport - Page viewport.
  * @param container - HTML container.
+ * @param signal - Abort signal.
  */
 const renderPageTextLayer = async (
   page: PDFPageProxy,
   viewport: PageViewport,
-  container: HTMLElement
+  container: HTMLElement,
+  signal: AbortSignal
 ) => {
+  const textContentSource = await page.getTextContent()
+  if (signal.aborted) {
+    return
+  }
+
   emptyElement(container)
   const textLayer = new TextLayer({
     container,
-    textContentSource: await page.getTextContent(),
+    textContentSource,
     viewport,
   })
-  await textLayer.render()
+  const abort = () => textLayer.cancel?.()
+  signal.addEventListener('abort', abort, { once: true })
+
+  try {
+    await textLayer.render()
+  } catch (e) {
+    if (!isCancellationError(e)) {
+      throw e
+    }
+    return
+  } finally {
+    signal.removeEventListener('abort', abort)
+  }
+
+  if (signal.aborted) {
+    return
+  }
 
   const endOfContent = document.createElement('div')
   endOfContent.className = 'endOfContent'
@@ -369,38 +421,17 @@ watch(
     props.textLayer,
     props.width,
   ],
-  ([newDoc]) => {
+  ([newDoc], _, onCleanup) => {
     if (newDoc) {
-      if (renderingController) {
-        renderingController.isAborted = true
-      }
-
-      const controller = { isAborted: false }
-      renderingController = controller
-
-      renderingQueue = renderingQueue
-        .then(() => {
-          if (controller.isAborted) {
-            return
-          }
-
-          releaseChildCanvases(root.value)
-          return render(controller)
-        })
-        .finally(() => {
-          if (renderingController === controller) {
-            renderingController = null
-          }
-        })
+      const controller = new AbortController()
+      onCleanup(() => controller.abort())
+      render(controller.signal)
     }
   },
   { immediate: true }
 )
 
 onBeforeUnmount(() => {
-  if (renderingController) {
-    renderingController.isAborted = true
-  }
   highlighters.forEach((highlighter) => highlighter.disable())
   releaseChildCanvases(root.value)
 })

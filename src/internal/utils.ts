@@ -76,6 +76,14 @@ export function emptyElement(el?: HTMLElement | null) {
 }
 
 // @internal
+export function isCancellationError(e: unknown): boolean {
+  return (
+    e instanceof Error &&
+    (e.name === 'AbortException' || e.name === 'RenderingCancelledException')
+  )
+}
+
+// @internal
 export function isDocument(doc: unknown): doc is PDFDocumentProxy {
   return doc ? Object.prototype.hasOwnProperty.call(doc, '_pdfInfo') : false
 }
