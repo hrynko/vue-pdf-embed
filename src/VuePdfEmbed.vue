@@ -18,6 +18,7 @@ import {
   emptyElement,
   isCancellationError,
   releaseChildCanvases,
+  runCancellableTask,
 } from './internal/utils'
 import { TextHighlighter } from './internal/highlighter'
 import { usePdfDocument } from './composables'
@@ -279,18 +280,11 @@ const renderPage = async (
   canvas.width = viewport.width
   canvas.height = viewport.height
   const task = page.render({ canvas, viewport })
-  const abort = () => task.cancel?.()
-  signal.addEventListener('abort', abort, { once: true })
-
-  try {
-    await task.promise
-  } catch (e) {
-    if (!isCancellationError(e)) {
-      throw e
-    }
-  } finally {
-    signal.removeEventListener('abort', abort)
-  }
+  await runCancellableTask(
+    () => task.promise,
+    () => task.cancel?.(),
+    signal
+  )
 }
 
 /**
@@ -359,20 +353,11 @@ const renderPageTextLayer = async (
     textContentSource,
     viewport,
   })
-  const abort = () => textLayer.cancel?.()
-  signal.addEventListener('abort', abort, { once: true })
-
-  try {
-    await textLayer.render()
-  } catch (e) {
-    if (!isCancellationError(e)) {
-      throw e
-    }
-    return
-  } finally {
-    signal.removeEventListener('abort', abort)
-  }
-
+  await runCancellableTask(
+    () => textLayer.render(),
+    () => textLayer.cancel?.(),
+    signal
+  )
   if (signal.aborted) {
     return
   }

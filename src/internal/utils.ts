@@ -99,3 +99,21 @@ export function releaseCanvas(canvas: HTMLCanvasElement) {
 export function releaseChildCanvases(el?: HTMLElement | null) {
   el?.querySelectorAll('canvas').forEach(releaseCanvas)
 }
+
+// @internal
+export const runCancellableTask = async (
+  start: () => Promise<unknown>,
+  cancel: () => void,
+  signal: AbortSignal
+) => {
+  signal.addEventListener('abort', cancel, { once: true })
+  try {
+    await start()
+  } catch (e) {
+    if (!isCancellationError(e)) {
+      throw e
+    }
+  } finally {
+    signal.removeEventListener('abort', cancel)
+  }
+}
