@@ -110,7 +110,7 @@ export function usePdfDocument({
     }
   })
 
-  const download = async (filename: string) => {
+  const download = async (filename?: string) => {
     if (!doc.value) {
       return
     }
