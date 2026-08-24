@@ -16,8 +16,6 @@ const cssCopyOptions: CopyOptions = {
       const commonAtRules = new Map<string, Map<string, postcss.AtRule>>()
       const result = postcss.root()
       const targets = new Set([
-        '#hiddenCopyElement',
-        '.hiddenCanvasElement',
         '[data-main-rotation="90"]',
         '[data-main-rotation="180"]',
         '[data-main-rotation="270"]',

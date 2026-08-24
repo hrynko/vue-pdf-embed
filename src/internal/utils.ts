@@ -52,7 +52,7 @@ export function createPrintIframe(
 // @internal
 export function downloadPdf(data: Uint8Array, filename: string) {
   const url = URL.createObjectURL(
-    new Blob([data], {
+    new Blob([data as BlobPart], {
       type: 'application/pdf',
     })
   )

@@ -84,7 +84,7 @@ describe('usePdfDocument', () => {
       const { app, result } = withSetup(() => usePdfDocument({ source }))
 
       await flushPromises()
-      expect(mockGetDocument).toHaveBeenCalledWith(source.value)
+      expect(mockGetDocument).toHaveBeenCalledWith({ url: source.value })
       expect(result.doc.value).toBe(mockDoc)
       app.unmount()
     })
@@ -126,7 +126,7 @@ describe('usePdfDocument', () => {
       source.value = 'http://localhost/test2.pdf'
       await flushPromises()
       expect(result.doc.value).toBe(mockDoc2)
-      expect(mockDoc1.destroy).toHaveBeenCalled()
+      expect(mockLoadingTask1.destroy).toHaveBeenCalled()
       app.unmount()
     })
   })
@@ -327,7 +327,7 @@ describe('usePdfDocument', () => {
   })
 
   describe('cleanup on unmount', () => {
-    it('should destroy doc and loading task on unmount', async () => {
+    it('should destroy the loading task on unmount', async () => {
       const mockDoc = createMockDoc()
       const mockTask = createMockLoadingTask(mockDoc)
       mockGetDocument.mockReturnValue(mockTask)
@@ -337,7 +337,6 @@ describe('usePdfDocument', () => {
       await flushPromises()
       app.unmount()
       expect(mockTask.destroy).toHaveBeenCalled()
-      expect(mockDoc.destroy).toHaveBeenCalled()
     })
 
     it('should not destroy externally-provided doc', async () => {

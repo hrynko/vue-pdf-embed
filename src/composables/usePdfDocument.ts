@@ -1,8 +1,6 @@
 import {
-  onBeforeUnmount,
   shallowRef,
   toValue,
-  watch,
   watchEffect,
   type ComputedRef,
   type MaybeRef,
@@ -13,11 +11,7 @@ import {
   PasswordResponses,
   getDocument,
 } from 'pdfjs-dist/legacy/build/pdf.mjs'
-import type {
-  OnProgressParameters,
-  PDFDocumentLoadingTask,
-  PDFDocumentProxy,
-} from 'pdfjs-dist'
+import type { OnProgressParameters, PDFDocumentProxy } from 'pdfjs-dist'
 
 import type { PasswordRequestParams, Source } from '../types'
 import {
@@ -28,6 +22,22 @@ import {
   releaseCanvas,
   releaseChildCanvases,
 } from '../internal/utils'
+
+const toDocumentInitParams = (
+  source: Exclude<Source, PDFDocumentProxy | null>
+): Parameters<typeof getDocument>[0] => {
+  if (typeof source === 'string' || source instanceof URL) {
+    return { url: source }
+  }
+  if (
+    source instanceof ArrayBuffer ||
+    ArrayBuffer.isView(source) ||
+    Array.isArray(source)
+  ) {
+    return { data: source }
+  }
+  return source
+}
 
 /**
  * @deprecated renamed to {@link usePdfDocument}
@@ -46,9 +56,8 @@ export function usePdfDocument({
   source: ComputedRef<Source> | MaybeRef<Source> | ShallowRef<Source>
 }) {
   const doc = shallowRef<PDFDocumentProxy | null>(null)
-  const docLoadingTask = shallowRef<PDFDocumentLoadingTask | null>(null)
 
-  watchEffect(async () => {
+  watchEffect(async (onCleanup) => {
     const sourceValue = toValue(source)
 
     if (!sourceValue) {
@@ -58,13 +67,26 @@ export function usePdfDocument({
       return
     }
 
+    let isStale = false
+
     try {
-      docLoadingTask.value = getDocument(
-        sourceValue as Parameters<typeof getDocument>[0]
-      )
+      const loadingTask = getDocument(toDocumentInitParams(sourceValue))
+
+      onCleanup(() => {
+        isStale = true
+        if (loadingTask.onPassword) {
+          // @ts-expect-error: onPassword must be reset
+          loadingTask.onPassword = null
+        }
+        if (loadingTask.onProgress) {
+          // @ts-expect-error: onProgress must be reset
+          loadingTask.onProgress = null
+        }
+        loadingTask.destroy()
+      })
 
       if (onPasswordRequest) {
-        docLoadingTask.value!.onPassword = (
+        loadingTask.onPassword = (
           callback: (password: unknown) => void,
           response: number
         ) => {
@@ -76,11 +98,20 @@ export function usePdfDocument({
       }
 
       if (onProgress) {
-        docLoadingTask.value.onProgress = onProgress
+        loadingTask.onProgress = onProgress
       }
 
-      doc.value = await docLoadingTask.value.promise
+      const loadedDoc = await loadingTask.promise
+      if (isStale) {
+        return
+      }
+
+      doc.value = loadedDoc
     } catch (e) {
+      if (isStale) {
+        return
+      }
+
       doc.value = null
 
       if (onError) {
@@ -88,25 +119,6 @@ export function usePdfDocument({
       } else {
         throw e
       }
-    }
-  })
-
-  watch(doc, (_, oldDoc) => {
-    oldDoc?.destroy()
-  })
-
-  onBeforeUnmount(() => {
-    if (docLoadingTask.value?.onPassword) {
-      // @ts-expect-error: onPassword must be reset
-      docLoadingTask.value.onPassword = null
-    }
-    if (docLoadingTask.value?.onProgress) {
-      // @ts-expect-error: onProgress must be reset
-      docLoadingTask.value.onProgress = null
-    }
-    docLoadingTask.value?.destroy()
-    if (!isDocument(toValue(source))) {
-      doc.value?.destroy()
     }
   })
 
