@@ -1,6 +1,6 @@
 # 📄 vue-pdf-embed
 
-PDF embed component for Vue 3 (see [Compatibility](#compatibility) for Vue 2 support)
+PDF embedding component for Vue 3 (see [Compatibility](#compatibility) for Vue 2 support)
 
 [![Awesome List](https://raw.githubusercontent.com/sindresorhus/awesome/main/media/mentioned-badge.svg)](https://github.com/vuejs/awesome-vue)
 [![npm Version](https://img.shields.io/npm/v/vue-pdf-embed?style=flat)](https://npmjs.com/package/vue-pdf-embed)
@@ -12,10 +12,12 @@ PDF embed component for Vue 3 (see [Compatibility](#compatibility) for Vue 2 sup
 
 - Controlled rendering of PDF documents in Vue apps
 - Handling password-protected documents
-- Includes text layer (searchable and selectable documents)
-- Includes annotation layer (annotations and links)
+- Text layer (searchable and selectable documents)
+- Annotation layer (annotations and links)
 - No peer dependencies or additional configuration required
 - Can be used directly in the browser (see [Examples](#examples))
+
+> **Looking for a full PDF viewer?** This library renders documents and leaves the UI to you. For a ready-made viewer, check out [vue-pdfz](https://github.com/hrynko/vue-pdfz) from the same author.
 
 ## Compatibility
 
