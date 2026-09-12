@@ -324,6 +324,24 @@ describe('usePdfDocument', () => {
       expect(mockDoc.getPage).toHaveBeenCalledWith(3)
       app.unmount()
     })
+
+    it.each(['', 'Original title'])(
+      'should restore the document title after printing',
+      async (originalTitle) => {
+        const mockDoc = createMockDoc(1)
+        mockGetDocument.mockReturnValue(createMockLoadingTask(mockDoc))
+        document.title = originalTitle
+
+        const { app, result } = withSetup(() =>
+          usePdfDocument({ source: 'test.pdf' })
+        )
+
+        await flushPromises()
+        await result.print(undefined, 'printed.pdf')
+        expect(document.title).toBe(originalTitle)
+        app.unmount()
+      }
+    )
   })
 
   describe('cleanup on unmount', () => {

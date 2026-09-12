@@ -215,7 +215,7 @@ export function usePdfDocument({
       iframe.contentWindow?.focus()
       iframe.contentWindow?.print()
     } finally {
-      if (title) {
+      if (title !== undefined) {
         window.document.title = title
       }
 
