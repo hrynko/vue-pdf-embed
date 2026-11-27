@@ -18,6 +18,7 @@ import {
   addPrintStyles,
   createPrintIframe,
   downloadPdf,
+  getPrintRotation,
   isDocument,
   releaseCanvas,
   releaseChildCanvases,
@@ -165,6 +166,20 @@ export function usePdfDocument({
           : [pageNumber]
         : [...Array(doc.value.numPages + 1).keys()].slice(1)
 
+      if (!pageNums.length) {
+        return
+      }
+
+      // The first page defines the sheet size (CSS supports only one @page size)
+      const firstPage = await doc.value.getPage(pageNums[0]!)
+      const firstViewport = firstPage.getViewport({ scale: 1 })
+      const isFirstPagePortrait = firstViewport.width <= firstViewport.height
+      addPrintStyles(
+        iframe,
+        (firstViewport.width * printUnits) / styleUnits,
+        (firstViewport.height * printUnits) / styleUnits
+      )
+
       for (
         let batchIndex = 0;
         batchIndex < pageNums.length;
@@ -173,18 +188,12 @@ export function usePdfDocument({
         await Promise.all(
           pageNums
             .slice(batchIndex, batchIndex + batchSize)
-            .map(async (pageNum, i) => {
+            .map(async (pageNum) => {
               const page = await doc.value!.getPage(pageNum)
               const viewport = page.getViewport({
                 scale: 1,
-                rotation: 0,
+                rotation: getPrintRotation(page, isFirstPagePortrait),
               })
-
-              if (batchIndex + i === 0) {
-                const sizeX = (viewport.width * printUnits) / styleUnits
-                const sizeY = (viewport.height * printUnits) / styleUnits
-                addPrintStyles(iframe, sizeX, sizeY)
-              }
 
               const canvas = window.document.createElement('canvas')
               canvas.width = viewport.width * printUnits

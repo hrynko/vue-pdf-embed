@@ -3,8 +3,16 @@ import { createApp, ref, shallowRef } from 'vue'
 import { flushPromises } from '@vue/test-utils'
 import { PasswordResponses, type PDFDocumentProxy } from 'pdfjs-dist'
 
-import { createMockDoc, createMockLoadingTask } from './mocks/pdfjs'
-import { createPrintIframe, downloadPdf } from '../src/internal/utils'
+import {
+  createMockDoc,
+  createMockLoadingTask,
+  createMockPage,
+} from './mocks/pdfjs'
+import {
+  addPrintStyles,
+  createPrintIframe,
+  downloadPdf,
+} from '../src/internal/utils'
 import { usePdfDocument, usePdfSearch } from '../src/composables'
 
 const mockGetDocument = vi.fn()
@@ -322,6 +330,69 @@ describe('usePdfDocument', () => {
       expect(mockDoc.getPage).toHaveBeenCalledWith(1)
       expect(mockDoc.getPage).not.toHaveBeenCalledWith(2)
       expect(mockDoc.getPage).toHaveBeenCalledWith(3)
+      app.unmount()
+    })
+
+    it('should size the sheet after the first page and rotate pages with a different orientation', async () => {
+      const createPage = (width: number, height: number, rotate = 0) =>
+        createMockPage({
+          rotate,
+          getViewport: vi.fn(
+            ({ rotation = rotate }: { rotation?: number } = {}) =>
+              rotation % 180 === 0
+                ? { width, height }
+                : { width: height, height: width }
+          ),
+        })
+      const pages = [
+        createPage(595, 842),
+        createPage(842, 595),
+        createPage(595, 842, 90),
+      ]
+      const mockDoc = createMockDoc(3, {
+        getPage: vi.fn((num: number) => Promise.resolve(pages[num - 1])),
+      })
+      mockGetDocument.mockReturnValue(createMockLoadingTask(mockDoc))
+
+      const { app, result } = withSetup(() =>
+        usePdfDocument({ source: 'test.pdf' })
+      )
+
+      await flushPromises()
+      await result.print(96)
+      expect(addPrintStyles).toHaveBeenCalledTimes(1)
+      expect(addPrintStyles).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.closeTo(595),
+        expect.closeTo(842)
+      )
+      expect(pages[0]!.getViewport).toHaveBeenCalledWith({
+        scale: 1,
+        rotation: 0,
+      })
+      expect(pages[1]!.getViewport).toHaveBeenCalledWith({
+        scale: 1,
+        rotation: 90,
+      })
+      expect(pages[2]!.getViewport).toHaveBeenCalledWith({
+        scale: 1,
+        rotation: 180,
+      })
+      app.unmount()
+    })
+
+    it('should not create pages when an empty page list is given', async () => {
+      const mockDoc = createMockDoc(2)
+      mockGetDocument.mockReturnValue(createMockLoadingTask(mockDoc))
+
+      const { app, result } = withSetup(() =>
+        usePdfDocument({ source: 'test.pdf' })
+      )
+
+      await flushPromises()
+      await result.print(undefined, undefined, [])
+      expect(mockDoc.getPage).not.toHaveBeenCalled()
+      expect(addPrintStyles).not.toHaveBeenCalled()
       app.unmount()
     })
 
