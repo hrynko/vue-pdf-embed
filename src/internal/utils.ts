@@ -1,4 +1,4 @@
-import type { PDFDocumentProxy } from 'pdfjs-dist'
+import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist'
 
 // @internal
 export function addPrintStyles(
@@ -7,6 +7,9 @@ export function addPrintStyles(
   sizeY: number
 ) {
   const style = iframe.contentWindow!.document.createElement('style')
+  // Pages are scaled down to fit inside the sheet in both dimensions, so a page
+  // whose size or aspect ratio differs from the first page cannot overflow onto
+  // an extra sheet. The 6mm subtracted from the height matches the @page margins.
   style.textContent = `
     @page {
       margin: 3mm;
@@ -16,7 +19,10 @@ export function addPrintStyles(
       margin: 0;
     }
     canvas {
-      width: 100%;
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+      max-height: calc(${sizeY}pt - 6mm);
       page-break-before: avoid;
       break-before: avoid;
       page-break-inside: avoid;
@@ -29,6 +35,19 @@ export function addPrintStyles(
   `
   iframe.contentWindow!.document.head.appendChild(style)
   iframe.contentWindow!.document.body.style.width = '100%'
+}
+
+// @internal
+export function getPrintRotation(
+  page: PDFPageProxy,
+  isFirstPagePortrait: boolean
+) {
+  // Like the PDF.js viewer, rotate pages whose orientation differs from the
+  // first page, so they use the whole sheet instead of being squeezed into it.
+  const { width, height } = page.getViewport({ scale: 1 })
+  return width <= height === isFirstPagePortrait
+    ? page.rotate
+    : (page.rotate + 90) % 360
 }
 
 // @internal

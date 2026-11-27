@@ -5,6 +5,7 @@ import {
   createPrintIframe,
   downloadPdf,
   emptyElement,
+  getPrintRotation,
   isDocument,
   releaseCanvas,
   releaseChildCanvases,
@@ -32,6 +33,41 @@ describe('addPrintStyles', () => {
   it('should set body width to 100%', () => {
     addPrintStyles(iframe, 595, 842)
     expect(iframe.contentWindow!.document.body.style.width).toBe('100%')
+  })
+
+  it('should fit pages inside the sheet in both dimensions', () => {
+    addPrintStyles(iframe, 595, 842)
+    const style = iframe.contentWindow!.document.head.querySelector('style')
+    expect(style!.textContent).toContain('max-width: 100%')
+    expect(style!.textContent).toContain('max-height: calc(842pt - 6mm)')
+  })
+})
+
+describe('getPrintRotation', () => {
+  const createPage = (width: number, height: number, rotate = 0) =>
+    ({
+      rotate,
+      getViewport: ({ rotation = rotate }: { rotation?: number } = {}) =>
+        rotation % 180 === 0
+          ? { width, height }
+          : { width: height, height: width },
+    }) as unknown as Parameters<typeof getPrintRotation>[0]
+
+  it('should keep the page rotation when orientation matches the first page', () => {
+    expect(getPrintRotation(createPage(595, 842), true)).toBe(0)
+    expect(getPrintRotation(createPage(842, 595), false)).toBe(0)
+  })
+
+  it('should rotate pages whose orientation differs from the first page', () => {
+    expect(getPrintRotation(createPage(842, 595), true)).toBe(90)
+    expect(getPrintRotation(createPage(595, 842), false)).toBe(90)
+  })
+
+  it("should respect the page's own /Rotate", () => {
+    // Landscape page stored as portrait with /Rotate 90
+    expect(getPrintRotation(createPage(595, 842, 90), true)).toBe(180)
+    expect(getPrintRotation(createPage(595, 842, 90), false)).toBe(90)
+    expect(getPrintRotation(createPage(595, 842, 270), true)).toBe(0)
   })
 })
 
